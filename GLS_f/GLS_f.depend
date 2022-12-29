@@ -1,0 +1,29 @@
+# depslib dependency file v1.0
+1672232955 source:/home/kacper/Pulpit/C++/Zmienne/GLS_f/main.cpp
+	<iostream>
+	<string>
+	<filesystem>
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cmath>
+	<vector>
+	<fstream>
+	<sstream>
+
+1672287700 source:/home/kacper/Pulpit/GLS_variables_detector/GLS_f/main.cpp
+	<iostream>
+	<string>
+	<filesystem>
+	<cstdlib>
+	<cstdio>
+	<cstring>
+	<cmath>
+	<vector>
+	<fstream>
+	<sstream>
+	"GLS.hpp"
+
+1672288509 /home/kacper/Pulpit/GLS_variables_detector/GLS_f/GLS.hpp
+	<cmath>
+
