@@ -1,0 +1,16 @@
+#version 460
+
+// The execution structure
+layout (local_size_x = 1) in;
+
+// The buffers are provided via the tensors
+layout(binding = 0) buffer bufT { float t[]; };
+layout(binding = 1) buffer bufY { float y[]; };
+layout(binding = 2) buffer bufDy { float dy[]; };
+layout(binding = 3) buffer bufF { float f[]; };
+layout(binding = 4) buffer bufOut { float o[]; };
+
+void main() {
+    uint index = gl_GlobalInvocationID.x;
+    o[index] = y[index] / dy[index];
+}
