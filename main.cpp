@@ -7,6 +7,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <boost/spirit/include/qi.hpp>
+
 #include "my_shader.hpp"
 #include <kompute/Kompute.hpp>
 
@@ -44,7 +46,7 @@ const int batch_size = std::stoi(argv[5]);
 const float min_power = std::stof(argv[6]);
 const float filter_range = std::stof(argv[7]);
 const int no_steps = (max_frequency - min_frequency)/step_size + 1;
-const int cells_per_file = ceil(float(no_steps)/128);
+const int cells_per_file = ceil(float(no_steps)/1024);
 
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
@@ -79,55 +81,88 @@ const int number_of_cycles = ceil(file_count/batch_size);
 
 const int batch_number = 0; //do zmiany, będzie wynikać z wartości głównej pętli
 
-const int batch_length = std::min(batch_size, file_count - (batch_number * batch_size));
+int batch_length = std::min(batch_size, file_count - (batch_number * batch_size));
 
 
 std::vector<std::vector<std::vector<float>>> all_data(batch_size); //creates temporary vector to enable multithreaded data read
 
 
 
-#pragma omp parallel for
+#pragma omp parallel for //usunąć w przypadku HDD
 for (int k = 0; k< batch_length; k++){
+    std::vector<std::vector<float>> data;
 
-std::vector<std::vector<float>> data; std::string line; float word; //declares data temporary vector
-std::ifstream input_file(files[k]);
+    std::ifstream input_file(files[k]);
 
-    if(input_file){
-    while(getline(input_file, line, '\n')){ //creates a temporary vector that will contain all the columns
-    std::vector<float> tempVec; std::istringstream ss(line); //read float by float
-    while(ss >> word){tempVec.push_back(word);} //adds the float to the temporary vector
-    data.emplace_back(tempVec);} //add floats from the current line has been added to the temporary vector
+    if (input_file) {
+        std::string line;
+        while (std::getline(input_file, line)) {
+            std::vector<float> tempVec;
+            std::string::const_iterator it = line.begin();
+            std::string::const_iterator end = line.end();
 
-    all_data[k] = data;
-    data.clear();}
+            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
 
-else{std::cout<<"file cannot be opened"<<std::endl;}
+            if (success && it == end) {
+                data.emplace_back(tempVec);
+            } else {
+                std::cout << "Parsing failed" << std::endl;
+                break;
+            }}
 
-input_file.close();}
+        all_data[k] = data;
+    } else {
+        std::cout << "file cannot be opened" << std::endl;}
 
-//generates data vectors
-std::vector<float> t, y, dy; std::vector<float> breakpoints(1, 0); //creates vectors for input data storage
+    input_file.close();}
+
+
+//generates breakpoint vector
+std::vector<int> breakpoints(1, 0); //creates vectors for input data storage
 
 
 //fills vectors with data
 for (int k = 0; k < batch_length; k++){
 breakpoints.push_back(breakpoints[k] + all_data[k].size());
             // std::cout<<files[k]<<" " <<breakpoints[k+1] - breakpoints[k]<<" "<<std::endl; //prints data length for each file to check the corectness of algorithm
-for (int j = 0; j < all_data[k].size(); j++){
-t.push_back(all_data[k][j][0]);
-y.push_back(all_data[k][j][1]);
-dy.push_back(all_data[k][j][2]);
-}}
+}
 
+
+std::vector<float> t(breakpoints.back()), y(breakpoints.back()), dy(breakpoints.back());  //creats data vectors
+
+//fills vectors with data
+#pragma omp parallel for
+for (int k = 0; k < batch_length; k++){
+for (int j = 0; j < breakpoints[k+1] - breakpoints[k] ; j++){
+t[j + breakpoints[k]] =  all_data[k][j][0];
+y[j + breakpoints[k]] =  all_data[k][j][1];
+dy[j + breakpoints[k]] = all_data[k][j][2];
+}}
 
 all_data.clear(); //deletes 3D vector with data
 
+int data_size = t.size();
             //std::cout<<t.size()<<" "<<y.size()<<" "<<dy.size()<<" "<<std::endl; - prints data size
 for (int i = 1; i <= file_count;i++){
 //std::cout<<breakpoints[i] - breakpoints[i-1]<<" "<<std::endl;
 }
 
-std::vector<float> output_test(t.size(), 0); //creates output vector
+std::vector<int32_t> batch_info; //creates vector storing variables characterising batch
+batch_info.push_back(data_size);
+batch_info.push_back(128);
+batch_info.push_back(batch_length);
+batch_info.push_back(cells_per_file);
+
+std::vector<float>batch(batch_length, 0);
+std::vector<float>time_buffer(no_steps, 0);
+
+
+
+std::vector<float> output_test(t.size(), 0); //creates long buffer vector
+
+
+std::vector<float> output(batch_size * 3 * cells_per_file , 0); //creates output vector
+
 
     kp::Manager mgr(1); // Selects GPU device at index 1
 
@@ -143,16 +178,54 @@ std::vector<float> output_test(t.size(), 0); //creates output vector
     std::shared_ptr<kp::TensorT<float>> tensorInF =
       mgr.tensor(frequencies);
 
+    std::shared_ptr<kp::TensorT<float>> tensorShortBuffer =
+mgr.tensor(batch);
 
-    std::shared_ptr<kp::TensorT<float>> tensorOut =
-      mgr.tensor(output_test);
+
+std::shared_ptr<kp::TensorT<float>> tensorW =
+mgr.tensor(output_test);
+std::shared_ptr<kp::TensorT<float>> tensorWy =
+mgr.tensor(output_test);
+
+std::shared_ptr<kp::TensorT<float>> tensorPusty =
+mgr.tensor(time_buffer);
+std::shared_ptr<kp::TensorT<float>> tensorOutput =
+mgr.tensor(output);
+
+std::shared_ptr<kp::TensorT<float>> tensorCosDx =
+mgr.tensor(output_test);
+std::shared_ptr<kp::TensorT<float>> tensorSinDx =
+mgr.tensor(output_test);
+
+std::shared_ptr<kp::TensorT<float>> tensorLongBuffer =
+mgr.tensor(output_test);
 
 
-    const std::vector<std::shared_ptr<kp::Tensor>> params = { tensorInT,
-                                                              tensorInY,
-                                                             tensorInDy,
-                                                              tensorInF,
-                                                              tensorOut };
+std::shared_ptr<kp::TensorT<int32_t>> tensorBreakpoints =
+mgr.tensorT(breakpoints);
+
+std::shared_ptr<kp::TensorT<float>> tensorWsum =
+mgr.tensor(batch);
+
+std::shared_ptr<kp::TensorT<float>> tensorWnorm =
+mgr.tensor(output_test);
+
+std::shared_ptr<kp::TensorT<float>> tensorY =
+mgr.tensor(batch);
+
+
+
+    const std::vector<std::shared_ptr<kp::Tensor>> params = { tensorInT, tensorInY,tensorInDy,
+
+tensorInF,
+
+tensorShortBuffer,
+
+tensorW, tensorWy, tensorPusty, tensorOutput, tensorCosDx, tensorSinDx,
+
+tensorLongBuffer,
+
+tensorBreakpoints, tensorWsum, tensorWnorm, tensorY};
 
     const std::vector<uint32_t> shader = std::vector<uint32_t>(
       shader::MY_SHADER_COMP_SPV.begin(), shader::MY_SHADER_COMP_SPV.end());
@@ -173,12 +246,15 @@ for (int i = 0; i < t.size(); i++){
 std::cout <<y[i]<<" "<<dy[i]<<" "<<output_test[i]<<std::endl;
 }
 */
-std::vector<float> output_data = tensorOut->vector();
+std::vector<float> output_data = tensorCosDx->vector();
 
 
 // prints all the data
-for (int i; i < 100; i++){
-std::cout<<y[i]<<" "<<dy[i]<<" "<<output_data[i]<<std::endl;
+
+std::cout <<"step size: " << step_size <<std::endl;
+
+for (int i = 0; i < 100; i++){
+std::cout<<t[i]<<" "<<output_data[i]<<std::endl;
 }
 
 std::cout << std::endl;
