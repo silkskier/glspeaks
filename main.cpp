@@ -161,7 +161,7 @@ std::vector<float>time_buffer(no_steps, 0);
 std::vector<float> output_test(t.size(), 0); //creates long buffer vector
 
 
-std::vector<float> output(batch_size * 3 * cells_per_file , 0); //creates output vector
+std::vector<float> output(batch_size * 3 , 0); //creates output vector // * cells_per_file
 
 
     kp::Manager mgr(1); // Selects GPU device at index 1
@@ -187,7 +187,7 @@ mgr.tensor(output_test);
 std::shared_ptr<kp::TensorT<float>> tensorWy =
 mgr.tensor(output_test);
 
-std::shared_ptr<kp::TensorT<float>> tensorPusty =
+std::shared_ptr<kp::TensorT<float>> tensorYY =
 mgr.tensor(time_buffer);
 std::shared_ptr<kp::TensorT<float>> tensorOutput =
 mgr.tensor(output);
@@ -215,13 +215,13 @@ mgr.tensor(batch);
 
 
 
-    const std::vector<std::shared_ptr<kp::Tensor>> params = { tensorInT, tensorInY,tensorInDy,
+    const std::vector<std::shared_ptr<kp::Tensor>> params = { tensorInT, tensorInY, tensorInDy,
 
 tensorInF,
 
 tensorShortBuffer,
 
-tensorW, tensorWy, tensorPusty, tensorOutput, tensorCosDx, tensorSinDx,
+tensorW, tensorWy, tensorYY, tensorOutput, tensorCosDx, tensorSinDx,
 
 tensorLongBuffer,
 
@@ -246,14 +246,14 @@ for (int i = 0; i < t.size(); i++){
 std::cout <<y[i]<<" "<<dy[i]<<" "<<output_test[i]<<std::endl;
 }
 */
-std::vector<float> output_data = tensorCosDx->vector();
+std::vector<float> output_data = tensorShortBuffer->vector();
 
 
 // prints all the data
 
 std::cout <<"step size: " << step_size <<std::endl;
 
-for (int i = 0; i < 100; i++){
+for (int i = 0; i < 10; i++){
 std::cout<<t[i]<<" "<<output_data[i]<<std::endl;
 }
 
