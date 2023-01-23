@@ -1,7 +1,8 @@
-#version 460
+#version 450
 
 // The execution structure
 layout (local_size_x = 1024) in;
+layout (local_size_y = 1024) in;
 
 // The buffers are provided via the tensors
 layout(binding = 0) buffer bufT { float t[]; };
@@ -13,7 +14,7 @@ layout(binding = 4) buffer bufShort { float short_buffer[]; }; //short temporary
 
 layout(binding = 5) buffer bufW          { float w[]; };
 layout(binding = 6) buffer bufWy        { float wy[]; };
-layout(binding = 7) buffer bufPusty    { float abcd[]; };
+layout(binding = 7) buffer bufYY    { float YY[]; };
 layout(binding = 8) buffer bufOutput    { float output_data[]; };
 layout(binding = 9) buffer bufCosDx  { float cosdx[]; };
 layout(binding = 10) buffer bufSinDx { float sindx[]; };
@@ -27,6 +28,13 @@ layout(binding = 13) buffer bufWsum { float wsum[]; };
 layout(binding = 14) buffer bufWnorm { float wnorm[]; };
 
 layout(binding = 15) buffer bufY_ { float Y_[]; };
+
+
+struct max_power_data {
+    float power;
+    float frequency;
+    float sum_of_powers;
+};
 
 
 
@@ -58,6 +66,90 @@ for (uint i = breakpoints[index]; i < breakpoints[index+1]; i++){wy[i] = wnorm[i
 return yy_temp;}
 
 
+																	//nowa funkcja
+
+
+
+max_power_data calculate_block_powers (uint data_begin, uint data_end, uint frequency_begin, uint frequency_end){
+
+max_power_data block_max_power;
+block_max_power.power = 0; block_max_power.frequency = 0; block_max_power.sum_of_powers = 0;
+
+float C = 0, S = 0, SS = 0, YC = 0, YS = 0, CC = 0, CS = 0, D = 0, p = 0;
+
+float cosx[1024]; float sinx[1024];
+
+for (uint j = frequency_begin; j < frequency_end; j++){
+
+  for (uint i = data_begin; i < data_end; i++) {
+     if (j % 256 == 0) {
+
+        // init/refresh recurrences to stop error propagation
+        cosx[i - data_begin] = cos(6.2831853 * f[j] * t[i]);
+        sinx[i - data_begin] = sin(6.2831853 * f[j] * t[i]);
+     }
+
+     C += wnorm[i] * cosx[i - data_begin];              // Eq. (8) 
+     S += wnorm[i] * sinx[i - data_begin];              // Eq. (9) 
+     YC += wnorm[i] * cosx[i - data_begin];            // Eq. (11) 
+     YS += wnorm[i] * sinx[i - data_begin];            // Eq. (12) 
+     CC += wnorm[i] * cosx[i - data_begin] * cosx[i - data_begin];   /* Eq. (13) */
+     CS += wnorm[i] * cosx[i - data_begin] * sinx[i - data_begin];   /* Eq. (15) */
+
+     /* increase freq for next loop */
+     float tmp = cosx[i - data_begin] * cosdx[i] - sinx[i - data_begin] * sindx[i];
+     sinx[i] = cosx[i - data_begin] * sindx[i] + sinx[i - data_begin] * cosdx[i];
+     cosx[i] = tmp;
+  }
+
+  SS = 1. - CC;
+  CC -= C * C;              // Eq. (13) 
+  SS -= S * S;              // Eq. (14) 
+  CS -= C * S;              // Eq. (15) 
+  D = CC*SS - CS*CS;        // Eq. (6) 
+// power
+
+  p = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY[j]*D);  // Eq. (5) in ZK09
+block_max_power.sum_of_powers += p;
+
+if (p > block_max_power.power) {block_max_power.power = p; block_max_power.frequency = f[j]; }
+
+}
+
+return block_max_power;
+}
+
+
+
+																	//nowa funkcja
+
+
+
+
+uint calculate_powers (uint file_number){
+
+max_power_data max_power;
+max_power.power = 0; max_power.frequency = 0; max_power.sum_of_powers = 0;
+
+
+for (uint j = 0; j < f.length(); j+= 1024){
+
+
+max_power_data block_data_input = calculate_block_powers(breakpoints[file_number], breakpoints[file_number + 1], j, min(j + 1024, f.length()) );
+
+max_power.sum_of_powers += block_data_input.sum_of_powers;
+
+if(block_data_input.power > max_power.power){max_power.power = block_data_input.power; max_power.frequency = block_data_input.frequency;}
+}
+
+uint output_index = 3 * file_number;
+
+output_data[output_index] = max_power.power;
+output_data[output_index + 1] = max_power.frequency;
+output_data[output_index + 2] = max_power.sum_of_powers;
+return 1;
+}
+
 
 
 
@@ -67,9 +159,7 @@ return yy_temp;}
 void main() {
 
 
-    uint index_x = gl_GlobalInvocationID.x;
-
-float YY[8192]; //declares YY array
+uint index_x = gl_GlobalInvocationID.x;
 
 
 
@@ -79,25 +169,24 @@ float step_size = f[1] - f[0];
 
 
 
-    w[index_x] = 1 / (dy[index_x] * dy[index_x]); //calculates "w" array
+w[index_x] = 1 / (dy[index_x] * dy[index_x]); //calculates "w" array
 
 
 wsum[index_x] = w_normalisation(index_x); //calculates wsum and normalised "w" array
 
 Y_[index_x] = calculate_Y(index_x);  //Eq. (7) (line 46)
 
-short_buffer[index_x] = calculate_wy(index_x); //Subtracts weighted mean
+YY[index_x] = calculate_wy(index_x); //Subtracts weighted mean /Eq. (10) (line 52)
 
-YY[index_x] = short_buffer[index_x]; //Eq. (10) (line 52)
 
 cosdx[index_x] = cos(t[index_x] * step_size * 6.2831853);
 sindx[index_x] = sin(t[index_x] * step_size * 6.2831853); 
 
-float     C, S, YC, YS, CC, SS, CS, D, tmp; //declares variables
 
 
 
-long_buffer[index_x] = 0; //nie działa
+short_buffer[index_x] = calculate_powers(index_x) ; //nie działa, prawdopodobnie przez (local_size_x = 1024), użyć dodatkowo layout (local_size_y = 1024) in;
+
 
 
 }
