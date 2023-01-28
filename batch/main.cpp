@@ -16,12 +16,6 @@ using namespace std;
 
 bool filter(float frequency, float power, float min_value, float filter_range){
 if(power < min_value){return false;}
-if(frequency < 1 + filter_range && frequency > 1 - filter_range){return false;}
-if(frequency < 2 + filter_range && frequency > 2 - filter_range){return false;}
-if(frequency < 3 + filter_range && frequency > 3 - filter_range){return false;}
-if(frequency < 4 + filter_range && frequency > 4 - filter_range){return false;}
-if(frequency < 5 + filter_range && frequency > 5 - filter_range){return false;}
-if(frequency < 8 + filter_range && frequency > 8 - filter_range){return false;}
 else {return true;}
 }
 
@@ -70,18 +64,15 @@ for (auto& entry : directory_iterator)
 std::cout <<"Number of files in directory: " << file_count << "\n" << std::endl;
 // for(int i=0; i < files.size(); i++) std::cout << files.at(i) << ','; //prints list of files
 
-string path = filesystem::path(files_location).parent_path(); string output_path = path + "/GLS_output.csv"; ofstream output_file(output_path); //creates and opens output file
+string path = filesystem::path(files_location).parent_path(); string output_path = path + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
 // calculates best-fitting period time and its power for each file using generalized Lomb-Scargle periodogram.
 
 /*/
-
 const int max_thread_number = std::thread::hardware_concurrency();
-
 int i = 0;
 for (i = 0; i < max_thread_number; ++i) {
     if (fork() == 0) {
-
 int j;
 for (j=i; j< file_count; j+= max_thread_number){auto [frequency, period, max_power] = periodogram(frequencies, step_size, no_steps, files.at(j));
 if(filter(frequency, max_power, min_power, filter_range)==true) {output_file << files.at(j) << " " << frequency << " " << period << " " << max_power << std::endl;}}
@@ -90,10 +81,8 @@ exit(0);
 // wait all child processes
 int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
-
-
 /*/
-const int files_per_cycle = 256; const int number_of_cycles = ceil(file_count/files_per_cycle);
+const int files_per_cycle = 1024; const int number_of_cycles = ceil(file_count/files_per_cycle);
 
 float best_frequencies[file_count]; float powers[file_count];
 
