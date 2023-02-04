@@ -82,9 +82,9 @@ exit(0);
 int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
-const int files_per_cycle = 1024; const int number_of_cycles = ceil(file_count/files_per_cycle);
+const int files_per_cycle = 512; const int number_of_cycles = ceil(file_count/files_per_cycle);
 
-float best_frequencies[file_count]; float powers[file_count];
+float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
 for (int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){
 
@@ -92,11 +92,12 @@ std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count)
 
 #pragma omp parallel for
 for (int i = j; i < min(j + files_per_cycle, file_count) ; i++)
-{auto [frequency, period, max_power] = periodogram(frequencies, step_size, no_steps, files.at(i)); best_frequencies[i] = frequency, powers[i] =  max_power;}
+{auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files.at(i)); best_frequencies[i] = frequency, amplitudes[i] =  amplitude, powers[i] =  max_power;}
 
 
 
-for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range)==true) {output_file <<std::fixed << std::setprecision(6) << files.at(i) << " " << best_frequencies[i] << " " << 1/best_frequencies[i] << " " << powers[i] << std::endl;}}
+for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range)==true) {
+output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}}
 cout << std::endl;
 //*/
 

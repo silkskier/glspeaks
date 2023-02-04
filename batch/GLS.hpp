@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cmath>
 
 //const float tau = 6.283185307179586;
@@ -9,7 +9,7 @@ using namespace std;
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,float* p) {
+void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,float* p, float* a) { //
 
 
    /*
@@ -23,7 +23,7 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
     * f : frequency array
     */
 
-   float wsum=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, tmp;
+   float wsum=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, self_a, self_b, tmp;
    float *w = (float *) malloc(n * sizeof(float)),
           *wy = (float *) malloc(n * sizeof(float)),
           *cosx = (float *) malloc(n * sizeof(float)),
@@ -53,11 +53,17 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
       sindx[i] = sin(2 * M_PI * fstep * t[i]);
    }
    /*printf("%i \n");*/
+
+
+
+
+
+
    for (k=0; k<nk; k++) {
 
-      C = S = YC = YS = CC = CS = 0;
+      C = S = YC = YS = CC = CS = 0, self_a = 0, self_b = 0; //
       for (i=0; i<n; i++) {
-         if (k % 1024 == 0) {
+         if (k % 128 == 0) {
             /* init/refresh recurrences to stop error propagation */
             cosx[i] = cos(2 * M_PI * f[k] * t[i]);
             sinx[i] = sin(2 * M_PI * f[k] * t[i]);
@@ -78,17 +84,23 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
          cosx[i] = tmp;
       }
 
+
+
+
+
+
       SS = 1. - CC;
       CC -= C * C;              /* Eq. (13) */
       SS -= S * S;              /* Eq. (14) */
       CS -= C * S;              /* Eq. (15) */
       D = CC*SS - CS*CS;        /* Eq. (6) */
 
-/*         self._a = (YC*SS-YS*CS) / D
-//         self._b = (YS*CC-YC*CS) / D
-//         self._off = -self._a*C - self._b*S
-*/
+    self_a = (YC*SS-YS*CS) / D;
+    self_b = (YS*CC-YC*CS) / D;
+
       /* power */
       p[k] = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
+      a[k] = 2 * sqrt((self_a * self_a) + (self_b * self_b));
    }
+   free(w); free(wy); free(cosx); free(sinx); free(cosdx); free(sindx);
 }
