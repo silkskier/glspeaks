@@ -100,7 +100,7 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
 
       /* power */
       p[k] = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
-      a[k] = 2 * sqrt((self_a * self_a) + (self_b * self_b));
+      a[k] = sqrt((self_a * self_a) + (self_b * self_b));
    }
    free(w); free(wy); free(cosx); free(sinx); free(cosdx); free(sindx);
 }
