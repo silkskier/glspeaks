@@ -1,21 +1,20 @@
 #include <iostream>
 #include <string>
-#include <filesystem>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <cmath>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <tuple>
 #include <bits/stdc++.h> //for sorting
-#include <numeric>
 
 #include "GLS.hpp"
 
 using namespace std;
 
-
+struct quad {
+	int index;
+	float power, amplitude, frequency;
+};
 
 int main(int argc, char *argv[]){
 
@@ -29,9 +28,12 @@ if(argc < 5){
 
 }else if(stof(argv[2]) <= 0){
      printf("\n Error; Starting frequency must be greater, than 0\n");
-     return 0;
+     return 1;
+
+}else if (std::stoi(argv[4]) > 23) {printf(" Error: Step sizes smaller than 2^-23 unsupported due to limitations of 32-bit floats"); return 1;
 
 }else{
+
 
 std::string file = argv[1]; //source file
 //defines variables used for calculations
@@ -49,7 +51,9 @@ const float step_size_0 = pow(0.5,std::stoi(argv[4]));
 const int no_steps = (max_frequency - min_frequency)/step_size_0 + 1;
     //std::cout << "Number of steps: " << no_steps << "\n";
 
-float *frequencies = (float *) malloc(no_steps * sizeof(float)), *powers = (float *) malloc(no_steps * sizeof(float)); //vectors storing step frequencies and powers for each frequency
+float *frequencies = (float *) malloc(no_steps * sizeof(float)),
+*powers = (float *) malloc(no_steps * sizeof(float)),  *amplitudes = (float *) malloc(no_steps * sizeof(float)); //vectors storing step frequencies and powers for each frequency
+
 for(int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size_0 * step;} //fills frequency vector
 //    for(int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
 
@@ -84,7 +88,7 @@ for (int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data[i][1], e
 data.clear();
 //  for (int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
 
-gls(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers);
+gls(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);
 
 //        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 //  //prints input files directory
@@ -93,31 +97,46 @@ gls(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers);
 // output_file << "Frequency Power" "\n";
 //for (int i = 0; i < no_steps; i++) output_file << frequencies[i] <<" "<< powers[i] <<std::endl; //prints frequencies and corresponding frequencies to a text file
 
-vector<pair<float, float>> output_data;
+std::vector<quad> output_data;
 
 float powers_sum = 0;
-for (int i=0; i < no_steps; i++){output_data.emplace_back(powers[i], frequencies[i]); if(isnormal(powers[i])){powers_sum += powers[i];};};
-float powers_average = powers_sum / no_steps;
+
+for (int i=0; i < no_steps; i++){output_data.emplace_back(quad{i, powers[i], amplitudes[i], frequencies[i]}); if(isnormal(powers[i])){powers_sum += powers[i];};};
+
+float ony_by_powers_average = no_steps / powers_sum;
+
+for (int i=0; i < no_steps; i++){output_data[i].power *= ony_by_powers_average;}
+
+
+
+std::vector<quad> sorted_data;
+
+for (int i=0; i < no_steps; i++){
+if (output_data[i].power > 2){
+sorted_data.push_back(output_data[i]);
+}}
+
 // float average_power = sum_of_powers/no_steps;
 
 //frequencies.clear(), powers.clear(); // removes lists from memory - doesn't work on lists
-std::sort(output_data.begin(), output_data.end(), greater());
+std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &b) {
+    return a.power > b.power;
+});
+
 std::cout <<"\n" << "File: "<< files_location << "\n";
-std::cout <<"\n" <<"f[1/d]        P[d]         max/avg" << std::endl;
-std::cout << std::fixed << std::setprecision(6); //sets cout's precision
+
+std::cout <<"\n  " <<"f[1/d]	P[d]		Amp		max/avg" << std::endl; //<< std::endl
+std::cout << std::fixed << std::setprecision(8); //sets cout's precision
 
 int j = 0;
-for (int i=0; i <= 10;){
+for (int i = 0; i < 20; i++) {
+  for (int k = i; k <= i;) {
+    if (sorted_data[j].power > output_data[sorted_data[j].index - 1].power && sorted_data[j].power > output_data[sorted_data[j].index + 1].power) {
 
-for(int k=i; i <= k;){
+    std::cout << "  " << sorted_data[j].frequency << "	" << 1/sorted_data[j].frequency << "	" << sorted_data[j].amplitude << "	" << sorted_data[j].power << std::endl;
+  j++;k++;
+} else {j++;}
 
-int step_number = round((output_data[j].second - min_frequency)/step_size_0);
-
-if (output_data[j].first >= powers[step_number - 1] && output_data[j].first >= powers[step_number + 1])
-{std::cout << output_data[j].second << "     " << 1/output_data[j].second << "     " << output_data[j].first/powers_average << std::endl; i++; j++;}
-else {j++;};}
-
-};
-
-
+}}
+free(frequencies); free(powers); free(amplitudes);
 }return 0;}
