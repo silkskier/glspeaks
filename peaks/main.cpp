@@ -1,15 +1,16 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <cmath>
 #include <vector>
 #include <fstream>
 #include <sstream>
 #include <tuple>
-#include <bits/stdc++.h> //for sorting
-
-#include "GLS.hpp"
+#include <algorithm> //for sorting
 
 #include <boost/spirit/include/qi.hpp>
+
+#include "GLS.hpp"
 
 using namespace std;
 
