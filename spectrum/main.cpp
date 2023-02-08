@@ -54,25 +54,27 @@ for(int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step
 //    for(int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
 
 
-std::vector<std::vector<float>> data;
+std::vector<std::vector<float>> data; std::string line;
+std::ifstream input_file(file);
 
-std::string line;
-    float word;
-    std::ifstream input_file(file);
-    if(input_file){
-        while(getline(input_file, line, '\n')){
-            //create a temporary vector that will contain all the columns
+    if (input_file) {
+        std::string line;
+        while (std::getline(input_file, line)) {
             std::vector<float> tempVec;
-            std::istringstream ss(line);
-            //read float by float
-            while(ss >> word){
-                //add the float to the temporary vector
-                tempVec.push_back(word);}
-            //add floats from the current line has been added to the temporary vector
-            data.emplace_back(tempVec);}
+            std::string::const_iterator it = line.begin();
+            std::string::const_iterator end = line.end();
 
-}else{
-std::cout<<"file cannot be opened"<<std::endl;}
+            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
+
+            if (success && it == end) {
+                data.emplace_back(tempVec);
+            } else {
+                std::cout << "Parsing failed" << std::endl;
+                break;
+            }}
+    } else {
+        std::cout << "file cannot be opened" << std::endl;}
+
     input_file.close();
 //  for(int i=0; i<data.size(); i++) {for(int j=0; j<data[i].size(); j++) cout<<data[i][j]<<" "; cout<<endl;} // prints data array
 
