@@ -17,8 +17,9 @@
 
 using namespace std;
 
-bool filter(float frequency, float power, float min_value, float filter_range){
+bool filter(float frequency, float power, float min_value, float filter_range, float amplitude, float min_amplitude, float max_amplitude){
 if((power < min_value) ||
+amplitude < min_amplitude  || amplitude > max_amplitude  ||
 (frequency < 1 + filter_range && frequency > 1 - filter_range) ||
 (frequency < 2 + filter_range && frequency > 2 - filter_range) ||
 (frequency < 3 + filter_range && frequency > 3 - filter_range) ||
@@ -34,10 +35,10 @@ else {return true;}
 int main(int argc, char *argv[]){
 
 //Message to print if there is not enough given arguments
- if(argc < 7){
+ if(argc < 9){
      printf("\n Batch GLS period finder for variable stars, version 1.0\n");
      printf(" based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS)\n\n");
-     printf(" Usage: GLS_batch <Path to catalog with data> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Filter range>\n\n");
+     printf(" Usage: GLS_batch <Path to catalog with data> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Filter range> <Min amplitude> <Max amplitude>\n\n");
      return 0;
 
 }else{
@@ -49,6 +50,8 @@ const float max_frequency = std::stof(argv[3]);
 const float step_size = pow(0.5,std::stoi(argv[4]));
 const float min_power = std::stof(argv[5]);
 const float filter_range = std::stof(argv[6]);
+const float min_amplitude = std::stof(argv[7]);
+const float max_amplitude = std::stof(argv[8]);
 
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
@@ -57,7 +60,8 @@ std::cout << "Step size: " << step_size << "\n";
 const int no_steps = (max_frequency - min_frequency)/step_size + 1;
 std::cout << "Number of steps: " << no_steps << "\n";
 std::cout << "Required avg/max power: " << min_power << "\n";
-std::cout << "Filter range: " << filter_range << "\n";
+std::cout << "Frequency filter range: " << filter_range << "\n";
+std::cout << "Amplitudes range: " << "[" << min_amplitude << " , " << max_amplitude << "]" << "\n";
 
 //const int max_thread_number = std::thread::hardware_concurrency();
 
@@ -92,7 +96,7 @@ exit(0);
 int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
-const int files_per_cycle = 512; const int number_of_cycles = ceil(file_count/files_per_cycle);
+const int files_per_cycle = 1024; const int number_of_cycles = ceil(file_count/files_per_cycle);
 
 float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
@@ -106,7 +110,7 @@ for (int i = j; i < min(j + files_per_cycle, file_count) ; i++)
 
 
 
-for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range)==true) {
+for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true) {
 output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}}
 cout << std::endl;
 //*/
