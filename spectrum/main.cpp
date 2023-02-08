@@ -96,17 +96,14 @@ string path = filesystem::path(file); string output_path = path + "_output.tsv";
 
   std::vector<std::string> output_string(no_steps);
 
-
-
+	#pragma omp parallel for
   for (int i = 0; i < no_steps; i++) {
-    float freq = frequencies[i];
-    float pow = powers[i];
 
   boost::spirit::karma::generate
 	(std::back_inserter(output_string[i]),
-	boost::spirit::float_(freq)
+	boost::spirit::float_(frequencies[i])
 	<< "\t"
-	<< boost::spirit::float_(pow));
+	<< boost::spirit::float_(powers[i]));
 }
 
 
