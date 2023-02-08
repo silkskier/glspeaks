@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <filesystem>
 #include <cstdlib>
@@ -8,6 +9,11 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/karma.hpp>
+#include <boost/spirit/include/karma_real.hpp>
+#include <boost/format.hpp>
 
 #include "GLS.hpp"
 
@@ -64,6 +70,7 @@ std::string line;
                 tempVec.push_back(word);}
             //add floats from the current line has been added to the temporary vector
             data.emplace_back(tempVec);}
+
 }else{
 std::cout<<"file cannot be opened"<<std::endl;}
     input_file.close();
@@ -82,9 +89,31 @@ gls(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers);
 
 //        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 // std::cout<< filesystem::path(file).filesystem::path::parent_path() <<std::endl; //prints input files directory
-string path = filesystem::path(file); string output_path = path + "_output.csv"; ofstream output_file(output_path); //creates and opens output file
+string path = filesystem::path(file); string output_path = path + "_output.tsv";
+
+
+
+
+  std::vector<std::string> output_string(no_steps);
+
+
+
+  for (int i = 0; i < no_steps; i++) {
+    float freq = frequencies[i];
+    float pow = powers[i];
+
+  boost::spirit::karma::generate
+	(std::back_inserter(output_string[i]),
+	boost::spirit::float_(freq)
+	<< "\t"
+	<< boost::spirit::float_(pow));
+}
+
+
+ofstream output_file(output_path); //creates and opens output file
 
 // output_file << "Frequency Power" "\n";
-for (int i = 0; i < no_steps; i++) output_file <<std::fixed << std::setprecision(6) << frequencies[i] <<" "<< powers[i] <<std::endl;
+
+for (int i = 0; i < no_steps; i++) output_file << output_string[i] << "\n";
 
 }return 0;}
