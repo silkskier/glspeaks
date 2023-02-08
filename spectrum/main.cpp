@@ -2,9 +2,6 @@
 #include <iomanip>
 #include <string>
 #include <filesystem>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <cmath>
 #include <vector>
 #include <fstream>
@@ -12,8 +9,6 @@
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/karma.hpp>
-#include <boost/spirit/include/karma_real.hpp>
-#include <boost/format.hpp>
 
 #include "GLS.hpp"
 
@@ -90,8 +85,8 @@ data.clear();
 gls(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers);
 
 //        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
-// std::cout<< filesystem::path(file).filesystem::path::parent_path() <<std::endl; //prints input files directory
-string path = filesystem::path(file); string output_path = path + "_output.tsv";
+// std::cout<< std::filesystem::path(file).filesystem::path::parent_path() <<std::endl; //prints input files directory
+string path = std::filesystem::path(file); string output_path = path + "_output.tsv";
 
 
 

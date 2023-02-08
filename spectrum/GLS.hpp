@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 
 //const float tau = 6.283185307179586;
