@@ -1,11 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <bits/stdc++.h> //for sorting
+#include <algorithm> //for sorting
 #include <tuple>
 
 #include "GLS.hpp"
-//#include "GLS.hpp"
 #include <boost/spirit/include/qi.hpp>
 
 using namespace std;

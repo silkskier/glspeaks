@@ -3,12 +3,8 @@
 #include <filesystem>
 #include <vector>
 #include <fstream>
-#include <bits/stdc++.h>
-
 #include <tuple>
 #include <thread>
-#include <sys/types.h>
-#include <sys/wait.h>
 
 #include <boost/spirit/include/karma.hpp>
 #include <boost/spirit/include/karma_real.hpp>
