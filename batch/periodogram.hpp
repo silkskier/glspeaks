@@ -5,7 +5,7 @@
 #include <tuple>
 
 #include "GLS.hpp"
-//#include "GLS_bez_rekurencji.hpp"
+//#include "GLS.hpp"
 #include <boost/spirit/include/qi.hpp>
 
 using namespace std;
@@ -56,6 +56,6 @@ int location = std::distance(powers_vector.begin(), std::max_element(powers_vect
 
 //float output[3] = {frequencies_array[location], 1/frequencies_array[location], powers[location]/powers_average}; //creates output array
 std::tuple<float, float, float> output_tuple = make_tuple(frequencies_array[location], amplitudes[location], powers[location]/powers_average);
-free(powers);// free(amplitudes);
+free(powers); free(amplitudes);
 return output_tuple;
 }

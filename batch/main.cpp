@@ -10,12 +10,22 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <boost/spirit/include/karma.hpp>
+#include <boost/spirit/include/karma_real.hpp>
+
 #include "periodogram.hpp"
 
 using namespace std;
 
 bool filter(float frequency, float power, float min_value, float filter_range){
-if(power < min_value){return false;}
+if((power < min_value) ||
+(frequency < 1 + filter_range && frequency > 1 - filter_range) ||
+(frequency < 2 + filter_range && frequency > 2 - filter_range) ||
+(frequency < 3 + filter_range && frequency > 3 - filter_range) ||
+(frequency < 4 + filter_range && frequency > 4 - filter_range) ||
+(frequency < 5 + filter_range && frequency > 5 - filter_range) ||
+(frequency < 8 + filter_range && frequency > 8 - filter_range)
+){return false;}
 else {return true;}
 }
 

@@ -63,7 +63,7 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
 
       C = S = YC = YS = CC = CS = 0, self_a = 0, self_b = 0; //
       for (i=0; i<n; i++) {
-         if (k % 128 == 0) {
+         if (k % 256 == 0) {
             /* init/refresh recurrences to stop error propagation */
             cosx[i] = cos(2 * M_PI * f[k] * t[i]);
             sinx[i] = sin(2 * M_PI * f[k] * t[i]);
@@ -82,6 +82,8 @@ void gls(float* t,float* y,float* e_y, int n, long nk, float fstep,float* f,floa
          tmp = cosx[i] * cosdx[i] - sinx[i] * sindx[i];
          sinx[i] = cosx[i] * sindx[i] + sinx[i] * cosdx[i];
          cosx[i] = tmp;
+
+//free(cosx); free(sinx); //nie jest źródłem problemu
       }
 
 
