@@ -18,16 +18,17 @@
 using namespace std;
 
 bool filter(float frequency, float power, float min_value, float filter_range, float amplitude, float min_amplitude, float max_amplitude){
-if((power < min_value) ||
-amplitude < min_amplitude  || amplitude > max_amplitude  ||
-(frequency < 1 + filter_range && frequency > 1 - filter_range) ||
-(frequency < 2 + filter_range && frequency > 2 - filter_range) ||
-(frequency < 3 + filter_range && frequency > 3 - filter_range) ||
-(frequency < 4 + filter_range && frequency > 4 - filter_range) ||
-(frequency < 5 + filter_range && frequency > 5 - filter_range) ||
-(frequency < 8 + filter_range && frequency > 8 - filter_range)
-){return false;}
-else {return true;}
+
+    if (power < min_value) return false; //powers filter
+
+    if (amplitude < min_amplitude || amplitude > max_amplitude) return false; //amplitudes filter
+
+    float filter_frequencies[] = {1, 2, 3, 4, 5, 8};
+    int num_frequencies = sizeof(filter_frequencies) / sizeof(filter_frequencies[0]);
+    for (int i = 0; i < num_frequencies; ++i)
+    {if (frequency > filter_frequencies[i] - filter_range && frequency < filter_frequencies[i] + filter_range) return false;} //frequencies filter
+
+    return true;
 }
 
 
@@ -96,25 +97,44 @@ exit(0);
 int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
-const int files_per_cycle = 1024; const int number_of_cycles = ceil(file_count/files_per_cycle);
 
+const int files_per_cycle = 1024; const int number_of_cycles = ceil(file_count/files_per_cycle);
 float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
-for (int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){
 
-std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << "%  " << std::flush;
+for (int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
+
+std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << "%, " << std::flush;
 
 #pragma omp parallel for
 for (int i = j; i < min(j + files_per_cycle, file_count) ; i++)
-{auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files.at(i)); best_frequencies[i] = frequency, amplitudes[i] =  amplitude, powers[i] =  max_power;}
+{auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]); best_frequencies[i] = frequency, amplitudes[i] =  amplitude, powers[i] =  max_power;}
 
 
 
-for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true) {
-output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}}
+//for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true)
+//{output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}
+
+std::vector<std::string> output_string(files_per_cycle);
+#pragma omp parallel for
+for (int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true){
+
+
+  boost::spirit::karma::generate
+	(std::back_inserter(output_string[i-j]),
+
+	boost::spirit::float_(best_frequencies[i])
+	<< "\t"<< boost::spirit::float_(1/best_frequencies[i])
+	<< "\t"<< boost::spirit::float_(amplitudes[i])
+	<< "\t"<< boost::spirit::float_(powers[i]));}
+
+	output_string.erase(remove(output_string.begin(), output_string.end(), ""), output_string.end());
+
+for (int i = 0; i < output_string.size(); i++) output_file << output_string[i] << std::endl; output_string.clear();
+
+}
+
 cout << std::endl;
-//*/
-
 
 return 0;}
 }
