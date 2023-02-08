@@ -9,6 +9,8 @@
 
 #include "GLS.hpp"
 
+#include <boost/spirit/include/qi.hpp>
+
 using namespace std;
 
 struct quad {
@@ -60,22 +62,26 @@ for(int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step
 
 std::vector<std::vector<float>> data;
 
-std::string line;
-    float word;
-    std::ifstream input_file(file);
-    if(input_file){
-        while(getline(input_file, line, '\n')){
-            //create a temporary vector that will contain all the columns
+std::ifstream input_file(file);
+
+    if (input_file) {
+        std::string line;
+        while (std::getline(input_file, line)) {
             std::vector<float> tempVec;
-            std::istringstream ss(line);
-            //read float by float
-            while(ss >> word){
-                //add the float to the temporary vector
-                tempVec.push_back(word);}
-            //add floats from the current line has been added to the temporary vector
-            data.emplace_back(tempVec);}
-}else{
-std::cout<<"file cannot be opened"<<std::endl;}
+            std::string::const_iterator it = line.begin();
+            std::string::const_iterator end = line.end();
+
+            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
+
+            if (success && it == end) {
+                data.emplace_back(tempVec);
+            } else {
+                std::cout << "Parsing failed" << std::endl;
+                break;
+            }}
+    } else {
+        std::cout << "file cannot be opened" << std::endl;}
+
     input_file.close();
 //  for(int i=0; i<data.size(); i++) {for(int j=0; j<data[i].size(); j++) cout<<data[i][j]<<" "; cout<<endl;} // prints data array
 
@@ -126,7 +132,7 @@ std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &
 std::cout <<"\n" << "File: "<< files_location << "\n";
 
 std::cout <<"\n  " <<"f[1/d]	P[d]		Amp		max/avg" << std::endl; //<< std::endl
-std::cout << std::fixed << std::setprecision(8); //sets cout's precision
+std::cout << std::fixed;  std::cout<< std::setprecision(7); //sets cout's precision
 
 int j = 0;
 for (int i = 0; i < 20; i++) {
