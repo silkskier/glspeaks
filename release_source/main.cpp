@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[]) {
 if (argc < 2) {
-		printf("\n Generalised Lomb-Scargle periodogram for variable stars, version beta 1.0.\n");
+		printf("\n Generalised Lomb-Scargle periodogram for variable stars, version alpha 1.0.\n");
 		printf(" Based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS).\n");
 		printf(" GitHub page of the project: https://github.com/silkskier/glspeaks \n\n");
 std::cout << "\n No mode specified." << std::endl;

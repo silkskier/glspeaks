@@ -69,7 +69,7 @@ std::cout <<"Number of files in directory: " << file_count << "\n" << std::endl;
 
 string path = filesystem::path(files_location).parent_path(); string output_path = path + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
-output_file << "<path_to_file>						<frequency> <period>	<amplitude> <avg/max>" << std::endl;
+output_file << "<path_to_file>\t\t\t\t\t\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
 
 // calculates best-fitting period time and its power for each file using generalized Lomb-Scargle periodogram.
 
