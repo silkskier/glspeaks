@@ -3,6 +3,6 @@
 
 ## Recommended installation:
 ```bash
-sudo wget
+sudo wget [url] -O /usr/local/bin/glspeaks
 ```
 
