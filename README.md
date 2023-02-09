@@ -1,5 +1,5 @@
 # glspeaks
-ąąą
+Repository under construction
 
 ## Recommended installation command:
 ```bash
