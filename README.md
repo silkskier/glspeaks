@@ -1,3 +1,8 @@
 # glspeaks
 ąąą
-# ąąą
+
+## Recommended installation:
+```bash
+sudo wget
+```
+
