@@ -45,7 +45,7 @@ float *amplitudes = (float *) malloc(number_of_steps * sizeof(float));
 
  gls_b(t, y, e_y, length_of_data, number_of_steps, step_size, frequencies_array, powers, amplitudes); //declares and fills a powers array //
 
-float powers_sum = 0; vector<float> powers_vector; //declares vector meant to store all the powers, but without any NaN's to enable further data analysis
+double powers_sum = 0; vector<float> powers_vector; //declares vector meant to store all the powers, but without any NaN's to enable further data analysis
 for (unsigned int i=0; i < number_of_steps; i++){if(isnormal(powers[i])){powers_sum += powers[i]; powers_vector.push_back(powers[i]);}else{powers_vector.push_back(0);};}
 
 float powers_average = powers_sum / number_of_steps; //calculates average power for the input data

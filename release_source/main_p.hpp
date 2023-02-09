@@ -89,7 +89,7 @@ gls_p(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amp
 
 std::vector<quad> output_data;
 
-float powers_sum = 0;
+double powers_sum = 0;
 
 for (unsigned int i=0; i < no_steps; i++){output_data.emplace_back(quad{i, powers[i], amplitudes[i], frequencies[i]}); if(isnormal(powers[i])){powers_sum += powers[i];};};
 

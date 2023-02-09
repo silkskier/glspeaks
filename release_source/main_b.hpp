@@ -21,8 +21,9 @@ bool filter(float frequency, float power, float min_value, float filter_range, f
 
     float filter_frequencies[] = {1, 2, 3, 4, 5, 8};
     unsigned int num_frequencies = sizeof(filter_frequencies) / sizeof(filter_frequencies[0]);
+    if (frequency == 0) return 0;
     for (unsigned int i = 0; i < num_frequencies; ++i)
-    {if (frequency > filter_frequencies[i] - filter_range && frequency < filter_frequencies[i] + filter_range) return false;} //frequencies filter
+    {if (frequency > filter_frequencies[i] - filter_range && frequency < filter_frequencies[i] + filter_range) return false;}//frequencies filter
 
     return true;
 }
@@ -69,7 +70,7 @@ std::cout <<"Number of files in directory: " << file_count << "\n" << std::endl;
 
 string path = filesystem::path(files_location).parent_path(); string output_path = path + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
-output_file << "<path_to_file>\t\t\t\t\t\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
+//output_file << "<path_to_file>\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
 
 // calculates best-fitting period time and its power for each file using generalized Lomb-Scargle periodogram.
 

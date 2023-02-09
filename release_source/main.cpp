@@ -30,8 +30,8 @@ std::string option(argv[1]);
 		if(argc < 6){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 23) {printf(" Error: Step sizes smaller than 2^-23 unsupported due to the limitations of 32-bit floats"); return 1;}
-
+	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}
+	if (std::stof(argv[4]) > pow(2 ,24 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(24-<Resolution>) unsupported due to 32-bit float limitations"); return 1;}
 
 
 main_spectrum(argc, argv); return 0;}
@@ -51,8 +51,8 @@ main_spectrum(argc, argv); return 0;}
 	if(argc < 6){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 23) {printf(" Error: Step sizes smaller than 2^-23 unsupported due to the limitations of 32-bit floats"); return 1;}
-
+	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}
+	if (std::stof(argv[4]) > pow(2 ,24 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(24-<Resolution>) unsupported due to 32-bit float limitations"); return 1;}
 
 
 main_peaks(argc, argv);return 0;}
@@ -68,8 +68,9 @@ main_peaks(argc, argv);return 0;}
 	if(argc < 10){
 		std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to catalog with input data files> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Frequency filter range> <Min amplitude> <Max amplitude>\n" <<std::endl; return 1;}
 
-if (std::stoi(argv[5]) > 23) {printf(" Error: Step sizes smaller than 2^-23 unsupported due to the limitations of 32-bit floats"); return 1;}
-if(stof(argv[3]) <= 0){printf("\n Error; Starting frequency must be greater, than 0\n"); return 1;}
+	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}
+	if (std::stof(argv[4]) > pow(2 ,24 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(24-<Resolution>) unsupported due to 32-bit float limitations"); return 1;}
+
 
 
 main_batch(argc, argv);return 0;}
