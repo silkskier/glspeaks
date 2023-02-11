@@ -3,13 +3,17 @@
 //const float tau = 6.283185307179586;
 using namespace std;
 
-
+struct output_data {
+	float power, amplitude, frequency;
+	double sum_of_powers;
+};
 
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-void gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep,float* f,float* p, float* a) { //
+output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
 
+output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
    /*
     * t : time array
@@ -57,10 +61,11 @@ void gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float 
 
 
 
-
    for (k=0; k<nk; k++) {
 
-      C = S = YC = YS = CC = CS = 0, self_a = 0, self_b = 0; //
+      C = S = YC = YS = CC = CS = 0, self_a = 0, self_b = 0;
+	  float power = 0, amplitude = 0; //declares output variables
+
       for (i=0; i<n; i++) {
          if (k % 256 == 0) {
             /* init/refresh recurrences to stop error propagation */
@@ -100,8 +105,17 @@ void gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float 
     self_b = (YS*CC-YC*CS) / D;
 
       /* power */
-      p[k] = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
-      a[k] = sqrt((self_a * self_a) + (self_b * self_b));
-   }
+      power = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
+      amplitude = sqrt((self_a * self_a) + (self_b * self_b));
+
+      //update output data struct
+	  best_frequency.sum_of_powers += power;
+
+	  if (power > best_frequency.power){
+best_frequency.frequency = f[k];
+best_frequency.amplitude = amplitude;
+best_frequency.power = power;
+	  }}
+
    free(w); free(wy); free(cosx); free(sinx); free(cosdx); free(sindx);
-}
+return best_frequency;}
