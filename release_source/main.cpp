@@ -35,7 +35,7 @@ std::string option(argv[1]);
 		if(argc < 6){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}
+	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}
 	if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(23 - <Resolution>) unsupported due to 32-bit float limitations"); return 1;}
 
 
@@ -117,7 +117,107 @@ print_help();
 
 
     else if (mode == "Peaks") {
-        char* argv_peaks[6]; unsigned int argc_peaks = 6;
+
+		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Please select file to be used for computation'");
+
+		char* argv_peaks[6];
+
+		argv_peaks[0] = (char*) malloc(256);
+		argv_peaks[1] = (char*) malloc(16);
+		argv_peaks[2] = (char*) malloc(256);
+		argv_peaks[3] = (char*) malloc(16);
+		argv_peaks[4] = (char*) malloc(16);
+		argv_peaks[5] = (char*) malloc(16);
+
+		argv_peaks[0] = argv[0];
+		argv_peaks[1] = argv[1];
+		FILE* pipe_file = popen("zenity --file-selection --title 'file selection window - glspeaks (peaks mode)'", "r");
+		if (!pipe_file) return 1;
+
+		char buffer_file[256];
+		fgets(buffer_file, sizeof(buffer_file), pipe_file);
+		pclose(pipe_file);
+
+		buffer_file[strlen(buffer_file) - 1] = '\0';
+
+		strcpy(argv_peaks[2], buffer_file);
+
+		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks (peaks mode)' --text='Please input values to be used for calculation' \
+		--add-entry='min frequency (1/d)' --add-entry='max frequency (1/d)' --add-entry='resolution'", "r");
+		if (!pipe_data) return 1;
+
+
+		char buffer_data[256];
+		fgets(buffer_data, sizeof(buffer_data), pipe_data);
+		pclose(pipe_data);
+
+		// Remove the newline character from the string
+		buffer_data[strlen(buffer_data) - 1] = '\0';
+
+
+		// Parse the input string to extract the values
+		char argv3[16], argv4[16], argv5[16];
+		sscanf(buffer_data, "%7[^|]|%7[^|]|%7s", argv3, argv4, argv5);
+		strcpy(argv_peaks[3], argv3), strcpy(argv_peaks[4], argv4), strcpy(argv_peaks[5], argv5);
+
+		if (std::stoi(argv_peaks[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+
+		if (std::stof(argv_peaks[4]) > pow(2 ,23 - std::stoi(argv_peaks[5])))
+		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
+
+
+
+
+std::stringstream output_buffer;
+std::streambuf *coutbuf = std::cout.rdbuf();
+std::cout.rdbuf(output_buffer.rdbuf());
+
+main_peaks(6, argv_peaks);
+
+std::cout.rdbuf(coutbuf);
+
+std::string output = output_buffer.str();
+if (output.length() > 0 && output[0] == '\n') {output.erase(0, 1);}
+
+// Replace tabs with spaces
+size_t start_position = 0;
+
+std::string tab_replacement = "                        "; // 25 spaces
+int tab_width = 24;
+size_t line_start = 0;
+size_t pos = 0;
+while ((pos = output.find("\n", pos)) != std::string::npos) {
+  size_t line_end = pos;
+  pos++;
+  size_t current_pos = line_start;
+
+while (current_pos < line_end) {
+	if (line_start > start_position){start_position = line_start;}
+    size_t tab_pos = output.find("\t", current_pos);
+    if (tab_pos == std::string::npos || tab_pos >= line_end) {
+      break;
+    }
+    size_t spaces_to_add = tab_width - ((3*(tab_pos - start_position - 9)) % tab_width);
+    output.replace(tab_pos, 1, tab_replacement.substr(0, spaces_to_add));
+	//output.replace(tab_pos + spaces_to_add - 1, 1, "\t");
+    current_pos = tab_pos + spaces_to_add;
+    start_position = current_pos;
+  }
+  line_start = pos;
+}
+
+std::FILE *pipe = popen("zenity --text-info --width=520 --height=536 --title 'results - glspeaks (peaks mode)'", "w");
+fwrite(output.c_str(), output.size() - 1, 1, pipe); //remove "\n" from the output string
+pclose(pipe);
+
+
+
+
+
+
+
+
         std::cout << "success (peaks)" << std::endl;
         return 0;
     }
@@ -129,7 +229,13 @@ print_help();
 		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Please select file to be used for computation'");
 
 		char* argv_spectrum[6];
-		for (int i = 0; i < 6; i++) {argv_spectrum[i] = (char*) malloc(1024);}
+
+		argv_spectrum[0] = (char*) malloc(256);
+		argv_spectrum[1] = (char*) malloc(16);
+		argv_spectrum[2] = (char*) malloc(256);
+		argv_spectrum[3] = (char*) malloc(16);
+		argv_spectrum[4] = (char*) malloc(16);
+		argv_spectrum[5] = (char*) malloc(16);
 
 		argv_spectrum[0] = argv[0];
 		argv_spectrum[1] = argv[1];
@@ -143,8 +249,7 @@ print_help();
 		buffer_file[strlen(buffer_file) - 1] = '\0';
 
 		strcpy(argv_spectrum[2], buffer_file);
-		std::cout << argv_spectrum[2] <<std::endl; //prints path to file saved for computation
-
+		//std::cout << argv_spectrum[2] <<std::endl; //prints path to file saved for computation
 
 
 		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks' --text='Please input values to be used for calculation' \
@@ -161,11 +266,17 @@ print_help();
 
 
 		// Parse the input string to extract the values
-		char argv3[8], argv4[8], argv5[8];
+		char argv3[16], argv4[16], argv5[16];
 		sscanf(buffer_data, "%7[^|]|%7[^|]|%7s", argv3, argv4, argv5);
 		strcpy(argv_spectrum[3], argv3), strcpy(argv_spectrum[4], argv4), strcpy(argv_spectrum[5], argv5);
 
 		//std::cout << "You entered: " << argv_spectrum[3] << " " << argv_spectrum[4] << " " << argv_spectrum[5] << " " << std::endl;
+
+		if (std::stoi(argv_spectrum[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+
+		if (std::stof(argv_spectrum[4]) > pow(2 ,23 - std::stoi(argv_spectrum[5])))
+		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
 
 		main_spectrum(6, argv_spectrum);
 
@@ -179,15 +290,15 @@ print_help();
 
     else if (mode == "Help") {
 
-    std::stringstream buffer;
+    std::stringstream output_buffer;
     std::streambuf *coutbuf = std::cout.rdbuf();
-    std::cout.rdbuf(buffer.rdbuf());
+    std::cout.rdbuf(output_buffer.rdbuf());
 
 	print_help();
 
     std::cout.rdbuf(coutbuf);
 
-    std::string output = buffer.str();
+    std::string output = output_buffer.str();
 
     std::FILE *pipe = popen("zenity --text-info \ --width=1080 --height=250 \ --title 'help window - glspeaks' ", "w");
     fwrite(output.c_str(), output.size(), 1, pipe);
