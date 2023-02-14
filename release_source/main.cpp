@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <regex>
 
 
 #include "batch_cpu/main_b.hpp"
@@ -180,11 +181,14 @@ std::cout.rdbuf(coutbuf);
 std::string output = output_buffer.str();
 if (output.length() > 0 && output[0] == '\n') {output.erase(0, 1);}
 
+// Replace double tabs with single tabs
+while (output.find("\t\t") != std::string::npos) {output = std::regex_replace(output, std::regex("\t\t"), "\t");}
+
 // Replace tabs with spaces
 size_t start_position = 0;
 
-std::string tab_replacement = "                        "; // 25 spaces
-int tab_width = 24;
+std::string tab_replacement = "                                                "; // 49 spaces
+int tab_width = 48;
 size_t line_start = 0;
 size_t pos = 0;
 while ((pos = output.find("\n", pos)) != std::string::npos) {
@@ -195,19 +199,18 @@ while ((pos = output.find("\n", pos)) != std::string::npos) {
 while (current_pos < line_end) {
 	if (line_start > start_position){start_position = line_start;}
     size_t tab_pos = output.find("\t", current_pos);
-    if (tab_pos == std::string::npos || tab_pos >= line_end) {
-      break;
-    }
-    size_t spaces_to_add = tab_width - ((3*(tab_pos - start_position - 9)) % tab_width);
+    if (tab_pos == std::string::npos || tab_pos >= line_end) {break;}
+
+    size_t spaces_to_add = tab_width - (3*(tab_pos - start_position) % tab_width);
     output.replace(tab_pos, 1, tab_replacement.substr(0, spaces_to_add));
-	//output.replace(tab_pos + spaces_to_add - 1, 1, "\t");
+	//output.replace(tab_pos + spaces_to_add - 1, 1, "\t"); //somehow breaks Zenity.
     current_pos = tab_pos + spaces_to_add;
     start_position = current_pos;
   }
   line_start = pos;
 }
 
-std::FILE *pipe = popen("zenity --text-info --width=520 --height=536 --title 'results - glspeaks (peaks mode)'", "w");
+std::FILE *pipe = popen("zenity --text-info --width=492 --height=536 --title 'results - glspeaks (peaks mode)'", "w");
 fwrite(output.c_str(), output.size() - 1, 1, pipe); //remove "\n" from the output string
 pclose(pipe);
 
