@@ -35,17 +35,17 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
           *sindx = (float *) malloc(n * sizeof(float));
    unsigned int i, k;
 
-   for (i=0; i<n; i++) {
+   for (i=0; i<n; ++i) {
       /* weights */
       w[i] = 1 / (e_y[i] * e_y[i]);
       wsum += w[i];
    }
-   for (i=0; i<n; i++) {
+   for (i=0; i<n; ++i) {
       /* mean */
       w[i] /= wsum;                 /* normalised weights */
       Y += w[i] * y[i];             /* Eq. (7) */
    }
-   for (i=0; i<n; i++) {
+   for (i=0; i<n; ++i) {
       /* variance */
       wy[i] = y[i] - Y;             /* Subtract weighted mean */
       YY += w[i] * wy[i] * wy[i];   /* Eq. (10) */
@@ -61,12 +61,12 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
 
 
 
-   for (k=0; k<nk; k++) {
+   for (k=0; k<nk; ++k) {
 
       C = S = YC = YS = CC = CS = 0, self_a = 0, self_b = 0;
 	  float power = 0, amplitude = 0; //declares output variables
 
-      for (i=0; i<n; i++) {
+      for (i=0; i<n; ++i) {
          if (k % 256 == 0) {
             /* init/refresh recurrences to stop error propagation */
             cosx[i] = cos(2 * M_PI * f[k] * t[i]);
@@ -87,7 +87,6 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
          sinx[i] = cosx[i] * sindx[i] + sinx[i] * cosdx[i];
          cosx[i] = tmp;
 
-//free(cosx); free(sinx); //nie jest źródłem problemu
       }
 
 
@@ -109,7 +108,7 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
       amplitude = sqrt((self_a * self_a) + (self_b * self_b));
 
       //update output data struct
-	  best_frequency.sum_of_powers += power;
+if (std::isnormal(power)) {best_frequency.sum_of_powers += power;}
 
 if (power > best_frequency.power){
   best_frequency.frequency = f[k];

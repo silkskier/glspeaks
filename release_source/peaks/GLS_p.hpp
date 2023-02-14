@@ -29,17 +29,17 @@ void gls_p(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float 
           *sindx = (float *) malloc(n * sizeof(float));
 
 
-   for (unsigned int i=0; i<n; i++) {
+   for (unsigned int i=0; i<n; ++i) {
       /* weights */
       w[i] = 1 / (e_y[i] * e_y[i]);
       wsum += w[i];
    }
-   for (unsigned int i=0; i<n; i++) {
+   for (unsigned int i=0; i<n; ++i) {
       /* mean */
       w[i] /= wsum;                 /* normalised weights */
       Y += w[i] * y[i];             /* Eq. (7) */
    }
-   for (unsigned int i=0; i<n; i++) {
+   for (unsigned int i=0; i<n; ++i) {
       /* variance */
       wy[i] = y[i] - Y;             /* Subtract weighted mean */
       YY += w[i] * wy[i] * wy[i];   /* Eq. (10) */
@@ -62,9 +62,9 @@ for (unsigned int k=0; k < nk; k+= 128) {
 float     *cosx = (float *) malloc(n * sizeof(float)),
           *sinx = (float *) malloc(n * sizeof(float));
 
-   for (unsigned int j = 0; j < std::min<unsigned int>(128, (nk - k)); j++) {
+   for (unsigned int j = 0; j < std::min<unsigned int>(128, (nk - k)); ++j) {
    float C = 0, S = 0, YC = 0, YS = 0, CC = 0, SS = 0, CS = 0, D = 0, self_a = 0, self_b = 0, tmp = 0;
-      for (unsigned int i=0; i<n; i++) {
+      for (unsigned int i=0; i<n; ++i) {
          if (j == 0) {
             /* init recurrences to stop error propagation */
             cosx[i] = cos(2 * M_PI * f[k + j] * t[i]);
