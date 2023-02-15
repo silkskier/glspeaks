@@ -100,17 +100,20 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
       CS -= C * S;              /* Eq. (15) */
       D = CC*SS - CS*CS;        /* Eq. (6) */
 
-    self_a = (YC*SS-YS*CS) / D;
-    self_b = (YS*CC-YC*CS) / D;
+
 
       /* power */
       power = (SS*YC*YC + CC*YS*YS - 2.*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
-      amplitude = sqrt((self_a * self_a) + (self_b * self_b));
 
       //update output data struct
 if (std::isnormal(power)) {best_frequency.sum_of_powers += power;}
 
 if (power > best_frequency.power){
+    self_a = (YC*SS-YS*CS) / D;
+    self_b = (YS*CC-YC*CS) / D;
+
+    amplitude = sqrt((self_a * self_a) + (self_b * self_b));
+
   best_frequency.frequency = f[k];
   best_frequency.amplitude = amplitude;
   best_frequency.power = power;
