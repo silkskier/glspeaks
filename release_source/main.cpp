@@ -36,8 +36,11 @@ std::string option(argv[1]);
 		if(argc < 6){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}
-	if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(23 - <Resolution>) unsupported due to 32-bit float limitations"); return 1;}
+	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}}
+
+	if (argc > 5) {if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+	else {if (std::stof(argv[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
 
 
 main_spectrum(argc, argv); return 0;}
@@ -50,8 +53,11 @@ main_spectrum(argc, argv); return 0;}
 	if(argc < 6){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}
-	if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(23 - <Resolution>) unsupported due to 32-bit float limitations"); return 1;}
+	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}}
+
+	if (argc > 5) {if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+	else {if (std::stof(argv[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
 
 
 main_peaks(argc, argv);return 0;}
@@ -64,8 +70,13 @@ main_peaks(argc, argv);return 0;}
 	if(argc < 10){
 		std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to catalog with input data files> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Frequency filter range> <Min amplitude> <Max amplitude>\n" <<std::endl; return 1;}
 
-	if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}
-	if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))) {printf("\n Error: Max frequency greater, than 2^(23 - <Resolution>) unsupported due to 32-bit float limitations"); return 1;}
+	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}}
+
+	if (argc > 5) {if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
+	if (argc > 5) {if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+	else {if (std::stof(argv[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
 
 
 
@@ -110,7 +121,7 @@ print_help();
 //    std::cout << "You selected the " << mode <<" mode." << std::endl;
 
     if (mode == "Batch") {
-    char* argv_batch[10]; unsigned int argc_batch = 0;
+    char* argv_batch[10]; unsigned int argc_batch = 3;
 
 		system("zenity --info --title 'glspeaks (batch mode)' --text='Please select catalog with data files to be used for computation'");
 
@@ -130,6 +141,7 @@ print_help();
 
 		argv_batch[0] = argv[0];
 		argv_batch[1] = argv[1];
+
 		FILE* pipe_dir = popen("zenity --file-selection --directory --title 'file selection window - glspeaks (batch mode)'", "r");
 		if (!pipe_dir) return 1;
 
@@ -161,19 +173,19 @@ print_help();
 		strcpy(argv_batch[3], argv3), strcpy(argv_batch[4], argv4), strcpy(argv_batch[5], argv5), strcpy(argv_batch[6], argv6),
 		strcpy(argv_batch[7], argv7), strcpy(argv_batch[8], argv8), strcpy(argv_batch[9], argv9);
 
+		for (int i = 3; i < 10; i++) {if (isdigit(argv_batch[i][0])) {argc_batch++;}}
+
+//		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
 
 
-		if (std::stoi(argv_batch[5]) > 127)
-		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_batch > 5) {if (std::stoi(argv_batch[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}}
 
-		if (std::stof(argv_batch[4]) > pow(2 ,23 - std::stoi(argv_batch[5])))
-		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_batch > 5) {if (std::stof(argv_batch[4]) > pow(2 ,23 - std::stoi(argv_batch[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+		else {if (std::stof(argv_batch[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
 
-for (int i = 0; i < 10; i++) {if (argv[i] != "") {argc_batch++;}} //nie działa - zawsze zwraca 9 lub 10
 
-		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
-
-//		main_peaks(6, argv_spectrum);
+		main_batch(argc_batch, argv_batch); //runs the periodogram
 
 
 
@@ -194,7 +206,7 @@ for (int i = 0; i < 10; i++) {if (argv[i] != "") {argc_batch++;}} //nie działa 
 
 		system("zenity --info --title 'glspeaks (peaks mode)' --text='Please select file to be used for computation'");
 
-		char* argv_peaks[6];
+		char* argv_peaks[6]; int argc_peaks = 6;
 
 		argv_peaks[0] = (char*) malloc(256);
 		argv_peaks[1] = (char*) malloc(16);
@@ -234,11 +246,12 @@ for (int i = 0; i < 10; i++) {if (argv[i] != "") {argc_batch++;}} //nie działa 
 		sscanf(buffer_data, "%7[^|]|%7[^|]|%7s", argv3, argv4, argv5);
 		strcpy(argv_peaks[3], argv3), strcpy(argv_peaks[4], argv4), strcpy(argv_peaks[5], argv5);
 
-		if (std::stoi(argv_peaks[5]) > 127)
-		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_peaks > 5) {if (std::stoi(argv_peaks[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}}
 
-		if (std::stof(argv_peaks[4]) > pow(2 ,23 - std::stoi(argv_peaks[5])))
-		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_peaks > 5) {if (std::stof(argv_peaks[4]) > pow(2 ,23 - std::stoi(argv_peaks[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+		else {if (std::stof(argv_peaks[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
 
 
 
@@ -298,7 +311,7 @@ pclose(pipe);
 
 		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Please select file to be used for computation'");
 
-		char* argv_spectrum[6];
+		char* argv_spectrum[6]; int argc_spectrum = 6;
 
 		argv_spectrum[0] = (char*) malloc(256);
 		argv_spectrum[1] = (char*) malloc(16);
@@ -342,15 +355,16 @@ pclose(pipe);
 
 		//std::cout << "You entered: " << argv_spectrum[3] << " " << argv_spectrum[4] << " " << argv_spectrum[5] << " " << std::endl;
 
-		if (std::stoi(argv_spectrum[5]) > 127)
-		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_spectrum > 5) {if (std::stoi(argv_spectrum[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}}
 
-		if (std::stof(argv_spectrum[4]) > pow(2 ,23 - std::stoi(argv_spectrum[5])))
-		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
+		if (argc_spectrum > 5) {if (std::stof(argv_spectrum[4]) > pow(2 ,23 - std::stoi(argv_spectrum[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+		else {if (std::stof(argv_spectrum[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+
 
 		main_spectrum(6, argv_spectrum);
 
-		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Spectrum saved to .tsv file in the parent directory of selected file.'");
+		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Spectrum saved to .tsv file in the parent directory of selected input file.'");
 
 
         //std::cout << "success (spectrum)" << std::endl;
