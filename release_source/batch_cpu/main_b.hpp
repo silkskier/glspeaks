@@ -125,6 +125,6 @@ for (unsigned int i = 0; i < output_string.size(); i++) output_file << output_st
 
 }
 
-cout << std::endl;
+std::cout <<std::fixed << std::setprecision(1) << "100%" << std::endl;
 
 }

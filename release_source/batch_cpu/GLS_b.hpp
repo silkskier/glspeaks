@@ -103,7 +103,7 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
 
 
       /* power */
-      power = (SS*YC*YC + CC*YS*YS - float(2)*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
+      power = (SS*YC*YC + CC*YS*YS - 2*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
 
       //update output data struct
 if (std::isnormal(power)) {best_frequency.sum_of_powers += power;}

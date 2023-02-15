@@ -101,7 +101,7 @@ float     *cosx = (float *) malloc(n * sizeof(float)),
     self_b = (YS*CC-YC*CS) / D;
 
       /* power */
-      p[j + k] = (SS*YC*YC + CC*YS*YS - float(2)*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
+      p[j + k] = (SS*YC*YC + CC*YS*YS - 2*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
       a[j + k] = sqrt((self_a * self_a) + (self_b * self_b));
    }
 free(cosx); free(sinx);

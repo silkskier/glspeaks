@@ -110,16 +110,89 @@ print_help();
 //    std::cout << "You selected the " << mode <<" mode." << std::endl;
 
     if (mode == "Batch") {
-    char* argv_batch[10]; unsigned int argc_batch = 10;
+    char* argv_batch[10]; unsigned int argc_batch = 0;
+
+		system("zenity --info --title 'glspeaks (batch mode)' --text='Please select catalog with data files to be used for computation'");
+
+		char* argv_peaks[10];
+
+		argv_batch[0] = (char*) malloc(256);
+		argv_batch[1] = (char*) malloc(16);
+		argv_batch[2] = (char*) malloc(256);
+		argv_batch[3] = (char*) malloc(16);
+		argv_batch[4] = (char*) malloc(16);
+		argv_batch[5] = (char*) malloc(16);
+		argv_batch[6] = (char*) malloc(16);
+		argv_batch[7] = (char*) malloc(16);
+		argv_batch[8] = (char*) malloc(16);
+		argv_batch[9] = (char*) malloc(16);
+
+
+		argv_batch[0] = argv[0];
+		argv_batch[1] = argv[1];
+		FILE* pipe_dir = popen("zenity --file-selection --directory --title 'file selection window - glspeaks (batch mode)'", "r");
+		if (!pipe_dir) return 1;
+
+		char buffer_dir[256];
+		fgets(buffer_dir, sizeof(buffer_dir), pipe_dir);
+		pclose(pipe_dir);
+
+		buffer_dir[strlen(buffer_dir) - 1] = '\0';
+
+		strcpy(argv_batch[2], buffer_dir);
+
+		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks (batch mode)' --text='Please input values to be used for calculation' \
+		--add-entry='min frequency [1/d]' --add-entry='max frequency [1/d]' --add-entry='resolution (default = 12)' --add-entry='required max/avg power ratio (default = 16)'\
+		 --add-entry='frequency filter range (default = 0.02)' --add-entry='min amplitude (default = 0)' --add-entry='max amplitude (default = 8)'", "r");
+		if (!pipe_data) return 1;
+
+
+		char buffer_data[256];
+		fgets(buffer_data, sizeof(buffer_data), pipe_data);
+		pclose(pipe_data);
+
+		// Remove the newline character from the string
+		buffer_data[strlen(buffer_data) - 1] = '\0';
+
+
+		// Parse the input string to extract the values
+		char argv3[16], argv4[16], argv5[16], argv6[16], argv7[16], argv8[16], argv9[16];
+		sscanf(buffer_data, "%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7s", argv3, argv4, argv5, argv6, argv7, argv8, argv9);
+		strcpy(argv_batch[3], argv3), strcpy(argv_batch[4], argv4), strcpy(argv_batch[5], argv5), strcpy(argv_batch[6], argv6),
+		strcpy(argv_batch[7], argv7), strcpy(argv_batch[8], argv8), strcpy(argv_batch[9], argv9);
+
+
+
+		if (std::stoi(argv_batch[5]) > 127)
+		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}
+
+		if (std::stof(argv_batch[4]) > pow(2 ,23 - std::stoi(argv_batch[5])))
+		{system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}
+
+for (int i = 0; i < 10; i++) {if (argv[i] != "") {argc_batch++;}} //nie działa - zawsze zwraca 9 lub 10
+
+		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
+
+//		main_peaks(6, argv_spectrum);
+
+
+
+
+
+
+
+
+
         std::cout << "success (batch)" << std::endl;
         return 0;
     }
 
 
 
+
     else if (mode == "Peaks") {
 
-		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Please select file to be used for computation'");
+		system("zenity --info --title 'glspeaks (peaks mode)' --text='Please select file to be used for computation'");
 
 		char* argv_peaks[6];
 
@@ -144,7 +217,7 @@ print_help();
 		strcpy(argv_peaks[2], buffer_file);
 
 		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks (peaks mode)' --text='Please input values to be used for calculation' \
-		--add-entry='min frequency (1/d)' --add-entry='max frequency (1/d)' --add-entry='resolution'", "r");
+		--add-entry='min frequency (1/d)' --add-entry='max frequency (1/d)' --add-entry='resolution (default = 12)'", "r");
 		if (!pipe_data) return 1;
 
 
@@ -215,15 +288,9 @@ fwrite(output.c_str(), output.size() - 1, 1, pipe); //remove "\n" from the outpu
 pclose(pipe);
 
 
-
-
-
-
-
-
-        std::cout << "success (peaks)" << std::endl;
         return 0;
     }
+
 
 
 
@@ -256,7 +323,7 @@ pclose(pipe);
 
 
 		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks' --text='Please input values to be used for calculation' \
-		--add-entry='min frequency (1/d)' --add-entry='max frequency (1/d)' --add-entry='resolution'", "r");
+		--add-entry='min frequency (1/d)' --add-entry='max frequency (1/d)' --add-entry='resolution (default = 12)'", "r");
 		if (!pipe_data) return 1;
 
 
@@ -283,6 +350,7 @@ pclose(pipe);
 
 		main_spectrum(6, argv_spectrum);
 
+		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Spectrum saved to .tsv file in the parent directory of selected file.'");
 
 
         //std::cout << "success (spectrum)" << std::endl;

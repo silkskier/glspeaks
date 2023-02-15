@@ -99,7 +99,7 @@ float     *cosx = (float *) malloc(n * sizeof(float)),
 
 
       /* power */
-      p[j + k] = (SS*YC*YC + CC*YS*YS - float(2)*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
+      p[j + k] = (SS*YC*YC + CC*YS*YS - 2*CS*YC*YS) / (YY*D);  /* Eq. (5) in ZK09 */
    }
 free(cosx); free(sinx);
 }
