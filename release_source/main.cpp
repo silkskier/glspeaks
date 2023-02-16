@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <regex>
 
+#include <unistd.h>
+
 
 #include "batch_cpu/main_b.hpp"
 #include "peaks/main_p.hpp"
@@ -98,7 +100,8 @@ print_help();
 
 				 else if (option == "-g" || option == "--gui") {
 
-    FILE* pipe = popen("zenity --list\ --width=800 --height=250\ --title='Mode selection - glspeaks'\ --text='Please select the mode, in which the application will launch.'\ --column='Mode'\ --column='Description'\
+    FILE* pipe = popen("zenity --list\ --width=800 --height=250\ --title='Mode selection - glspeaks'\
+     --text='Please select the mode, in which the application will launch.'\ --column='Mode'\ --column='Description'\
      'Batch' 'Writes best frequencies with corresponding powers ratio and amplitudes for each file in directory into .tsv file'\
 	 'Peaks' 'Prints list of 20 best-fitting frequencies with corresponding power ratios and amplitudes for a selected file'\
 	 'Spectrum' 'Writes corresponding powers to all of the calculated frequencies for the selected file into .tsv file'\
@@ -153,7 +156,9 @@ print_help();
 
 		strcpy(argv_batch[2], buffer_dir);
 
-		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks (batch mode)' --text='Please input values to be used for calculation' \
+		FILE* pipe_data = popen("zenity --forms --title='data input - glspeaks (batch mode)'\
+		 --text='	Please input values to be used for calculation. \n\n	Warning: The parser reads the input only to the first empty field. \n	To pass an argument to function all arguments preciding\
+		 \n	argument to be passed to application must be specified. \n\n	If value of the argument or any of the preceding ones\n	is not specified it will take a default value.' \
 		--add-entry='min frequency [1/d]' --add-entry='max frequency [1/d]' --add-entry='resolution (default = 12)' --add-entry='required max/avg power ratio (default = 16)'\
 		 --add-entry='frequency filter range (default = 0.02)' --add-entry='min amplitude (default = 0)' --add-entry='max amplitude (default = 8)'", "r");
 		if (!pipe_data) return 1;
@@ -169,11 +174,14 @@ print_help();
 
 		// Parse the input string to extract the values
 		char argv3[16], argv4[16], argv5[16], argv6[16], argv7[16], argv8[16], argv9[16];
-		sscanf(buffer_data, "%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7[^|]|%7s", argv3, argv4, argv5, argv6, argv7, argv8, argv9);
+		sscanf(buffer_data, "%15[^|]|%15[^|]|%15[^|]|%15[^|]|%15[^|]|%15[^|]|%15s", argv3, argv4, argv5, argv6, argv7, argv8, argv9);
 		strcpy(argv_batch[3], argv3), strcpy(argv_batch[4], argv4), strcpy(argv_batch[5], argv5), strcpy(argv_batch[6], argv6),
 		strcpy(argv_batch[7], argv7), strcpy(argv_batch[8], argv8), strcpy(argv_batch[9], argv9);
 
 		for (int i = 3; i < 10; i++) {if (isdigit(argv_batch[i][0])) {argc_batch++;}}
+
+		if (argc_batch < 6) {
+		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
 
 //		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
 
@@ -185,17 +193,21 @@ print_help();
 		else {if (std::stof(argv_batch[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
 
 
-		main_batch(argc_batch, argv_batch); //runs the periodogram
+		//Create Zenity progressbar for calculations
+		FILE* pipe = popen("bash -c \"zenity --progress --width=640 --title='glspeaks (batch mode)' --text='Calculations in progress.' --percentage=0 --auto-close --time-remaining --auto-kill\"", "w");
+		// Redirect stdout to the Zenity pipe
+		fflush(stdout);
+		int pipe_fd = fileno(pipe);
+		dup2(pipe_fd, STDOUT_FILENO);
 
+		//Start the calculations main_batch function
+		main_batch(argc_batch, argv_batch);
 
+		// Close the Zenity pipe
+		pclose(pipe);
 
+		system("zenity --info --title 'glspeaks (batch mode)' --text='Calculations complete. Output data saved to GLS_output.tsv file in the parent directory of selected input data directory.'");
 
-
-
-
-
-
-        std::cout << "success (batch)" << std::endl;
         return 0;
     }
 
@@ -243,7 +255,7 @@ print_help();
 
 		// Parse the input string to extract the values
 		char argv3[16], argv4[16], argv5[16];
-		sscanf(buffer_data, "%7[^|]|%7[^|]|%7s", argv3, argv4, argv5);
+		sscanf(buffer_data, "%15[^|]|%15[^|]|%15s", argv3, argv4, argv5);
 		strcpy(argv_peaks[3], argv3), strcpy(argv_peaks[4], argv4), strcpy(argv_peaks[5], argv5);
 
 		if (argc_peaks > 5) {if (std::stoi(argv_peaks[5]) > 127)
@@ -350,7 +362,7 @@ pclose(pipe);
 
 		// Parse the input string to extract the values
 		char argv3[16], argv4[16], argv5[16];
-		sscanf(buffer_data, "%7[^|]|%7[^|]|%7s", argv3, argv4, argv5);
+		sscanf(buffer_data, "%15[^|]|%15[^|]|%15s", argv3, argv4, argv5);
 		strcpy(argv_spectrum[3], argv3), strcpy(argv_spectrum[4], argv4), strcpy(argv_spectrum[5], argv5);
 
 		//std::cout << "You entered: " << argv_spectrum[3] << " " << argv_spectrum[4] << " " << argv_spectrum[5] << " " << std::endl;
@@ -367,7 +379,6 @@ pclose(pipe);
 		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Spectrum saved to .tsv file in the parent directory of selected input file.'");
 
 
-        //std::cout << "success (spectrum)" << std::endl;
         return 0;
     }
 

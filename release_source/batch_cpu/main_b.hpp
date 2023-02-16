@@ -89,13 +89,16 @@ int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
 
-const unsigned int files_per_cycle = 1024; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
+const unsigned int files_per_cycle = 512; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
 float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
 
 for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
 
-std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << "%, " << std::flush;
+if (string(argv[1]) == "-g" || string(argv[1])  == "--gui") {std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << std::endl;}
+else {std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << "%, " << std::flush;}
+
+
 
 #pragma omp parallel for
 for (unsigned int i = j; i < min(j + files_per_cycle, file_count) ; i++)
