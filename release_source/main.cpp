@@ -128,8 +128,6 @@ print_help();
 
 		system("zenity --info --title 'glspeaks (batch mode)' --text='Please select catalog with data files to be used for computation'");
 
-		char* argv_peaks[10];
-
 		argv_batch[0] = (char*) malloc(256);
 		argv_batch[1] = (char*) malloc(16);
 		argv_batch[2] = (char*) malloc(256);
@@ -180,7 +178,7 @@ print_help();
 
 		for (int i = 3; i < 10; i++) {if (isdigit(argv_batch[i][0])) {argc_batch++;}}
 
-		if (argc_batch < 6) {
+		if (argc_batch < 5) {
 		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
 
 //		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
@@ -218,7 +216,7 @@ print_help();
 
 		system("zenity --info --title 'glspeaks (peaks mode)' --text='Please select file to be used for computation'");
 
-		char* argv_peaks[6]; int argc_peaks = 6;
+		char* argv_peaks[6]; int argc_peaks = 3;
 
 		argv_peaks[0] = (char*) malloc(256);
 		argv_peaks[1] = (char*) malloc(16);
@@ -257,6 +255,13 @@ print_help();
 		char argv3[16], argv4[16], argv5[16];
 		sscanf(buffer_data, "%15[^|]|%15[^|]|%15s", argv3, argv4, argv5);
 		strcpy(argv_peaks[3], argv3), strcpy(argv_peaks[4], argv4), strcpy(argv_peaks[5], argv5);
+
+		for (int i = 3; i < 5; i++) {if (isdigit(argv_peaks[i][0])) {argc_peaks++;}}
+
+		if (argc_peaks < 5) {
+		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
+
+
 
 		if (argc_peaks > 5) {if (std::stoi(argv_peaks[5]) > 127)
 		{system("zenity --error --title 'Error - glspeaks' --text='Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations'"); return 1;}}
@@ -323,7 +328,7 @@ pclose(pipe);
 
 		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Please select file to be used for computation'");
 
-		char* argv_spectrum[6]; int argc_spectrum = 6;
+		char* argv_spectrum[6]; int argc_spectrum = 3;
 
 		argv_spectrum[0] = (char*) malloc(256);
 		argv_spectrum[1] = (char*) malloc(16);
@@ -364,6 +369,12 @@ pclose(pipe);
 		char argv3[16], argv4[16], argv5[16];
 		sscanf(buffer_data, "%15[^|]|%15[^|]|%15s", argv3, argv4, argv5);
 		strcpy(argv_spectrum[3], argv3), strcpy(argv_spectrum[4], argv4), strcpy(argv_spectrum[5], argv5);
+
+
+		for (int i = 3; i < 6; i++) {if (isdigit(argv_spectrum[i][0])) {argc_spectrum++;}}
+
+		if (argc_spectrum < 5) {
+		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
 
 		//std::cout << "You entered: " << argv_spectrum[3] << " " << argv_spectrum[4] << " " << argv_spectrum[5] << " " << std::endl;
 
@@ -412,38 +423,7 @@ pclose(pipe);
     return 0;
 
     */
-    }
-
-
-
-    else {
-        std::cerr << "Error: no mode selected." << std::endl;
-        return 1;
-   }}
-
-
-
-/*
-    FILE* pipe = popen("zenity --forms --add-entry=godziny --add-entry=minuty --add-entry=sekundy --text='Podaj kąt (w godzinach)'", "r");
-    if (!pipe) return 1;
-
-    char buffer[1024];
-    fgets(buffer, sizeof(buffer), pipe);
-    pclose(pipe);
-
-    // Remove the newline character from the string
-    buffer[strlen(buffer) - 1] = '\0';
-
-    // Parse the input string to extract the values
-    int hour, minute, second;
-    sscanf(buffer, "%d|%d|%d", &hour, &minute, &second);
-
-    std::cout << "You entered: " << hour << " hours, " << minute << " minutes, and " << second << " seconds." << std::endl;
- return 0;}
-*/
-
-
-
+    }}
 
 
  else {

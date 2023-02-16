@@ -24,7 +24,9 @@ std::string file = argv[2]; //source file
 const std::string files_location = argv[2];
 const float min_frequency = std::stof(argv[3]);
 const float max_frequency = std::stof(argv[4]);
-const float step_size_0 = pow(0.5,std::stoi(argv[5]));
+
+float step_size_0 = pow(0.5, 12);
+if (argc > 5){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
 std::cout << "\n" "File location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";

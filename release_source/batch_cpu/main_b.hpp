@@ -37,11 +37,21 @@ void main_batch(int argc, char *argv[]){
 const std::string files_location = argv[2];
 const float min_frequency = std::stof(argv[3]);
 const float max_frequency = std::stof(argv[4]);
-const float step_size = pow(0.5,std::stoi(argv[5]));
-const float min_power = std::stof(argv[6]);
-const float filter_range = std::stof(argv[7]);
-const float min_amplitude = std::stof(argv[8]);
-const float max_amplitude = std::stof(argv[9]);
+
+float step_size = pow(0.5, 12);
+if (argc > 5){step_size = pow(0.5,std::stoi(argv[5]));}
+
+float min_power = 16;
+if (argc > 6){min_power = std::stof(argv[6]);}
+
+float filter_range = 0.02;
+if (argc > 7){filter_range = std::stof(argv[7]);}
+
+float min_amplitude = 0;
+if (argc > 8){min_amplitude = std::stof(argv[8]);}
+
+float max_amplitude = 8;
+if (argc > 9){max_amplitude = std::stof(argv[9]);}
 
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
@@ -89,7 +99,7 @@ int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
 
-const unsigned int files_per_cycle = 512; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
+const unsigned int files_per_cycle = 1024; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
 float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
 
