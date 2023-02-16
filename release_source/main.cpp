@@ -18,7 +18,7 @@
 
 int main(int argc, char *argv[]) {
 if (argc < 2) {
-		printf("\n Generalised Lomb-Scargle periodogram for variable stars, version alpha 1.0.3\n");
+		printf("\n Generalised Lomb-Scargle periodogram for variable stars, version alpha 1.0.4\n");
 		printf(" Based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS).\n");
 		printf(" GitHub page of the project: https://github.com/silkskier/glspeaks \n\n");
 std::cout << "\n No mode specified." << std::endl;
@@ -35,7 +35,7 @@ std::string option(argv[1]);
 
 				if (option == "-s" || option == "--spectrum") {
 
-		if(argc < 6){
+		if(argc < 5){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
 	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}}
@@ -52,7 +52,7 @@ main_spectrum(argc, argv); return 0;}
 
 				 else if (option == "-p" || option == "--peaks") {
 
-	if(argc < 6){
+	if(argc < 5){
 	std::cout << "\n Usage: " << argv[0] <<" "<< argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl; return 1;}
 
 	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}}
@@ -69,7 +69,7 @@ main_peaks(argc, argv);return 0;}
 
 				 else if (option == "-b" || option == "--batch") {
 
-	if(argc < 10){
+	if(argc < 5){
 		std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to catalog with input data files> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Frequency filter range> <Min amplitude> <Max amplitude>\n" <<std::endl; return 1;}
 
 	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}}
@@ -277,7 +277,7 @@ std::stringstream output_buffer;
 std::streambuf *coutbuf = std::cout.rdbuf();
 std::cout.rdbuf(output_buffer.rdbuf());
 
-main_peaks(6, argv_peaks);
+main_peaks(argc_peaks, argv_peaks);
 
 std::cout.rdbuf(coutbuf);
 
@@ -385,7 +385,7 @@ pclose(pipe);
 		else {if (std::stof(argv_spectrum[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
 
 
-		main_spectrum(6, argv_spectrum);
+		main_spectrum(argc_spectrum, argv_spectrum);
 
 		system("zenity --info --title 'glspeaks (spectrum mode)' --text='Spectrum saved to .tsv file in the parent directory of selected input file.'");
 
