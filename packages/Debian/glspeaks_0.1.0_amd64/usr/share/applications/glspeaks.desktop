@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=glspeaks
+Exec=glspeaks -g
+Version=1.0.0-beta
+Comment=Calculates GLS spectra for variable stars photometry.
+Icon=/usr/share/icons/hicolor/128x128/apps/glspeaks.png
+Type=Application
+Categories=Science;
+Keywords=science;astronomy;variables;stars;variable stars;photometry;periodogram;lomb-scargle;
