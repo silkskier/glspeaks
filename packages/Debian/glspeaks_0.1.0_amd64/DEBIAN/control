@@ -1,8 +1,0 @@
-Package: glspeaks
-Version: 0.1.0
-Architecture: amd64
-Depends: bash, zenity, libomp5, libomp-dev
-Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
-Priority: optional
-Installed-Size: 603
-Description: A Simple Generalised Lomb-Scargle periodogram for variable stars photometry.
