@@ -1,6 +1,7 @@
 # Makefile requires libgomp and boost libraries installed to work.
 
-CXX := g++                # C++ compiler
+CXX := icpx                # C++ compiler
+LINK := icpx               # C++ linker
 CXXFLAGS := -std=c++17     # C++ flags
 CXXFLAGS += -O3            # Optimization level 3
 CXXFLAGS += -ffast-math    # Enable fast math optimizations
