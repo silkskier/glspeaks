@@ -1,6 +1,6 @@
 #include <cmath>
 
-//const float tau = 6.283185307179586;
+//const double tau = 6.283185307179586;
 using namespace std;
 
 
@@ -8,7 +8,7 @@ using namespace std;
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-void gls_s(float* t,float* y,float* e_y, unsigned int n,unsigned int nk, float fstep,float* f,float* p) { //
+void gls_s(double* t,double* y,double* e_y, unsigned int n,unsigned int nk, double fstep,double* f,double* p) { //
 
 
    /*
@@ -22,11 +22,11 @@ void gls_s(float* t,float* y,float* e_y, unsigned int n,unsigned int nk, float f
     * f : frequency array
     */
 
-   float wsum=0, Y=0, YY=0;
-   float *w = (float *) malloc(n * sizeof(float)),
-          *wy = (float *) malloc(n * sizeof(float)),
-          *cosdx = (float *) malloc(n * sizeof(float)),
-          *sindx = (float *) malloc(n * sizeof(float));
+   double wsum=0, Y=0, YY=0;
+   double *w = (double *) malloc(n * sizeof(double)),
+          *wy = (double *) malloc(n * sizeof(double)),
+          *cosdx = (double *) malloc(n * sizeof(double)),
+          *sindx = (double *) malloc(n * sizeof(double));
 
 
    for (unsigned int i=0; i<n; ++i) {
@@ -59,11 +59,11 @@ void gls_s(float* t,float* y,float* e_y, unsigned int n,unsigned int nk, float f
 #pragma omp parallel for
 for (unsigned int k=0; k < nk; k+= 128) {
 
-float     *cosx = (float *) malloc(n * sizeof(float)),
-          *sinx = (float *) malloc(n * sizeof(float));
+double     *cosx = (double *) malloc(n * sizeof(double)),
+          *sinx = (double *) malloc(n * sizeof(double));
 
    for (unsigned int j = 0; j < std::min<unsigned int>(128, (nk - k)); ++j) {
-   float C = 0, S = 0, YC = 0, YS = 0, CC = 0, SS = 0, CS = 0, D = 0, self_a = 0, self_b = 0, tmp = 0;
+   double C = 0, S = 0, YC = 0, YS = 0, CC = 0, SS = 0, CS = 0, D = 0, self_a = 0, self_b = 0, tmp = 0;
       for (unsigned int i=0; i<n; ++i) {
          if (j == 0) {
             /* init recurrences to stop error propagation */
