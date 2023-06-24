@@ -14,6 +14,7 @@
 #include "help/help.hpp"
 
 #include <QApplication>
+#include "window.h"
 
 
 int main(int argc, char *argv[]) {
@@ -99,7 +100,7 @@ print_help();
 
 
 				 else if (option == "-g" || option == "--gui") {
-	QApplication app(argc, argv);
+    QApplication app(argc, argv);
     Window window;
     window.show();
     return app.exec();
