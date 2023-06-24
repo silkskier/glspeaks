@@ -15,7 +15,7 @@ using namespace std;
 
 struct quad {
 	unsigned int index;
-	float power, amplitude, frequency;
+	double power, amplitude, frequency;
 };
 
 void main_peaks(int argc, char *argv[]){
@@ -24,10 +24,10 @@ void main_peaks(int argc, char *argv[]){
 std::string file = argv[2]; //source file
 //defines variables used for calculations
 const std::string files_location = argv[2];
-const float min_frequency = std::stof(argv[3]);
-const float max_frequency = std::stof(argv[4]);
+const double min_frequency = std::stof(argv[3]);
+const double max_frequency = std::stof(argv[4]);
 
-float step_size_0 = pow(0.5, 12);
+double step_size_0 = pow(0.5, 12);
 if (argc > 5){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
     //std::cout << "\n" "Directory location: " << files_location << "\n";
@@ -39,25 +39,25 @@ if (argc > 5){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 const unsigned int no_steps = (max_frequency - min_frequency)/step_size_0 + 1;
     //std::cout << "Number of steps: " << no_steps << "\n";
 
-float *frequencies = (float *) malloc(no_steps * sizeof(float)),
-*powers = (float *) malloc(no_steps * sizeof(float)),  *amplitudes = (float *) malloc(no_steps * sizeof(float)); //vectors storing step frequencies and powers for each frequency
+double *frequencies = (double *) malloc(no_steps * sizeof(double)),
+*powers = (double *) malloc(no_steps * sizeof(double)),  *amplitudes = (double *) malloc(no_steps * sizeof(double)); //vectors storing step frequencies and powers for each frequency
 
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size_0 * step;} //fills frequency vector
 //    for(int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
 
 
-std::vector<std::vector<float>> data;
+std::vector<std::vector<double>> data;
 
 std::ifstream input_file(file);
 
     if (input_file) {
         std::string line;
         while (std::getline(input_file, line)) {
-            std::vector<float> tempVec;
+            std::vector<double> tempVec;
             std::string::const_iterator it = line.begin();
             std::string::const_iterator end = line.end();
 
-            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
+            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::double_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::double_), boost::spirit::qi::space, tempVec);
 
             if (success && it == end) {
                 data.emplace_back(tempVec);
@@ -75,7 +75,7 @@ std::ifstream input_file(file);
 
         //applies Generalized Lomb-Scargle periodogram for all the frequencies
 unsigned int length_of_data = size(data);
-float t[length_of_data]; float y[length_of_data]; float e_y[length_of_data];
+double t[length_of_data]; double y[length_of_data]; double e_y[length_of_data];
 for (unsigned int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data[i][1], e_y[i] = data[i][2]; //transpose vectors
 data.clear();
 //  for (unsigned int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
@@ -95,7 +95,7 @@ double powers_sum = 0;
 
 for (unsigned int i=0; i < no_steps; i++){output_data.emplace_back(quad{i, powers[i], amplitudes[i], frequencies[i]}); if(isnormal(powers[i])){powers_sum += powers[i];};};
 
-float ony_by_powers_average = no_steps / powers_sum;
+double ony_by_powers_average = no_steps / powers_sum;
 
 for (unsigned int i=0; i < no_steps; i++){output_data[i].power *= ony_by_powers_average;}
 
@@ -108,7 +108,7 @@ if (output_data[i].power > 2){
 sorted_data.push_back(output_data[i]);
 }}
 
-// float average_power = sum_of_powers/no_steps;
+// double average_power = sum_of_powers/no_steps;
 
 //frequencies.clear(), powers.clear(); // removes lists from memory - doesn't work on lists
 std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &b) {
