@@ -22,10 +22,10 @@ void main_spectrum(int argc, char *argv[]){
 std::string file = argv[2]; //source file
 //defines variables used for calculations
 const std::string files_location = argv[2];
-const float min_frequency = std::stof(argv[3]);
-const float max_frequency = std::stof(argv[4]);
+const double min_frequency = std::stof(argv[3]);
+const double max_frequency = std::stof(argv[4]);
 
-float step_size_0 = pow(0.5, 12);
+double step_size_0 = pow(0.5, 12);
 if (argc > 5){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
 std::cout << "\n" "File location: " << files_location << "\n";
@@ -37,22 +37,22 @@ std::cout << "Step size: " << step_size_0 << "\n";
 const unsigned int no_steps = (max_frequency - min_frequency)/step_size_0 + 1;
 std::cout << "Number of steps: " << no_steps << "\n";
 
-float *frequencies = (float *) malloc(no_steps * sizeof(float)), *powers = (float *) malloc(no_steps * sizeof(float)); //vectors storing step frequencies and powers for each frequency
+double *frequencies = (double *) malloc(no_steps * sizeof(double)), *powers = (double *) malloc(no_steps * sizeof(double)); //vectors storing step frequencies and powers for each frequency
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size_0 * step;} //fills frequency vector
 //    for(unsigned int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
 
 
-std::vector<std::vector<float>> data; std::string line;
+std::vector<std::vector<double>> data; std::string line;
 std::ifstream input_file(file);
 
     if (input_file) {
         std::string line;
         while (std::getline(input_file, line)) {
-            std::vector<float> tempVec;
+            std::vector<double> tempVec;
             std::string::const_iterator it = line.begin();
             std::string::const_iterator end = line.end();
 
-            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
+            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::double_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::double_), boost::spirit::qi::space, tempVec);
 
             if (success && it == end) {
                 data.emplace_back(tempVec);
@@ -70,7 +70,7 @@ std::ifstream input_file(file);
 
         //applies Generalized Lomb-Scargle periodogram for all the frequencies
 unsigned int length_of_data = size(data);
-float t[length_of_data]; float y[length_of_data]; float e_y[length_of_data];
+double t[length_of_data]; double y[length_of_data]; double e_y[length_of_data];
 for (unsigned int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data[i][1], e_y[i] = data[i][2]; //transpose vectors
 data.clear();
 //  for (unsigned int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
@@ -91,9 +91,9 @@ string path = std::filesystem::path(file); string output_path = path + "_output.
 
   boost::spirit::karma::generate
 	(std::back_inserter(output_string[i]),
-	boost::spirit::float_(frequencies[i])
+	boost::spirit::double_(frequencies[i])
 	<< "\t"
-	<< boost::spirit::float_(powers[i]));
+	<< boost::spirit::double_(powers[i]));
 }
 
 
