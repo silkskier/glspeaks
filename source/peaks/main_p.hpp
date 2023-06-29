@@ -28,7 +28,7 @@ const double min_frequency = std::stof(argv[3]);
 const double max_frequency = std::stof(argv[4]);
 
 double step_size_0 = pow(0.5, 12);
-if (argc > 5){step_size_0 = pow(0.5,std::stoi(argv[5]));}
+if (argc > 3){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
     //std::cout << "\n" "Directory location: " << files_location << "\n";
     //std::cout << "Min frequency: " << min_frequency << "\n";
