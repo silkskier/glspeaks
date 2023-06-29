@@ -14,6 +14,6 @@ cd glspeaks
 qmake
 make
 sudo make install
-rm -r glspeaks
+rm -r ~/glspeaks
 ```
 ##### For versions 1.0.0 and later main packaging system will be changed to GNU Guix (a distribution-agnostic package manager).
