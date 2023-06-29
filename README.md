@@ -16,4 +16,4 @@ make
 sudo make install
 rm -r /glspeaks
 ```
-##### For versions beta 1.0.0 and later packaging will switch to GNU Guix (a distribution-agnostic package manager).
+##### For versions 1.0.0 and later main packaging system will be changed to GNU Guix (a distribution-agnostic package manager).
