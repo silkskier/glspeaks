@@ -12,5 +12,5 @@ QMAKE_LFLAGS += -fopenmp
 
 SOURCES += source/main.cpp
 
-target.path = /usr/bin/
+target.path = /usr/local/bin/
 INSTALLS += target
