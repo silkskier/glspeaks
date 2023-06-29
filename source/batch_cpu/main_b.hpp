@@ -113,7 +113,7 @@ float best_frequencies[file_count]; float powers[file_count]; float amplitudes[f
 for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
 
 if (string(argv[1]) == "-g" || string(argv[1])  == "--gui") {std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << std::endl;}
-else {std::court << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
+else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
 
 
 
