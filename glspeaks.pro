@@ -6,11 +6,10 @@ TARGET = glspeaks
 
 CONFIG += optimize_full
 
-QMAKE_CXXFLAGS += -ffast-math
-
-QMAKE_CXXFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -ffast-math  -fopenmp
 QMAKE_LFLAGS += -fopenmp
 
 QT += core gui widgets
 
 SOURCES += source/main.cpp
+
