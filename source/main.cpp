@@ -167,8 +167,8 @@ print_help();
 
 		for (int i = 3; i < 10; i++) {if (isdigit(argv_batch[i][0])) {argc_batch++;}}
 
-		if (argc_batch < 5) {
-		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
+//		if (argc_batch < 5) {
+//		system("zenity --error --title 'Error - glspeaks' --text='Min or max frequency not specified.'");}
 
 //		std::cout<<"\n argc_batch = " << argc_batch <<std::endl;
 
