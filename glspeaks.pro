@@ -8,7 +8,7 @@ CONFIG += optimize_full
 
 QMAKE_CXXFLAGS += -ffast-math  -fopenmp
 QMAKE_LFLAGS += -fopenmp
-QT += core gui widgets
+#QT += widgets #core gui
 
 SOURCES += source/main.cpp
 
