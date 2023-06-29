@@ -47,7 +47,7 @@ main_spectrum(argc, argv); return 0;}
 	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to 32-bit float limitations"); return 1;}}
 
 	if (argc > 5) {if (std::stof(argv[4]) > pow(2 ,23 - std::stoi(argv[5]))){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
-	else {if (std::stof(argv[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}
+	if (argc > 5) {else {if (std::stof(argv[4]) > pow(2 ,23 - 12)){system("zenity --error --title 'Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'"); return 1;}}}
 
 
 
