@@ -58,7 +58,7 @@ main_peaks(argc, argv);return 0;}
 
 				 else if (option == "-b" || option == "--batch") {
 
-	if(argc < 5){
+	if(argc < 3){
 		std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to catalog with input data files> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Frequency filter range> <Min amplitude> <Max amplitude>\n" <<std::endl; return 1;}
 
 	if (argc > 5) {if (std::stoi(argv[5]) > 127) {printf(" Error: Step sizes smaller than 2^-127 unsupported due to the limitations of 32-bit floats"); return 1;}}
