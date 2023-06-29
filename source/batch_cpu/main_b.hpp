@@ -37,12 +37,12 @@ void main_batch(int argc, char *argv[]){
 const std::string files_location = argv[2];
 
 float min_frequency_temp = 0.003;
-if (argc > 3){max_frequency_temp = std::stof(argv[3]);}
-const float min_frequency = min_frequency_temp
+if (argc > 3){min_frequency_temp = std::stof(argv[3]);}
+const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
 if (argc > 4){max_frequency_temp = std::stof(argv[4]);}
-const float max_frequency = max_frequency_temp
+const float max_frequency = max_frequency_temp;
 
 	
 float step_size = pow(0.5, 12);
