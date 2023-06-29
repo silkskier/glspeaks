@@ -35,9 +35,16 @@ void main_batch(int argc, char *argv[]){
 
 //defines and calculates constants used for calculations
 const std::string files_location = argv[2];
-const float min_frequency = std::stof(argv[3]);
-const float max_frequency = std::stof(argv[4]);
 
+float min_frequency_temp = 0.003
+if (argc > 3){max_frequency_temp = std::stof(argv[3]);}
+const float min_frequency = min_frequency_temp
+
+float max_frequency_temp = 10.0
+if (argc > 4){max_frequency_temp = std::stof(argv[4]);}
+const float max_frequency = max_frequency_temp
+
+	
 float step_size = pow(0.5, 12);
 if (argc > 5){step_size = pow(0.5,std::stoi(argv[5]));}
 
