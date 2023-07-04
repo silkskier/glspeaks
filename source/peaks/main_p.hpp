@@ -117,7 +117,7 @@ std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &
 
 std::cout <<"\n" << "File: "<< files_location << "\n";
 
-std::cout <<"\n  " <<"f[1/d]	P[d]		Amp[mag]	max/avg" << std::endl; //<< std::endl
+std::cout <<"\n  " <<"f[1/d]	P[d]		Amp[mag]	Power" << std::endl; //<< std::endl
 std::cout << std::fixed;  std::cout<< std::setprecision(7); //sets cout's precision
 
 unsigned int j = 0;
