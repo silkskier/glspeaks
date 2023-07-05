@@ -54,7 +54,7 @@ if (argc > 6){min_power = std::stof(argv[6]);}
 float filter_range = 0.04;
 if (argc > 7){filter_range = std::stof(argv[7]);}
 
-float min_amplitude = 0;
+float min_amplitude = 0.01;
 if (argc > 8){min_amplitude = std::stof(argv[8]);}
 
 float max_amplitude = 8;
