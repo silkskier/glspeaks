@@ -1,3 +1,4 @@
+#include <QObject>
 #include <QApplication>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -12,8 +13,38 @@
 #include <QFormLayout>
 #include <QGridLayout>
 
-int main(int argc, char *argv[])
-{
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+
+
+
+void continueButtonClicked (int mode, std::string * argv) {
+    std::cout << "Działa" << std::endl;
+    std::cout << "Mode: " << mode <<  std::endl;
+
+    if (mode == 1) //spectrum
+    {}
+    if (mode == 2) //peaks
+    {}
+    if (mode == 3) //slow
+    {}
+    if (mode == 4) //help
+    {}
+
+QCoreApplication::quit();}
+
+
+
+
+
+
+int main(int argc, char *argv[]){
+
+    int mode = 4;
+    std::string argv_gui[9];
+
     QApplication app(argc, argv);
 
     QWidget window;
@@ -179,6 +210,50 @@ int main(int argc, char *argv[])
     hboxButtons->addWidget(&cancelButton);
     hboxButtons->addWidget(&continueButton);
     layout.addLayout(hboxButtons);
+
+    // Connect the "Continue" button to a custom function
+    QObject::connect(&continueButton, &QPushButton::clicked, [&mode, &argv_gui, &fileLineEdit, &dirLineEdit, &lineEditInt1, &lineEditFloat1, &lineEditFloat2, &lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6]() {
+
+    argv_gui[0] = fileLineEdit.text().toStdString();
+    argv_gui[1] = dirLineEdit.text().toStdString();
+    argv_gui[2] = lineEditInt1.text().toStdString();
+    argv_gui[3] = lineEditFloat1.text().toStdString();
+    argv_gui[4] = lineEditFloat2.text().toStdString();
+    argv_gui[5] = lineEditFloat3.text().toStdString();
+    argv_gui[6] = lineEditFloat4.text().toStdString();
+    argv_gui[7] = lineEditFloat5.text().toStdString();
+    argv_gui[8] = lineEditFloat6.text().toStdString();
+
+    for (uint i = 3; i < 9; i++){std::replace(argv_gui[i].begin(), argv_gui[i].end(), ',', '.');}
+
+    //std::cout << argv_gui[0] << argv_gui[1] << std::endl;
+    //std::cout << argv_gui[2] << " " << argv_gui[3] << " " << argv_gui[4] << std::endl;
+    //std::cout << argv_gui[5] << " " << argv_gui[6] << " " << argv_gui[7] << " " << argv_gui[8] << std::endl;
+
+    continueButtonClicked(mode, argv_gui);
+    });
+
+
+    QObject::connect(&continueButton, &QPushButton::clicked, &window, &QWidget::close);
+
+
+
+        // Export selected mode
+    QObject::connect(&radio1, &QRadioButton::toggled, [&mode](bool checked){
+        if (checked) mode = 1;});
+    QObject::connect(&radio2, &QRadioButton::toggled, [&mode](bool checked){
+        if (checked) mode = 2;});
+    QObject::connect(&radio3, &QRadioButton::toggled, [&mode](bool checked){
+        if (checked) mode = 3;});
+    QObject::connect(&radio4, &QRadioButton::toggled, [&mode](bool checked){
+        if (checked) mode = 4;});
+
+
+
+
+
+
+
 
     window.setWindowTitle("gslpeaks");
     window.resize(480, window.height());
