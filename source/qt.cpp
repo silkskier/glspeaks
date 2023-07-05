@@ -41,7 +41,7 @@ QFormLayout dataLayout;
 dataGroupBox.setLayout(&dataLayout);
 
 QHBoxLayout *hboxFile = new QHBoxLayout;
-QPushButton fileButton("Select file");
+QPushButton fileButton("     Select file     ");
 QLineEdit fileLineEdit;
 
 fileButton.setEnabled(false);
@@ -163,6 +163,7 @@ dataLayout.addRow(hboxDir);
     layout.addLayout(hboxButtons);
 
     window.setWindowTitle("gslpeaks");
+    window.resize(480, window.height());
     window.show();
 
     return app.exec();
