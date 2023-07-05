@@ -55,27 +55,45 @@ int main(int argc, char *argv[])
     parametersLayout.addLayout(hboxFloat1);
     parametersLayout.addLayout(hboxFloat2);
 
+
+
+
+
+
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
     QVBoxLayout dataLayout;
     dataGroupBox.setLayout(&dataLayout);
 
+
+
     QHBoxLayout *hboxFile = new QHBoxLayout;
     QLineEdit fileLineEdit;
     QPushButton fileButton("Select file");
+
+    fileButton.setEnabled(false);
+    fileLineEdit.setEnabled(false);
+
     fileLineEdit.setReadOnly(true);
     hboxFile->addWidget(&fileLineEdit);
     hboxFile->addWidget(&fileButton);
 
+
     QHBoxLayout *hboxDir = new QHBoxLayout;
     QLineEdit dirLineEdit;
     QPushButton dirButton("Select directory");
+
+    dirButton.setEnabled(false);
+    dirLineEdit.setEnabled(false);
+
     dirLineEdit.setReadOnly(true);
     hboxDir->addWidget(&dirLineEdit);
     hboxDir->addWidget(&dirButton);
 
     dataLayout.addLayout(hboxFile);
     dataLayout.addLayout(hboxDir);
+
+
 
     // Connect radio buttons to line edits
     QObject::connect(&radio1, &QRadioButton::toggled, [&lineEditFloat1](bool checked) {
