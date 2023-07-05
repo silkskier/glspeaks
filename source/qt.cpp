@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     hboxInt1->addWidget(&lineEditInt1);
 
     QHBoxLayout *hboxFloat1 = new QHBoxLayout;
-    QLabel *labelFloat1 = new QLabel("Min frequency:");
+    QLabel *labelFloat1 = new QLabel("Min frequency [1/d]:");
     QLineEdit lineEditFloat1;
     QDoubleValidator *validator1 = new QDoubleValidator(&window);
     lineEditFloat1.setValidator(validator1);
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     hboxFloat1->addWidget(&lineEditFloat1);
 
     QHBoxLayout *hboxFloat2 = new QHBoxLayout;
-    QLabel *labelFloat2 = new QLabel("Max frequency:");
+    QLabel *labelFloat2 = new QLabel("Max frequency [1/d]:");
     QLineEdit lineEditFloat2;
     QDoubleValidator *validator2 = new QDoubleValidator(&window);
     lineEditFloat2.setValidator(validator2);
@@ -112,10 +112,46 @@ int main(int argc, char *argv[])
     hboxFloat3->addWidget(labelFloat3);
     hboxFloat3->addWidget(&lineEditFloat3);
 
+    QHBoxLayout *hboxFloat4 = new QHBoxLayout;
+    QLabel *labelFloat4 = new QLabel("Frequency filter range:");
+    QLineEdit lineEditFloat4;
+    QDoubleValidator *validator4 = new QDoubleValidator(&window);
+    lineEditFloat4.setValidator(validator4);
+    lineEditFloat4.setEnabled(false);
+    double placeholderValue4 = 0.04;
+    lineEditFloat4.setPlaceholderText(locale.toString(placeholderValue4));
+    hboxFloat4->addWidget(labelFloat4);
+    hboxFloat4->addWidget(&lineEditFloat4);
+
+    QHBoxLayout *hboxFloat5 = new QHBoxLayout;
+    QLabel *labelFloat5 = new QLabel("Min amplitude [mag]:");
+    QLineEdit lineEditFloat5;
+    QDoubleValidator *validator5 = new QDoubleValidator(&window);
+    lineEditFloat5.setValidator(validator5);
+    lineEditFloat5.setEnabled(false);
+    double placeholderValue5 = 0.01;
+    lineEditFloat5.setPlaceholderText(locale.toString(placeholderValue5));
+    hboxFloat5->addWidget(labelFloat5);
+    hboxFloat5->addWidget(&lineEditFloat5);
+
+    QHBoxLayout *hboxFloat6 = new QHBoxLayout;
+    QLabel *labelFloat6 = new QLabel("Min amplitude [mag]:");
+    QLineEdit lineEditFloat6;
+    QDoubleValidator *validator6 = new QDoubleValidator(&window);
+    lineEditFloat6.setValidator(validator6);
+    lineEditFloat6.setEnabled(false);
+    double placeholderValue6 = 8;
+    lineEditFloat6.setPlaceholderText(locale.toString(placeholderValue6));
+    hboxFloat6->addWidget(labelFloat6);
+    hboxFloat6->addWidget(&lineEditFloat6);
+
     parametersLayout.addLayout(hboxInt1);
     parametersLayout.addLayout(hboxFloat1);
     parametersLayout.addLayout(hboxFloat2);
     parametersLayout.addLayout(hboxFloat3);
+    parametersLayout.addLayout(hboxFloat4);
+    parametersLayout.addLayout(hboxFloat5);
+    parametersLayout.addLayout(hboxFloat6);
 
     // Connect buttons
     QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1](bool checked) {
