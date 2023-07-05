@@ -125,7 +125,7 @@ for (unsigned int i = 0; i < 20; i++) {
   for (unsigned int k = i; k <= i;) {
     if (sorted_data[j].power > output_data[sorted_data[j].index - 1].power && sorted_data[j].power > output_data[sorted_data[j].index + 1].power) {
 
-    std::cout << "  " << sorted_data[j].frequency << "	" << 1/sorted_data[j].frequency << "	" << sorted_data[j].amplitude << "	" << sorted_data[j].power / (log2(length_of_data) * 1.45) << std::endl;
+    std::cout << "  " << sorted_data[j].frequency << "	" << 1/sorted_data[j].frequency << "	" << sorted_data[j].amplitude << "	" << sorted_data[j].power / (log2(length_of_data) * 2.9) << std::endl;
   j++;k++;
 } else {j++;}
 
