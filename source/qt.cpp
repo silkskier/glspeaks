@@ -17,6 +17,11 @@ int main(int argc, char *argv[])
     QWidget window;
     QVBoxLayout layout(&window);
 
+    // Add Cancel and Continue buttons
+    QHBoxLayout *hboxButtons = new QHBoxLayout;
+    QPushButton cancelButton("Cancel");
+    QPushButton continueButton("Continue");
+
     QGroupBox modeGroupBox("Mode selection");
     QVBoxLayout modeLayout;
     modeGroupBox.setLayout(&modeLayout);
@@ -28,14 +33,10 @@ int main(int argc, char *argv[])
 
     radio4.setChecked(true);
 
-
-
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
     QVBoxLayout dataLayout;
     dataGroupBox.setLayout(&dataLayout);
-
-
 
     QHBoxLayout *hboxFile = new QHBoxLayout;
     QLineEdit fileLineEdit;
@@ -47,7 +48,6 @@ int main(int argc, char *argv[])
     fileLineEdit.setReadOnly(true);
     hboxFile->addWidget(&fileLineEdit);
     hboxFile->addWidget(&fileButton);
-
 
     QHBoxLayout *hboxDir = new QHBoxLayout;
     QLineEdit dirLineEdit;
@@ -63,13 +63,10 @@ int main(int argc, char *argv[])
     dataLayout.addLayout(hboxFile);
     dataLayout.addLayout(hboxDir);
 
-
-
-    //Line edits
+    // Line edits
     QGroupBox parametersGroupBox("Parameters");
     QVBoxLayout parametersLayout;
     parametersGroupBox.setLayout(&parametersLayout);
-
 
     QHBoxLayout *hboxInt1 = new QHBoxLayout;
     QLabel *labelInt1 = new QLabel("Resolution:");
@@ -81,19 +78,17 @@ int main(int argc, char *argv[])
     hboxInt1->addWidget(labelInt1);
     hboxInt1->addWidget(&lineEditInt1);
 
-
-
     QHBoxLayout *hboxFloat1 = new QHBoxLayout;
     QLabel *labelFloat1 = new QLabel("Min frequency:");
     QLineEdit lineEditFloat1;
     QDoubleValidator *validator1 = new QDoubleValidator(&window);
     lineEditFloat1.setValidator(validator1);
     lineEditFloat1.setEnabled(false);
-    double placeholderValue1 = 0.003;  QLocale locale;
+    double placeholderValue1 = 0.003;
+    QLocale locale;
     lineEditFloat1.setPlaceholderText(locale.toString(placeholderValue1));
     hboxFloat1->addWidget(labelFloat1);
     hboxFloat1->addWidget(&lineEditFloat1);
-
 
     QHBoxLayout *hboxFloat2 = new QHBoxLayout;
     QLabel *labelFloat2 = new QLabel("Max frequency:");
@@ -106,14 +101,23 @@ int main(int argc, char *argv[])
     hboxFloat2->addWidget(labelFloat2);
     hboxFloat2->addWidget(&lineEditFloat2);
 
+    QHBoxLayout *hboxFloat3 = new QHBoxLayout;
+    QLabel *labelFloat3 = new QLabel("Required power:");
+    QLineEdit lineEditFloat3;
+    QDoubleValidator *validator3 = new QDoubleValidator(&window);
+    lineEditFloat3.setValidator(validator3);
+    lineEditFloat3.setEnabled(false);
+    double placeholderValue3 = 1;
+    lineEditFloat3.setPlaceholderText(locale.toString(placeholderValue3));
+    hboxFloat3->addWidget(labelFloat3);
+    hboxFloat3->addWidget(&lineEditFloat3);
 
     parametersLayout.addLayout(hboxInt1);
     parametersLayout.addLayout(hboxFloat1);
     parametersLayout.addLayout(hboxFloat2);
+    parametersLayout.addLayout(hboxFloat3);
 
-
-
-    // Connect radio buttons
+    // Connect buttons
     QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1](bool checked) {
         lineEditInt1.setEnabled(!checked);
     });
@@ -124,17 +128,20 @@ int main(int argc, char *argv[])
         lineEditFloat2.setEnabled(!checked);
     });
 
-    // Connect file button to file dialog
+
     QObject::connect(&fileButton, &QPushButton::clicked, [&fileLineEdit]() {
         QString filePath = QFileDialog::getOpenFileName(nullptr, "Select file");
         fileLineEdit.setText(filePath);
     });
 
-    // Connect directory button to directory dialog
+
     QObject::connect(&dirButton, &QPushButton::clicked, [&dirLineEdit]() {
         QString dirPath = QFileDialog::getExistingDirectory(nullptr, "Select directory");
         dirLineEdit.setText(dirPath);
     });
+
+    QObject::connect(&cancelButton, &QPushButton::clicked, &QCoreApplication::quit);
+
 
     modeLayout.addWidget(&radio1);
     modeLayout.addWidget(&radio2);
@@ -144,6 +151,10 @@ int main(int argc, char *argv[])
     layout.addWidget(&modeGroupBox);
     layout.addWidget(&dataGroupBox);
     layout.addWidget(&parametersGroupBox);
+
+    hboxButtons->addWidget(&cancelButton);
+    hboxButtons->addWidget(&continueButton);
+    layout.addLayout(hboxButtons);
 
     window.setWindowTitle("gslpeaks");
     window.show();
