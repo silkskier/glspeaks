@@ -51,7 +51,7 @@ if (argc > 5){step_size = pow(0.5,std::stoi(argv[5]));}
 float min_power = 1;
 if (argc > 6){min_power = std::stof(argv[6]);}
 
-float filter_range = 0.02;
+float filter_range = 0.04;
 if (argc > 7){filter_range = std::stof(argv[7]);}
 
 float min_amplitude = 0;
