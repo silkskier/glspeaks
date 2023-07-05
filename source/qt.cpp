@@ -28,36 +28,6 @@ int main(int argc, char *argv[])
 
     radio4.setChecked(true);
 
-    // Float line edits
-    QGroupBox parametersGroupBox("Parameters");
-    QVBoxLayout parametersLayout;
-    parametersGroupBox.setLayout(&parametersLayout);
-
-    QHBoxLayout *hboxFloat1 = new QHBoxLayout;
-    QLabel *labelFloat1 = new QLabel("Float 1:");
-    QLineEdit lineEditFloat1;
-    QDoubleValidator *validator1 = new QDoubleValidator(&window);
-    lineEditFloat1.setValidator(validator1);
-    lineEditFloat1.setEnabled(false);
-    hboxFloat1->addWidget(labelFloat1);
-    hboxFloat1->addWidget(&lineEditFloat1);
-
-
-    QHBoxLayout *hboxFloat2 = new QHBoxLayout;
-    QLabel *labelFloat2 = new QLabel("Float 2:");
-    QLineEdit lineEditFloat2;
-    QDoubleValidator *validator2 = new QDoubleValidator(&window);
-    lineEditFloat2.setValidator(validator2);
-    lineEditFloat2.setEnabled(false);
-    hboxFloat2->addWidget(labelFloat2);
-    hboxFloat2->addWidget(&lineEditFloat2);
-
-    parametersLayout.addLayout(hboxFloat1);
-    parametersLayout.addLayout(hboxFloat2);
-
-
-
-
 
 
     // File and directory selection line edits
@@ -95,12 +65,63 @@ int main(int argc, char *argv[])
 
 
 
-    // Connect radio buttons to line edits
-    QObject::connect(&radio1, &QRadioButton::toggled, [&lineEditFloat1](bool checked) {
-        lineEditFloat1.setEnabled(checked);
+    //Line edits
+    QGroupBox parametersGroupBox("Parameters");
+    QVBoxLayout parametersLayout;
+    parametersGroupBox.setLayout(&parametersLayout);
+
+
+    QHBoxLayout *hboxInt1 = new QHBoxLayout;
+    QLabel *labelInt1 = new QLabel("Resolution:");
+    QLineEdit lineEditInt1;
+    QIntValidator *validator0 = new QIntValidator(&window);
+    lineEditInt1.setValidator(validator0);
+    lineEditInt1.setEnabled(false);
+    lineEditInt1.setPlaceholderText("12");
+    hboxInt1->addWidget(labelInt1);
+    hboxInt1->addWidget(&lineEditInt1);
+
+
+
+    QHBoxLayout *hboxFloat1 = new QHBoxLayout;
+    QLabel *labelFloat1 = new QLabel("Min frequency:");
+    QLineEdit lineEditFloat1;
+    QDoubleValidator *validator1 = new QDoubleValidator(&window);
+    lineEditFloat1.setValidator(validator1);
+    lineEditFloat1.setEnabled(false);
+    double placeholderValue1 = 0.003;  QLocale locale;
+    lineEditFloat1.setPlaceholderText(locale.toString(placeholderValue1));
+    hboxFloat1->addWidget(labelFloat1);
+    hboxFloat1->addWidget(&lineEditFloat1);
+
+
+    QHBoxLayout *hboxFloat2 = new QHBoxLayout;
+    QLabel *labelFloat2 = new QLabel("Max frequency:");
+    QLineEdit lineEditFloat2;
+    QDoubleValidator *validator2 = new QDoubleValidator(&window);
+    lineEditFloat2.setValidator(validator2);
+    lineEditFloat2.setEnabled(false);
+    double placeholderValue2 = 10;
+    lineEditFloat2.setPlaceholderText(locale.toString(placeholderValue2));
+    hboxFloat2->addWidget(labelFloat2);
+    hboxFloat2->addWidget(&lineEditFloat2);
+
+
+    parametersLayout.addLayout(hboxInt1);
+    parametersLayout.addLayout(hboxFloat1);
+    parametersLayout.addLayout(hboxFloat2);
+
+
+
+    // Connect radio buttons
+    QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1](bool checked) {
+        lineEditInt1.setEnabled(!checked);
     });
-    QObject::connect(&radio2, &QRadioButton::toggled, [&lineEditFloat2](bool checked) {
-        lineEditFloat2.setEnabled(checked);
+    QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditFloat1](bool checked) {
+        lineEditFloat1.setEnabled(!checked);
+    });
+    QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditFloat2](bool checked) {
+        lineEditFloat2.setEnabled(!checked);
     });
 
     // Connect file button to file dialog
