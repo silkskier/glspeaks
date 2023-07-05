@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QFormLayout>
 
 int main(int argc, char *argv[])
 {
@@ -34,52 +35,48 @@ int main(int argc, char *argv[])
     radio4.setChecked(true);
 
     // File and directory selection line edits
-    QGroupBox dataGroupBox("Data selection");
-    QVBoxLayout dataLayout;
-    dataGroupBox.setLayout(&dataLayout);
+// File and directory selection line edits
+QGroupBox dataGroupBox("Data selection");
+QFormLayout dataLayout;
+dataGroupBox.setLayout(&dataLayout);
 
-    QHBoxLayout *hboxFile = new QHBoxLayout;
-    QLineEdit fileLineEdit;
-    QPushButton fileButton("Select file");
+QHBoxLayout *hboxFile = new QHBoxLayout;
+QPushButton fileButton("Select file");
+QLineEdit fileLineEdit;
 
-    fileButton.setEnabled(false);
-    fileLineEdit.setEnabled(false);
+fileButton.setEnabled(false);
+fileLineEdit.setEnabled(false);
+fileLineEdit.setReadOnly(true);
 
-    fileLineEdit.setReadOnly(true);
-    hboxFile->addWidget(&fileLineEdit);
-    hboxFile->addWidget(&fileButton);
+hboxFile->addWidget(&fileButton);
+hboxFile->addWidget(&fileLineEdit);
 
-    QHBoxLayout *hboxDir = new QHBoxLayout;
-    QLineEdit dirLineEdit;
-    QPushButton dirButton("Select directory");
+QHBoxLayout *hboxDir = new QHBoxLayout;
+QPushButton dirButton("Select directory");
+QLineEdit dirLineEdit;
 
-    dirButton.setEnabled(false);
-    dirLineEdit.setEnabled(false);
+dirButton.setEnabled(false);
+dirLineEdit.setEnabled(false);
+dirLineEdit.setReadOnly(true);
 
-    dirLineEdit.setReadOnly(true);
-    hboxDir->addWidget(&dirLineEdit);
-    hboxDir->addWidget(&dirButton);
+hboxDir->addWidget(&dirButton);
+hboxDir->addWidget(&dirLineEdit);
 
-    dataLayout.addLayout(hboxFile);
-    dataLayout.addLayout(hboxDir);
+dataLayout.addRow(hboxFile);
+dataLayout.addRow(hboxDir);
 
     // Line edits
     QGroupBox parametersGroupBox("Parameters");
-    QVBoxLayout parametersLayout;
+    QFormLayout parametersLayout;
     parametersGroupBox.setLayout(&parametersLayout);
 
-    QHBoxLayout *hboxInt1 = new QHBoxLayout;
-    QLabel *labelInt1 = new QLabel("Resolution:");
     QLineEdit lineEditInt1;
     QIntValidator *validator0 = new QIntValidator(&window);
     lineEditInt1.setValidator(validator0);
     lineEditInt1.setEnabled(false);
     lineEditInt1.setPlaceholderText("12");
-    hboxInt1->addWidget(labelInt1);
-    hboxInt1->addWidget(&lineEditInt1);
+    parametersLayout.addRow("Resolution:", &lineEditInt1);
 
-    QHBoxLayout *hboxFloat1 = new QHBoxLayout;
-    QLabel *labelFloat1 = new QLabel("Min frequency [1/d]:");
     QLineEdit lineEditFloat1;
     QDoubleValidator *validator1 = new QDoubleValidator(&window);
     lineEditFloat1.setValidator(validator1);
@@ -87,71 +84,47 @@ int main(int argc, char *argv[])
     double placeholderValue1 = 0.003;
     QLocale locale;
     lineEditFloat1.setPlaceholderText(locale.toString(placeholderValue1));
-    hboxFloat1->addWidget(labelFloat1);
-    hboxFloat1->addWidget(&lineEditFloat1);
+    parametersLayout.addRow("Min frequency [1/d]:", &lineEditFloat1);
 
-    QHBoxLayout *hboxFloat2 = new QHBoxLayout;
-    QLabel *labelFloat2 = new QLabel("Max frequency [1/d]:");
     QLineEdit lineEditFloat2;
     QDoubleValidator *validator2 = new QDoubleValidator(&window);
     lineEditFloat2.setValidator(validator2);
     lineEditFloat2.setEnabled(false);
     double placeholderValue2 = 10;
     lineEditFloat2.setPlaceholderText(locale.toString(placeholderValue2));
-    hboxFloat2->addWidget(labelFloat2);
-    hboxFloat2->addWidget(&lineEditFloat2);
+    parametersLayout.addRow("Max frequency [1/d]:", &lineEditFloat2);
 
-    QHBoxLayout *hboxFloat3 = new QHBoxLayout;
-    QLabel *labelFloat3 = new QLabel("Required power:");
     QLineEdit lineEditFloat3;
     QDoubleValidator *validator3 = new QDoubleValidator(&window);
     lineEditFloat3.setValidator(validator3);
     lineEditFloat3.setEnabled(false);
     double placeholderValue3 = 1;
     lineEditFloat3.setPlaceholderText(locale.toString(placeholderValue3));
-    hboxFloat3->addWidget(labelFloat3);
-    hboxFloat3->addWidget(&lineEditFloat3);
+    parametersLayout.addRow("Required power:", &lineEditFloat3);
 
-    QHBoxLayout *hboxFloat4 = new QHBoxLayout;
-    QLabel *labelFloat4 = new QLabel("Frequency filter range:");
     QLineEdit lineEditFloat4;
     QDoubleValidator *validator4 = new QDoubleValidator(&window);
     lineEditFloat4.setValidator(validator4);
     lineEditFloat4.setEnabled(false);
     double placeholderValue4 = 0.04;
     lineEditFloat4.setPlaceholderText(locale.toString(placeholderValue4));
-    hboxFloat4->addWidget(labelFloat4);
-    hboxFloat4->addWidget(&lineEditFloat4);
+    parametersLayout.addRow("Frequency filter range:", &lineEditFloat4);
 
-    QHBoxLayout *hboxFloat5 = new QHBoxLayout;
-    QLabel *labelFloat5 = new QLabel("Min amplitude [mag]:");
     QLineEdit lineEditFloat5;
     QDoubleValidator *validator5 = new QDoubleValidator(&window);
     lineEditFloat5.setValidator(validator5);
     lineEditFloat5.setEnabled(false);
     double placeholderValue5 = 0.01;
     lineEditFloat5.setPlaceholderText(locale.toString(placeholderValue5));
-    hboxFloat5->addWidget(labelFloat5);
-    hboxFloat5->addWidget(&lineEditFloat5);
+    parametersLayout.addRow("Min amplitude [mag]:", &lineEditFloat5);
 
-    QHBoxLayout *hboxFloat6 = new QHBoxLayout;
-    QLabel *labelFloat6 = new QLabel("Min amplitude [mag]:");
     QLineEdit lineEditFloat6;
     QDoubleValidator *validator6 = new QDoubleValidator(&window);
     lineEditFloat6.setValidator(validator6);
     lineEditFloat6.setEnabled(false);
     double placeholderValue6 = 8;
     lineEditFloat6.setPlaceholderText(locale.toString(placeholderValue6));
-    hboxFloat6->addWidget(labelFloat6);
-    hboxFloat6->addWidget(&lineEditFloat6);
-
-    parametersLayout.addLayout(hboxInt1);
-    parametersLayout.addLayout(hboxFloat1);
-    parametersLayout.addLayout(hboxFloat2);
-    parametersLayout.addLayout(hboxFloat3);
-    parametersLayout.addLayout(hboxFloat4);
-    parametersLayout.addLayout(hboxFloat5);
-    parametersLayout.addLayout(hboxFloat6);
+    parametersLayout.addRow("Max amplitude [mag]:", &lineEditFloat6);
 
     // Connect buttons
     QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1](bool checked) {
@@ -164,12 +137,10 @@ int main(int argc, char *argv[])
         lineEditFloat2.setEnabled(!checked);
     });
 
-
     QObject::connect(&fileButton, &QPushButton::clicked, [&fileLineEdit]() {
         QString filePath = QFileDialog::getOpenFileName(nullptr, "Select file");
         fileLineEdit.setText(filePath);
     });
-
 
     QObject::connect(&dirButton, &QPushButton::clicked, [&dirLineEdit]() {
         QString dirPath = QFileDialog::getExistingDirectory(nullptr, "Select directory");
@@ -177,7 +148,6 @@ int main(int argc, char *argv[])
     });
 
     QObject::connect(&cancelButton, &QPushButton::clicked, &QCoreApplication::quit);
-
 
     modeLayout.addWidget(&radio1);
     modeLayout.addWidget(&radio2);
