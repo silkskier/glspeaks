@@ -51,7 +51,7 @@ void continueButtonClicked (int mode, std::string argv[]) {
 
 
     if (mode == 4) //help
-    {}
+    {print_help();}
 
 
 QCoreApplication::quit();}
