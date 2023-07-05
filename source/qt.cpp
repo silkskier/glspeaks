@@ -17,21 +17,42 @@
 #include <algorithm>
 #include <string>
 
+#include "batch_cpu/main_b.hpp"
+#include "peaks/main_p.hpp"
+#include "spectrum/main_s.hpp"
+#include "help/help.hpp"
 
 
 
-void continueButtonClicked (int mode, std::string * argv) {
+
+void continueButtonClicked (int mode, std::string argv[]) {
     std::cout << "Działa" << std::endl;
     std::cout << "Mode: " << mode <<  std::endl;
 
     if (mode == 1) //spectrum
-    {}
+    {
+    char* argv_spectrum[] = {"glspeaks", "-s", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
+    main_spectrum(6, argv_spectrum);
+    }
+
+
     if (mode == 2) //peaks
-    {}
+    {
+    char* argv_peaks[] = {"glspeaks", "-p", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
+    main_peaks(6, argv_peaks);
+    }
+
+
     if (mode == 3) //slow
-    {}
+    {
+    char* argv_batch[] = {"glspeaks", "-b", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
+    main_batch(10, argv_batch);
+    }
+
+
     if (mode == 4) //help
     {}
+
 
 QCoreApplication::quit();}
 
@@ -212,6 +233,7 @@ int main(int argc, char *argv[]){
     layout.addLayout(hboxButtons);
 
     // Connect the "Continue" button to a custom function
+    QObject::connect(&continueButton, &QPushButton::clicked, &window, &QWidget::close);
     QObject::connect(&continueButton, &QPushButton::clicked, [&mode, &argv_gui, &fileLineEdit, &dirLineEdit, &lineEditInt1, &lineEditFloat1, &lineEditFloat2, &lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6]() {
 
     argv_gui[0] = fileLineEdit.text().toStdString();
@@ -226,15 +248,13 @@ int main(int argc, char *argv[]){
 
     for (uint i = 3; i < 9; i++){std::replace(argv_gui[i].begin(), argv_gui[i].end(), ',', '.');}
 
-    //std::cout << argv_gui[0] << argv_gui[1] << std::endl;
-    //std::cout << argv_gui[2] << " " << argv_gui[3] << " " << argv_gui[4] << std::endl;
-    //std::cout << argv_gui[5] << " " << argv_gui[6] << " " << argv_gui[7] << " " << argv_gui[8] << std::endl;
+    std::cout << argv_gui[0] << argv_gui[1] << std::endl;
+    std::cout << argv_gui[2] << " " << argv_gui[3] << " " << argv_gui[4] << std::endl;
+    std::cout << argv_gui[5] << " " << argv_gui[6] << " " << argv_gui[7] << " " << argv_gui[8] << std::endl;
 
     continueButtonClicked(mode, argv_gui);
     });
 
-
-    QObject::connect(&continueButton, &QPushButton::clicked, &window, &QWidget::close);
 
 
 
