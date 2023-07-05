@@ -23,7 +23,7 @@ bool filter(float frequency, float power, float min_value, float filter_range, f
     unsigned int num_frequencies = sizeof(filter_frequencies) / sizeof(filter_frequencies[0]);
     if (frequency == 0) return 0;
     for (unsigned int i = 0; i < num_frequencies; ++i)
-    {if (frequency > filter_frequencies[i] - filter_range && frequency < filter_frequencies[i] + filter_range) return false;}//frequencies filter
+    {if (frequency > filter_frequencies[i] - (filter_range / 2) && frequency < filter_frequencies[i] + (filter_range / 2)) return false;}//frequencies filter
 
     return true;
 }
