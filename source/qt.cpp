@@ -10,9 +10,10 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFormLayout>
+#include <QGridLayout>
 
 int main(int argc, char *argv[])
-    {
+{
     QApplication app(argc, argv);
 
     QWidget window;
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
     QPushButton continueButton("Continue");
 
     QGroupBox modeGroupBox("Mode selection");
-    QVBoxLayout modeLayout;
+    QGridLayout modeLayout;
     modeGroupBox.setLayout(&modeLayout);
 
     QRadioButton radio1("Spectrum");
@@ -34,7 +35,10 @@ int main(int argc, char *argv[])
 
     radio4.setChecked(true);
 
-
+    modeLayout.addWidget(&radio1, 0, 0);
+    modeLayout.addWidget(&radio2, 1, 0);
+    modeLayout.addWidget(&radio3, 0, 1);
+    modeLayout.addWidget(&radio4, 1, 1);
 
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
@@ -65,9 +69,6 @@ int main(int argc, char *argv[])
 
     dataLayout.addRow(hboxFile);
     dataLayout.addRow(hboxDir);
-
-
-
 
     // Line edits
     QGroupBox parametersGroupBox("Parameters");
@@ -130,36 +131,34 @@ int main(int argc, char *argv[])
     lineEditFloat6.setPlaceholderText(locale.toString(placeholderValue6));
     parametersLayout.addRow("Max amplitude [mag]:", &lineEditFloat6);
 
-
-
     // Connect buttons
     QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1, &lineEditFloat1, &lineEditFloat2](bool checked) {
         lineEditInt1.setEnabled(!checked);
         lineEditFloat1.setEnabled(!checked);
-        lineEditFloat2.setEnabled(!checked);});
-
+        lineEditFloat2.setEnabled(!checked);
+    });
 
     QObject::connect(&radio3, &QRadioButton::toggled, [&lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6](bool checked) {
         lineEditFloat3.setEnabled(checked);
         lineEditFloat4.setEnabled(checked);
         lineEditFloat5.setEnabled(checked);
-        lineEditFloat6.setEnabled(checked);});
+        lineEditFloat6.setEnabled(checked);
+    });
 
     QObject::connect(&radio1, &QRadioButton::toggled, [&fileLineEdit, &fileButton](bool checked) {
         fileLineEdit.setEnabled(checked);
-        fileButton.setEnabled(checked);});
+        fileButton.setEnabled(checked);
+    });
 
     QObject::connect(&radio2, &QRadioButton::toggled, [&fileLineEdit, &fileButton](bool checked) {
         fileLineEdit.setEnabled(checked);
-        fileButton.setEnabled(checked);});
+        fileButton.setEnabled(checked);
+    });
 
     QObject::connect(&radio3, &QRadioButton::toggled, [&dirLineEdit, &dirButton](bool checked) {
         dirLineEdit.setEnabled(checked);
-        dirButton.setEnabled(checked);});
-
-
-
-
+        dirButton.setEnabled(checked);
+    });
 
     QObject::connect(&fileButton, &QPushButton::clicked, [&fileLineEdit]() {
         QString filePath = QFileDialog::getOpenFileName(nullptr, "Select file");
@@ -172,11 +171,6 @@ int main(int argc, char *argv[])
     });
 
     QObject::connect(&cancelButton, &QPushButton::clicked, &QCoreApplication::quit);
-
-    modeLayout.addWidget(&radio1);
-    modeLayout.addWidget(&radio2);
-    modeLayout.addWidget(&radio3);
-    modeLayout.addWidget(&radio4);
 
     layout.addWidget(&modeGroupBox);
     layout.addWidget(&dataGroupBox);
