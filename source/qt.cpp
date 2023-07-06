@@ -35,7 +35,7 @@
 
 
 
-void showTextInSecondWindow(const std::string& text, int windowWidth, const std::string& windowTitle) {
+void showTextInSecondWindow(const std::string& text, int windowWidth, int windowHeight, const std::string& windowTitle) {
     QDialog dialog;
     dialog.setWindowTitle(QString::fromStdString(windowTitle));
 
@@ -55,12 +55,16 @@ void showTextInSecondWindow(const std::string& text, int windowWidth, const std:
 
     QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
 
-    dialog.resize(windowWidth, dialog.height());
+    dialog.resize(windowWidth,windowHeight);
     dialog.exec();
 }
 
 
 void continueButtonClicked(int mode, std::string argv[]) {
+
+    std::stringstream output_buffer;
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(output_buffer.rdbuf());
 
 
     if (mode == 1) //spectrum
@@ -72,25 +76,25 @@ void continueButtonClicked(int mode, std::string argv[]) {
     {
         char* argv_peaks[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
         main_peaks(6, argv_peaks);
+
+        std::cout.rdbuf(coutbuf);
+        std::string output = output_buffer.str();
+        showTextInSecondWindow(output, 360, 540, "glspeaks - peaks mode");
     }
     else if (mode == 3) //slow
     {
         char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
         main_batch(10, argv_batch);
+
+
     }
     else if (mode == 4) //help
     {
-    std::stringstream output_buffer;
-    std::streambuf *coutbuf = std::cout.rdbuf();
-    std::cout.rdbuf(output_buffer.rdbuf());
+        print_help();
 
-	print_help();
-
-    std::cout.rdbuf(coutbuf);
-
-    std::string output = output_buffer.str();
-
-    showTextInSecondWindow(output, 880, "glspeaks - help window");
+        std::cout.rdbuf(coutbuf);
+        std::string output = output_buffer.str();
+        showTextInSecondWindow(output, 880, 400, "glspeaks - help window");
 
     }
     else {
