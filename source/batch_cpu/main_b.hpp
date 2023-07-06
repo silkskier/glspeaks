@@ -39,24 +39,19 @@ const std::string files_location = argv[2];
 float min_frequency_temp = 0.003;
 if (argc > 3 && argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}
 const float min_frequency = min_frequency_temp;
-
 float max_frequency_temp = 10.0;
 if (argc > 4 && argv[4][0] != '\0'){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
 
-	
+
 float step_size = pow(0.5, 12);
 if (argc > 5 && argv[5][0] != '\0'){step_size = pow(0.5,std::stoi(argv[5]));}
-
 float min_power = 1;
 if (argc > 6 && argv[6][0] != '\0'){min_power = std::stof(argv[6]);}
-
 float filter_range = 0.04;
 if (argc > 7 && argv[7][0] != '\0'){filter_range = std::stof(argv[7]);}
-
 float min_amplitude = 0.01;
 if (argc > 8 && argv[8][0] != '\0'){min_amplitude = std::stof(argv[8]);}
-
 float max_amplitude = 8;
 if (argc > 9 && argv[9][0] != '\0'){max_amplitude = std::stof(argv[9]);}
 
@@ -112,7 +107,7 @@ float best_frequencies[file_count]; float powers[file_count]; float amplitudes[f
 
 for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
 
-if (string(argv[1]) == "-g" || string(argv[1])  == "--gui") {std::cout <<std::fixed << std::setprecision(1) << 100*float(j)/float(file_count) << std::endl;}
+if (string(argv[1]) == "-g") {std::cout <<std::fixed << std::setprecision(0) << "\r" << 1000*float(j)/float(file_count) << std::flush;}
 else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
 
 
@@ -142,9 +137,8 @@ for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filte
 	output_string.erase(remove(output_string.begin(), output_string.end(), ""), output_string.end());
 
 for (unsigned int i = 0; i < output_string.size(); i++) output_file << output_string[i] <<std::endl; output_string.clear();
-
 }
 
-std::cout <<std::fixed << std::setprecision(1) << "100%" << std::endl;
-
+if (string(argv[1]) == "-g") {std::cout << "\r" << "1000" << std::endl;}
+else {std::cout << "\r" << "Complete" << std::endl;}
 }
