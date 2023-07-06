@@ -125,15 +125,15 @@ std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &
 
 std::cout <<"\n" << "File: "<< files_location << "\n";
 
-std::cout <<"\n  " <<"f[1/d]	P[d]		Amp[mag]	Power" << std::endl; //<< std::endl
-std::cout << std::fixed;  std::cout<< std::setprecision(7); //sets cout's precision
+std::cout <<"\n " <<"f[1/d] 	P[d]	Amp[mag]	Power" << std::endl; //<< std::endl
+std::cout << std::fixed;  std::cout<< std::setprecision(5); //sets cout's precision
 
 unsigned int j = 0;
 for (unsigned int i = 0; i < 20; i++) {
   for (unsigned int k = i; k <= i;) {
     if (sorted_data[j].power > output_data[sorted_data[j].index - 1].power && sorted_data[j].power > output_data[sorted_data[j].index + 1].power) {
 
-    std::cout << "  " << sorted_data[j].frequency << "	" << 1/sorted_data[j].frequency << "	" << sorted_data[j].amplitude << "	" << sorted_data[j].power / (log2(length_of_data) * 1.45) << std::endl;
+    std::cout << " " << sorted_data[j].frequency << "\t" << 1/sorted_data[j].frequency << "\t" << sorted_data[j].amplitude << "\t" << sorted_data[j].power / (log2(length_of_data) * 1.45) << std::endl;
   j++;k++;
 } else {j++;}
 
