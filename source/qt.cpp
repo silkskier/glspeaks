@@ -12,10 +12,21 @@
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QGridLayout>
+#include <QPlainTextEdit>
+#include <QMessageBox>
+#include <QDialog>
+#include <QPlainTextEdit>
+#include <QDialogButtonBox>
+#include <QFont>
 
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <cstring>
+#include <sstream>
+
+#include <chrono>
+#include <thread>
 
 #include "batch_cpu/main_b.hpp"
 #include "peaks/main_p.hpp"
@@ -24,37 +35,68 @@
 
 
 
+void showTextInSecondWindow(const std::string& text, int windowWidth, const std::string& windowTitle) {
+    QDialog dialog;
+    dialog.setWindowTitle(QString::fromStdString(windowTitle));
 
-void continueButtonClicked (int mode, std::string argv[]) {
-    std::cout << "Działa" << std::endl;
-    std::cout << "Mode: " << mode <<  std::endl;
+    QPlainTextEdit* textEdit = new QPlainTextEdit(&dialog);
+    textEdit->setPlainText(QString::fromStdString(text));
+    textEdit->setReadOnly(true);
+
+    // Set font to monospace
+    QFont font("Monospace");
+    textEdit->setFont(font);
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->addWidget(textEdit);
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, &dialog);
+    layout->addWidget(buttonBox);
+
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+
+    dialog.resize(windowWidth, dialog.height());
+    dialog.exec();
+}
+
+
+void continueButtonClicked(int mode, std::string argv[]) {
+
 
     if (mode == 1) //spectrum
     {
-    char* argv_spectrum[] = {"glspeaks", "-s", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
-    main_spectrum(6, argv_spectrum);
+        char* argv_spectrum[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
+        main_spectrum(6, argv_spectrum);
     }
-
-
-    if (mode == 2) //peaks
+    else if (mode == 2) //peaks
     {
-    char* argv_peaks[] = {"glspeaks", "-p", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
-    main_peaks(6, argv_peaks);
+        char* argv_peaks[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
+        main_peaks(6, argv_peaks);
     }
-
-
-    if (mode == 3) //slow
+    else if (mode == 3) //slow
     {
-    char* argv_batch[] = {"glspeaks", "-b", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
-    main_batch(10, argv_batch);
+        char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
+        main_batch(10, argv_batch);
     }
+    else if (mode == 4) //help
+    {
+    std::stringstream output_buffer;
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(output_buffer.rdbuf());
 
+	print_help();
 
-    if (mode == 4) //help
-    {print_help();}
+    std::cout.rdbuf(coutbuf);
 
+    std::string output = output_buffer.str();
 
-QCoreApplication::quit();}
+    showTextInSecondWindow(output, 880, "glspeaks - help window");
+
+    }
+    else {
+        QCoreApplication::quit();
+    }
+}
 
 
 
