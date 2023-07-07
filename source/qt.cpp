@@ -1,12 +1,3 @@
-/*
-
-
-
-}
-
-
-*/
-
 #include <QObject>
 #include <QApplication>
 #include <QWidget>
@@ -25,7 +16,8 @@
 #include <QMessageBox>
 #include <QDialog>
 #include <QPlainTextEdit>
-#include <QProgressBar>
+#include <QProgressDialog>
+#include <QTimer>
 #include <QDialogButtonBox>
 #include <QFont>
 
@@ -34,6 +26,8 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <atomic>
+#include <cmath>
 
 #include <chrono>
 #include <thread>
@@ -43,6 +37,27 @@
 #include "spectrum/main_s.hpp"
 #include "help/help.hpp"
 
+class ProgressUpdater : public QObject {
+    Q_OBJECT
+
+public:
+    explicit ProgressUpdater(QProgressDialog* progressDialog) : QObject(progressDialog), progressDialog(progressDialog) {}
+
+public slots:
+    void updateProgress() {
+        int progress = progressValue.load(); // Read the progress value
+        int value = timeLeft.load();
+        int seconds = value % 60;
+        int minutes = (value / 60) % 60;
+        int hours = value / 3600;
+        progressDialog->setValue(progress);
+        progressDialog->setLabelText(QString("Computation in progress.\n%1 hours, %2 minutes and %3 seconds left.").arg(hours).arg(minutes).arg(seconds));
+        QCoreApplication::processEvents();
+    }
+
+private:
+    QProgressDialog* progressDialog;
+};
 
 void showText(const std::string& text, int windowWidth, int windowHeight, const std::string& windowTitle) {
     QDialog dialog;
@@ -66,49 +81,6 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
     dialog.resize(windowWidth,windowHeight);
     dialog.exec();
 }
-
-class ProgressBar {
-public:
-    ProgressBar(int windowWidth, int windowHeight, const std::string& windowTitle)
-        : dialog(new QDialog()), progressBar(new QProgressBar()), label(new QLabel())
-    {
-        dialog->setWindowTitle(QString::fromStdString(windowTitle));
-        progressBar->setRange(0, 100);
-        label->setAlignment(Qt::AlignCenter);
-
-        QFont font("Monospace");
-        label->setFont(font);
-
-        QVBoxLayout* layout = new QVBoxLayout(dialog);
-        layout->addWidget(progressBar);
-        layout->addWidget(label);
-
-        QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, dialog);
-        layout->addWidget(buttonBox);
-
-        QObject::connect(buttonBox, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
-
-        dialog->resize(windowWidth, windowHeight);
-    }
-
-    void show() {
-        dialog->exec();
-    }
-
-    void setProgress(int value) {
-        progressBar->setValue(value);
-    }
-
-    void setText(const std::string& text) {
-        label->setText(QString::fromStdString(text));
-    }
-
-private:
-    QDialog* dialog;
-    QProgressBar* progressBar;
-    QLabel* label;
-};
-
 
 
 void continueButtonClicked(int mode, std::string argv[]) {
@@ -137,19 +109,26 @@ void continueButtonClicked(int mode, std::string argv[]) {
     }
     else if (mode == 3) //slow
     {
-        char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
-        std::thread t(main_batch, 10, argv_batch);
-        ProgressBar progressBar(500, 500, "glspeaks - batch mode (slow)");
-        progressBar.show();
-        progressBar.setProgress(50);
-        progressBar.setText("Computation in progress, 50% complete");
+    char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
+    std::thread t(main_batch, 10, argv_batch);
+    QProgressDialog progressDialog("Computation in progress", "Cancel", 0, 1000);
+    progressDialog.setWindowModality(Qt::WindowModal);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        std::stringstream().swap(output_buffer);
+    ProgressUpdater updater(&progressDialog);
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, &updater, &ProgressUpdater::updateProgress);
+    timer.start(1000); // Update the progress dialog every second
+
+    progressDialog.exec();
+
+    std::stringstream().swap(output_buffer);
+    std::string output = "List of periodic variable candidates saved to\n" + argv[1] + "/GLS_output.tsv";
+    showText(output, 600, 60, "glspeaks - spectrum mode");
+
+    t.join();
 
 
 
-        t.join();
     }
     else if (mode == 4) //help
     {
@@ -352,10 +331,6 @@ int main(int argc, char *argv[]){
     argv_gui[8] = lineEditFloat6.text().toStdString();
 
     for (uint i = 3; i < 9; i++){std::replace(argv_gui[i].begin(), argv_gui[i].end(), ',', '.');}
-
-    std::cout << argv_gui[0] << argv_gui[1] << std::endl;
-    std::cout << argv_gui[2] << " " << argv_gui[3] << " " << argv_gui[4] << std::endl;
-    std::cout << argv_gui[5] << " " << argv_gui[6] << " " << argv_gui[7] << " " << argv_gui[8] << std::endl;
 
     continueButtonClicked(mode, argv_gui);
     });

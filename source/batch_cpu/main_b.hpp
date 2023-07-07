@@ -5,6 +5,11 @@
 #include <fstream>
 #include <tuple>
 #include <thread>
+#include <atomic>
+#include <chrono>
+
+#include <QProgressDialog>
+#include <QCoreApplication>
 
 #include <boost/spirit/include/karma.hpp>
 #include <boost/spirit/include/karma_real.hpp>
@@ -12,6 +17,8 @@
 #include "periodogram_b.hpp"
 
 using namespace std;
+
+std::atomic<int> progressValue(0), timeLeft(0);
 
 bool filter(float frequency, float power, float min_value, float filter_range, float amplitude, float min_amplitude, float max_amplitude){
 
@@ -107,10 +114,19 @@ for (i = 0; i < max_thread_number; ++i) wait(&status);
 const unsigned int files_per_cycle = 1024; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
 float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
 
+std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+std::chrono::steady_clock::time_point currentTime;
+std::chrono::duration<double> elapsedTime;
+
+
 
 for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
 
-if (string(argv[1]) == "-g") {std::cout <<std::fixed << std::setprecision(0) << "\r" << 1000*float(j)/float(file_count) << std::flush;}
+if (string(argv[1]) == "-g") {
+        currentTime = std::chrono::steady_clock::now();
+        elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
+        progressValue.store(static_cast<int>(1000 * static_cast<float>(j) / static_cast<float>(file_count)));
+        timeLeft.store(static_cast<int>(elapsedTime.count() * ((static_cast<float>(file_count) - static_cast<float>(j)) / static_cast<float>(j))));}
 else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
 
 
@@ -142,6 +158,6 @@ for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filte
 for (unsigned int i = 0; i < output_string.size(); i++) output_file << output_string[i] <<std::endl; output_string.clear();
 }
 
-if (string(argv[1]) == "-g") {std::cout << "\r" << "1000" << std::endl;}
+if (string(argv[1]) == "-g") {progressValue.store(static_cast<int>(1000)), timeLeft.store(static_cast<int>(0));}
 else {std::cout << "\r" << "Complete" << std::endl;}
 }
