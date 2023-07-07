@@ -20,7 +20,7 @@ struct quad {
 
 void main_peaks(int argc, char *argv[]){
 
-if (argc < 3 || argv[3][0] != '\0'){return;}
+if (argc < 3 || argv[3][0] == '\0'){return;}
 
 
 std::string file = argv[2]; //source file

@@ -18,20 +18,30 @@ using namespace std;
 
 void main_spectrum(int argc, char *argv[]){
 
-if (argc < 3 || argv[3][0] != '\0'){return;}
+std::cout << argc << argv[2] << std::endl;
+
+if (argc < 3 || argv[2][0] == '\0'){return;}
+
+std::cout << "Hello world" << std::endl;
 
 
 std::string file = argv[2]; //source file
 //defines variables used for calculations
 const std::string files_location = argv[2];
 
+std::cout << "Hello world" << std::endl;
+
 float min_frequency_temp = 0.003;
-if (argc > 3 && argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}
+if (argc < 3 || argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}
 const float min_frequency = min_frequency_temp;
+
+std::cout << "Hello world" << std::endl;
 
 float max_frequency_temp = 10.0;
 if (argc > 4 && argv[4][0] != '\0'){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
+
+std::cout << "Hello world" << std::endl;
 
 double step_size_0 = pow(0.5, 12);
 if (argc > 5 && argv[5][0] != '\0'){step_size_0 = pow(0.5,std::stoi(argv[5]));}
@@ -40,6 +50,8 @@ std::cout << "\n" "File location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
 std::cout << "Max frequency: " << max_frequency << "\n";
 std::cout << "Step size: " << step_size_0 << "\n";
+
+std::cout << "Hello world" << std::endl;
 
 //creates frequency array
 const unsigned int no_steps = (max_frequency - min_frequency)/step_size_0 + 1;
