@@ -43,7 +43,7 @@ void main_batch(int argc, char *argv[]){
 //defines and calculates constants used for calculations
 const std::string files_location = argv[2];
 
-if (argc < 3 || argv[3][0] == '\0'){return;}
+if (argc < 3){return;} // || argv[3][0] == '\0' - breaks gui
 
 float min_frequency_temp = 0.003;
 if (argc > 3 && argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}

@@ -20,7 +20,7 @@ void main_spectrum(int argc, char *argv[]){
 
 std::cout << argc << argv[2] << std::endl;
 
-if (argc < 3 || argv[2][0] == '\0'){return;}
+if (argc < 3){return;} // || argv[2][0] == '\0' - breaks gui
 
 std::cout << "Hello world" << std::endl;
 

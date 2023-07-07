@@ -28,7 +28,7 @@ std::string file = argv[2]; //source file
 const std::string files_location = argv[2];
 
 float min_frequency_temp = 0.003;
-if (argc > 3 && argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}
+if (argc > 3){min_frequency_temp = std::stof(argv[3]);}// && argv[3][0] != '\0' - breaks gui
 const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
