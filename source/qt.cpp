@@ -1,3 +1,12 @@
+/*
+
+
+
+}
+
+
+*/
+
 #include <QObject>
 #include <QApplication>
 #include <QWidget>
@@ -16,6 +25,7 @@
 #include <QMessageBox>
 #include <QDialog>
 #include <QPlainTextEdit>
+#include <QProgressBar>
 #include <QDialogButtonBox>
 #include <QFont>
 
@@ -33,9 +43,9 @@
 #include "spectrum/main_s.hpp"
 #include "help/help.hpp"
 
+QProgressBar* progressBar; QLabel* label;
 
-
-void showTextInSecondWindow(const std::string& text, int windowWidth, int windowHeight, const std::string& windowTitle) {
+void showText(const std::string& text, int windowWidth, int windowHeight, const std::string& windowTitle) {
     QDialog dialog;
     dialog.setWindowTitle(QString::fromStdString(windowTitle));
 
@@ -43,8 +53,7 @@ void showTextInSecondWindow(const std::string& text, int windowWidth, int window
     textEdit->setPlainText(QString::fromStdString(text));
     textEdit->setReadOnly(true);
 
-    // Set font to monospace
-    QFont font("Monospace");
+    QFont font("Monospace");  // Set font to monospace
     textEdit->setFont(font);
 
     QVBoxLayout* layout = new QVBoxLayout(&dialog);
@@ -59,6 +68,35 @@ void showTextInSecondWindow(const std::string& text, int windowWidth, int window
     dialog.exec();
 }
 
+void showProgress(int windowWidth, int windowHeight, const std::string& windowTitle) {
+    QDialog dialog;
+    dialog.setWindowTitle(QString::fromStdString(windowTitle));
+
+    progressBar = new QProgressBar(&dialog);
+    progressBar->setRange(0, 100);
+
+    label = new QLabel("Progress", &dialog);
+    label->setAlignment(Qt::AlignCenter);
+
+    // Set font to monospace
+    QFont font("Monospace");
+    label->setFont(font);
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->addWidget(progressBar);
+    layout->addWidget(label);
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, &dialog);
+    layout->addWidget(buttonBox);
+
+    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+
+    dialog.resize(windowWidth, windowHeight);
+    dialog.exec();
+}
+
+void setProgress(int value) {progressBar->setValue(value);} //idk what I'm doint here, but it's the only way I menaged to make progressbar work
+void setText(const std::string& text) {label->setText(QString::fromStdString(text));}
 
 void continueButtonClicked(int mode, std::string argv[]) {
 
@@ -79,7 +117,7 @@ void continueButtonClicked(int mode, std::string argv[]) {
 
         std::cout.rdbuf(coutbuf);
         std::string output = output_buffer.str();
-        showTextInSecondWindow(output, 360, 540, "glspeaks - peaks mode");
+        showText(output, 360, 540, "glspeaks - peaks mode");
     }
     else if (mode == 3) //slow
     {
@@ -94,15 +132,13 @@ void continueButtonClicked(int mode, std::string argv[]) {
 
         std::cout.rdbuf(coutbuf);
         std::string output = output_buffer.str();
-        showTextInSecondWindow(output, 880, 400, "glspeaks - help window");
+        showText(output, 880, 400, "glspeaks - help window");
 
     }
     else {
         QCoreApplication::quit();
     }
 }
-
-
 
 
 
