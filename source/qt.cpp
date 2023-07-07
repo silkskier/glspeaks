@@ -43,7 +43,6 @@
 #include "spectrum/main_s.hpp"
 #include "help/help.hpp"
 
-QProgressBar* progressBar; QLabel* label;
 
 void showText(const std::string& text, int windowWidth, int windowHeight, const std::string& windowTitle) {
     QDialog dialog;
@@ -68,35 +67,49 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
     dialog.exec();
 }
 
-void showProgress(int windowWidth, int windowHeight, const std::string& windowTitle) {
-    QDialog dialog;
-    dialog.setWindowTitle(QString::fromStdString(windowTitle));
+class ProgressBar {
+public:
+    ProgressBar(int windowWidth, int windowHeight, const std::string& windowTitle)
+        : dialog(new QDialog()), progressBar(new QProgressBar()), label(new QLabel())
+    {
+        dialog->setWindowTitle(QString::fromStdString(windowTitle));
+        progressBar->setRange(0, 100);
+        label->setAlignment(Qt::AlignCenter);
 
-    progressBar = new QProgressBar(&dialog);
-    progressBar->setRange(0, 100);
+        QFont font("Monospace");
+        label->setFont(font);
 
-    label = new QLabel("Progress", &dialog);
-    label->setAlignment(Qt::AlignCenter);
+        QVBoxLayout* layout = new QVBoxLayout(dialog);
+        layout->addWidget(progressBar);
+        layout->addWidget(label);
 
-    // Set font to monospace
-    QFont font("Monospace");
-    label->setFont(font);
+        QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, dialog);
+        layout->addWidget(buttonBox);
 
-    QVBoxLayout* layout = new QVBoxLayout(&dialog);
-    layout->addWidget(progressBar);
-    layout->addWidget(label);
+        QObject::connect(buttonBox, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, &dialog);
-    layout->addWidget(buttonBox);
+        dialog->resize(windowWidth, windowHeight);
+    }
 
-    QObject::connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    void show() {
+        dialog->exec();
+    }
 
-    dialog.resize(windowWidth, windowHeight);
-    dialog.exec();
-}
+    void setProgress(int value) {
+        progressBar->setValue(value);
+    }
 
-void setProgress(int value) {progressBar->setValue(value);} //idk what I'm doint here, but it's the only way I menaged to make progressbar work
-void setText(const std::string& text) {label->setText(QString::fromStdString(text));}
+    void setText(const std::string& text) {
+        label->setText(QString::fromStdString(text));
+    }
+
+private:
+    QDialog* dialog;
+    QProgressBar* progressBar;
+    QLabel* label;
+};
+
+
 
 void continueButtonClicked(int mode, std::string argv[]) {
 
@@ -109,6 +122,9 @@ void continueButtonClicked(int mode, std::string argv[]) {
     {
         char* argv_spectrum[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
         main_spectrum(6, argv_spectrum);
+        std::stringstream().swap(output_buffer);
+        std::string output = "GLS power spectrum of selected file saved to " + argv[0] + "_output.tsv";
+        showText(output, 600, 60, "glspeaks - spectrum mode");
     }
     else if (mode == 2) //peaks
     {
@@ -122,9 +138,18 @@ void continueButtonClicked(int mode, std::string argv[]) {
     else if (mode == 3) //slow
     {
         char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
-        main_batch(10, argv_batch);
+        std::thread t(main_batch, 10, argv_batch);
+        ProgressBar progressBar(500, 500, "glspeaks - batch mode (slow)");
+        progressBar.show();
+        progressBar.setProgress(50);
+        progressBar.setText("Computation in progress, 50% complete");
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::stringstream().swap(output_buffer);
 
 
+
+        t.join();
     }
     else if (mode == 4) //help
     {
@@ -135,9 +160,7 @@ void continueButtonClicked(int mode, std::string argv[]) {
         showText(output, 880, 400, "glspeaks - help window");
 
     }
-    else {
         QCoreApplication::quit();
-    }
 }
 
 
