@@ -110,7 +110,7 @@ void continueButtonClicked(int mode, std::string argv[]) {
     else if (mode == 3) //slow
     {
     char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
-    std::thread t(main_batch, 10, argv_batch);
+    std::thread t(main_batch, 10, std::ref(argv_batch));
     QProgressDialog progressDialog("Computation in progress", "Cancel", 0, 1000);
     progressDialog.setWindowModality(Qt::WindowModal);
 

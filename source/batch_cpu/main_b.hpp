@@ -81,7 +81,7 @@ float *frequencies = (float *) malloc(no_steps * sizeof(float)); // creates freq
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size * step;} //fills frequency vector
 
 //creates files array
-std::vector<std::string> files;
+std::vector<std::filesystem::path> files;
 auto directory_iterator = std::filesystem::directory_iterator(argv[2]);
 unsigned int file_count = 0;
 for (auto& entry : directory_iterator)
@@ -90,7 +90,7 @@ for (auto& entry : directory_iterator)
 std::cout <<"Number of files in directory: " << file_count << "\n" << std::endl;
 // for(unsigned int i=0; i < files.size(); i++) std::cout << files.at(i) << ','; //prints list of files
 
-string path = filesystem::path(files_location).parent_path(); string output_path = path + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
+std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
 //output_file << "<path_to_file>\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
 

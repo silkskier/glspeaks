@@ -99,7 +99,8 @@ gls_s(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers);
 
 //        for (unsigned int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 // std::cout<< std::filesystem::path(file).filesystem::path::parent_path() <<std::endl; //prints input files directory
-string path = std::filesystem::path(file); string output_path = path + "_output.tsv";
+//std::filesystem::path path = std::filesystem::path(file);
+std::filesystem::path output_path = std::filesystem::path (std::filesystem::path(file).string() + "_output.tsv");
 
 
 

@@ -17,7 +17,7 @@ using namespace std;
 };*/
 
 
-std::tuple<float, float, float> periodogram(float* frequencies_array, float step_size, int number_of_steps, std::string in_file){
+std::tuple<float, float, float> periodogram(float* frequencies_array, float step_size, int number_of_steps, std::filesystem::path in_file){
 
 
 std::vector<std::vector<float>> data; std::string line;
