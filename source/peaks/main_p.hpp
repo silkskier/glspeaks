@@ -20,12 +20,13 @@ struct quad {
 
 void main_peaks(int argc, char *argv[]){
 
-if (argc < 3 || argv[3][0] == '\0'){return;}
+if (argc < 3){return;} // || argv[3][0] //breaks gui
 
 
 std::string file = argv[2]; //source file
 //defines variables used for calculations
 const std::string files_location = argv[2];
+
 
 float min_frequency_temp = 0.003;
 if (argc > 3){min_frequency_temp = std::stof(argv[3]);}// && argv[3][0] != '\0' - breaks gui
