@@ -22,7 +22,7 @@ rm -r ~/glspeaks
 ```
 ##### For version 1.0.0 and later main package will switch to GNU Guix (a distribution-agnostic package manager). [PPA for Debian-based systems](https://silkskier.github.io/ppa/), as well as static executable with installer script for incompatible distros and FreeBSD, will be available as an alternative. Windows binary currently does not hold a high priority due to performance loss in comparison to running Linux binary with WSL2 as well, as simple compilation failure (caused by std::thread) happening during attempted compilation with MinGW-w64.
 
-ICPX (Intel One Api C++ Compiler) is a recommended compiler choice due to measured significant performance advantage over alternatives, however, g++ with O3 optimization level can be used to reduce output binary size from ~ 700 kB to less than 200 kB at a cost of ~15% increase of execution time.
+ICPX (Intel oneAPI C++ Compiler) is a recommended compiler choice due to measured significant performance advantage over alternatives, however, g++ with O3 optimization level can be used to reduce output binary size from ~ 700 kB to less than 200 kB at a cost of ~15% increase of execution time.
 
 The program is designed to work with data stored on flash memory - on HDDs accessing data 'all over the place' due to the usage of OpenMP to parse the input may cause significant overhead. Implementation of buffering algorithm for HDD drives is possible, however, currently, its implementation is not planned due to added complication of the project and limited impact for possible real-life implementations.
 
