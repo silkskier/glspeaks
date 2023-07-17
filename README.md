@@ -16,4 +16,4 @@ make
 sudo make install
 rm -r ~/glspeaks
 ```
-##### For versions 1.0.0 and later main packaging system will be changed to GNU Guix (a distribution-agnostic package manager).
+##### For version 1.0.0 and later main package will switch to GNU Guix (a distribution-agnostic package manager). [PPA for Debian-based systems](https://silkskier.github.io/ppa/), as well as static executable with installer script for incompatible distros and FreeBSD, will be available as an alternative. Windows binary currently does not hold a high priority due to performance loss in comparison to running Linux binary with WSL2 as well, as simple compilation failure (caused by std::thread) happening during attempted compilation with MinGW-w64.
