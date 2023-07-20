@@ -124,4 +124,5 @@ ofstream output_file(output_path); //creates and opens output file
 
 for (unsigned int i = 0; i < no_steps; i++) output_file << output_string[i] << "\n";
 
-}
+output_file.close(); return;}
+

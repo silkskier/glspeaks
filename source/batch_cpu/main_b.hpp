@@ -160,4 +160,6 @@ for (unsigned int i = 0; i < output_string.size(); i++) output_file << output_st
 
 if (string(argv[1]) == "-g") {progressValue.store(static_cast<int>(1000)), timeLeft.store(static_cast<int>(0));}
 else {std::cout << "\r" << "Complete" << std::endl;}
-}
+
+
+output_file.close(); return;}

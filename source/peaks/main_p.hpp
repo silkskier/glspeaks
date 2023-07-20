@@ -140,4 +140,4 @@ for (unsigned int i = 0; i < 20; i++) {
 
 }}
 free(frequencies); free(powers); free(amplitudes);
-}
+return;}

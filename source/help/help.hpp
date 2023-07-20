@@ -14,4 +14,4 @@ std::cout << "\t-p, --peaks \t Prints 20 best-fitting periods of brightness chan
 std::cout << "\t-b, --batch \t Calculates best-fitting periods of brightness change for all the data files \n\t in specified directory and write the filtered results into tsv file.\n" << std::endl;
 std::cout << "\t-h, --help \t Prints help page (WIP).\n" << std::endl;
 
-}
+return;}
