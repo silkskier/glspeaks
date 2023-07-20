@@ -1,3 +1,6 @@
+#ifndef QT_H
+#define QT_HPP
+
 #include <QObject>
 #include <QApplication>
 #include <QWidget>
@@ -361,3 +364,5 @@ int qt(int argc, char *argv[]){
 
     return app.exec();
 }
+
+#endif
