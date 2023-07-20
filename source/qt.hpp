@@ -88,21 +88,25 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
 
 void continueButtonClicked(int mode, std::string argv[]) {
 
-    std::stringstream output_buffer;
-    std::streambuf *coutbuf = std::cout.rdbuf();
-    std::cout.rdbuf(output_buffer.rdbuf());
 
 
     if (mode == 1) //spectrum
     {
         char* argv_spectrum[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
         main_spectrum(6, argv_spectrum);
-        std::stringstream().swap(output_buffer);
+
         std::string output = "GLS power spectrum of selected file saved to " + argv[0] + "_output.tsv";
         showText(output, 600, 60, "glspeaks - spectrum mode");
+
+
     }
     else if (mode == 2) //peaks
     {
+
+        std::stringstream output_buffer;
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(output_buffer.rdbuf());
+
         char* argv_peaks[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
         main_peaks(6, argv_peaks);
 
@@ -124,17 +128,20 @@ void continueButtonClicked(int mode, std::string argv[]) {
 
     progressDialog.exec();
 
-    std::stringstream().swap(output_buffer);
+    //std::stringstream().swap(output_buffer);
     std::string output = "List of periodic variable candidates saved to\n" + argv[1] + "/GLS_output.tsv";
-    showText(output, 600, 60, "glspeaks - spectrum mode");
+    showText(output, 600, 60, "glspeaks - batch mode");
 
     t.join();
-
-
 
     }
     else if (mode == 4) //help
     {
+
+        std::stringstream output_buffer;
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(output_buffer.rdbuf());
+
         print_help();
 
         std::cout.rdbuf(coutbuf);
