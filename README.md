@@ -15,7 +15,7 @@ wget https://github.com/silkskier/glspeaks/releases/download/v1.0.4-alpha/glspea
 ```bash
 git clone https://github.com/silkskier/glspeaks
 cd glspeaks
-cmake
+cmake .
 make
 sudo make install
 rm -r ~/glspeaks
