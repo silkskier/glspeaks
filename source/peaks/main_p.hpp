@@ -22,22 +22,22 @@ void main_peaks(int argc, char *argv[]){
 
 if (argc < 3){return;} // || argv[3][0] //breaks gui
 
-
+std::string mode(argv[1]);
 std::string file = argv[2]; //source file
 //defines variables used for calculations
 const std::string files_location = argv[2];
 
 
 float min_frequency_temp = 0.003;
-if (argc > 3){min_frequency_temp = std::stof(argv[3]);}// && argv[3][0] != '\0' - breaks gui
+if (argc > 3 && ((mode != "-g" && argv[3][0]) != '\0') || (mode == "-g" && argv[3][0]) != '\0'){min_frequency_temp = std::stof(argv[3]);}
 const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
-if (argc > 4 && argv[4][0] != '\0'){max_frequency_temp = std::stof(argv[4]);}
+if (argc > 4 && ((mode != "-g" && argv[4][0]) != '\0') || (mode == "-g" && argv[4][0]) != '\0'){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
 
 double step_size_0 = pow(0.5, 12);
-if (argc > 5 && argv[5][0] != '\0'){step_size_0 = pow(0.5,std::stoi(argv[5]));}
+if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
     //std::cout << "\n" "Directory location: " << files_location << "\n";
     //std::cout << "Min frequency: " << min_frequency << "\n";

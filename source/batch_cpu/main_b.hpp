@@ -39,31 +39,39 @@ bool filter(float frequency, float power, float min_value, float filter_range, f
 
 void main_batch(int argc, char *argv[]){
 
+std::string mode(argv[1]);
+
 
 //defines and calculates constants used for calculations
 const std::string files_location = argv[2];
 
 if (argc < 3){return;} // || argv[3][0] == '\0' - breaks gui
 
+//if (mode == "-g"){printf("true");}
+
 float min_frequency_temp = 0.003;
-if (argc > 3 && argv[3][0] != '\0'){min_frequency_temp = std::stof(argv[3]);}
+if (argc > 3 && ((mode != "-g" && argv[3][0]) != '\0') || (mode == "-g" && argv[3][0]) != '\0'){min_frequency_temp = std::stof(argv[3]);}
 const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
-if (argc > 4 && argv[4][0] != '\0'){max_frequency_temp = std::stof(argv[4]);}
+if (argc > 4 && ((mode != "-g" && argv[4][0]) != '\0') || (mode == "-g" && argv[4][0]) != '\0'){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
 
 
 float step_size = pow(0.5, 12);
-if (argc > 5 && argv[5][0] != '\0'){step_size = pow(0.5,std::stoi(argv[5]));}
+if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){step_size = pow(0.5,std::stoi(argv[5]));}
+
 float min_power = 1;
-if (argc > 6 && argv[6][0] != '\0'){min_power = std::stof(argv[6]);}
+if (argc > 6 && ((mode != "-g" && argv[6][0]) != '\0') || (mode == "-g" && argv[6][0]) != '\0'){min_power = std::stof(argv[6]);}
+
 float filter_range = 0.04;
-if (argc > 7 && argv[7][0] != '\0'){filter_range = std::stof(argv[7]);}
+if (argc > 7 && ((mode != "-g" && argv[7][0]) != '\0') || (mode == "-g" && argv[7][0]) != '\0'){filter_range = std::stof(argv[7]);}
+
 float min_amplitude = 0.01;
-if (argc > 8 && argv[8][0] != '\0'){min_amplitude = std::stof(argv[8]);}
+if (argc > 8 && ((mode != "-g" && argv[8][0]) != '\0') || (mode == "-g" && argv[8][0]) != '\0'){min_amplitude = std::stof(argv[8]);}
+
 float max_amplitude = 8;
-if (argc > 9 && argv[9][0] != '\0'){max_amplitude = std::stof(argv[9]);}
+if (argc > 9 && ((mode != "-g" && argv[9][0]) != '\0') || (mode == "-g" && argv[9][0]) != '\0'){max_amplitude = std::stof(argv[9]);}
 
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";

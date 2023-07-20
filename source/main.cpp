@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
 
     else if (option == "-p" || option == "--peaks") {
-        if (argc < 5) {
+        if (argc < 3) {
             std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to input file> <Min frequency> <Max frequency> <Resolution>\n" << std::endl;
             return 1;
         }
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     }
 
     else if (option == "-b" || option == "--batch") {
-        if (argc < 5) {
+        if (argc < 3) {
             std::cout << "\n Usage: " << argv[0] << " " << argv[1] << " <Path to catalog with input data files> <Min frequency> <Max frequency> <Resolution> <Max/Avg> <Frequency filter range> <Min amplitude> <Max amplitude>\n" << std::endl;
             return 1;
         }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         }
-        else {
+        if (argc > 4) {
             if (std::stof(argv[4]) > pow(2, 23 - 12)) {
                 std::cout << "Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'" << std::endl;
                 return 1;
