@@ -38,6 +38,11 @@ func main() {
 		return}
 
 	// Print the array.
-		fmt.Println(data)
+		//fmt.Println(data)
 		//fmt.Println(data[3][3])
+
+
+
+
+	for _, row := range data {fmt.Println(row)}
 }
