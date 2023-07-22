@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sort"
 	"path"
-//	"strconv"
+	"strconv"
 
 //	"gonum.org/v1/plot"
 //	"gonum.org/v1/plot/plotter"
@@ -19,7 +19,8 @@ import (
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: glspeaksplot <filename.tsv>")
-		return}
+		return
+	}
 
 	fileName := os.Args[1]
 	parentDir := path.Dir(fileName)
@@ -36,48 +37,96 @@ func main() {
 	var data [][]string
 
 	// Open the file for reading.
-	file, err := os.Open(fileName)
+	file_tsv, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return
 	}
-	defer file.Close()
+	defer file_tsv.Close()
 
-
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(file_tsv)
 
 	// Read each line and split it into fields based on tabs.
 	for scanner.Scan() {
-		line := scanner.Text()
-		fields := strings.Split(line, "\t")
-		data = append(data, fields)}
+		file := scanner.Text()
+		fields := strings.Split(file, "\t")
+		data = append(data, fields)
+	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading file:", err)
-		return}
+		return
+	}
 
-	for _, row := range data {row[4] = strings.ReplaceAll(row[4], ".", "")
-	if len(row[4]) > 4 {row[4] = "9999"}}
+	for _, file := range data {
+		file[4] = strings.ReplaceAll(file[4], ".", "")
+		if len(file[4]) > 4 {
+			file[4] = "9999"
+		}
+	}
 
 	sort.Slice(data, func(i, j int) bool {
-		return data[i][4] > data[j][4]})
+		return data[i][4] > data[j][4]
+	})
 
 	// Print the array.
-	//fmt.Println(data)
-	for _, row := range data {fmt.Println(row)}
-
-
-
-	for _, row := range data { //main loop
-		filename := strings.TrimSuffix(path.Base(row[0]), path.Ext(row[0]))
-
-		plotname := plotsDir + "/" + row[4] + "_" + filename + ".png"
-		fmt.Println(plotname)
-
-		photometry_location := row[0]
-
-
+	// fmt.Println(data)
+	for _, file := range data {
+		fmt.Println(file)
 	}
 
 
-}
+
+
+
+
+	for _, file := range data {	//main loop
+	filename := strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0]))
+
+	plotname := plotsDir + "/" + file[4] + "_" + filename + ".png"
+	fmt.Println(plotname)
+
+	photometry_location := strings.Trim(file[0], `"`)
+
+	var local_data [][]float64
+	// Open the file for reading.
+	loc_file, loc_err := os.Open(photometry_location)
+	if loc_err != nil {
+		fmt.Println("Error opening file:", loc_err)
+		return
+	}
+	defer loc_file.Close()
+
+	local_scanner := bufio.NewScanner(loc_file)
+	// Read each line and split it into fields based on spaces.
+	for local_scanner.Scan() {
+		line := local_scanner.Text()
+		local_fields := strings.Split(line, " ")
+
+		// Convert the string fields to float64 values.
+		var floatFields []float64
+		for _, field := range local_fields {
+			val, err := strconv.ParseFloat(field, 64)
+			if err != nil {
+				fmt.Println("Error parsing float:", err)
+				return
+			}
+			floatFields = append(floatFields, val)
+		}
+
+		local_data = append(local_data, floatFields)
+	}
+
+	if err := local_scanner.Err(); err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	// Print the array.
+	// fmt.Println(local_data)
+	for _, line := range local_data {
+		fmt.Println(line)
+	}
+
+
+}}
