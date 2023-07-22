@@ -61,4 +61,16 @@ func main() {
 	// Print the array.
 	//fmt.Println(data)
 	for _, row := range data {fmt.Println(row)}
+
+
+
+	for _, row := range data {
+
+	power := row[4]
+	filename := strings.TrimSuffix(path.Base(row[0]), path.Ext(row[0]))
+
+	//fmt.Println(power + "_" + filename)
+	}
+
+
 }
