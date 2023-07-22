@@ -10,6 +10,10 @@ import (
 //	"strconv"
 
 //	"gonum.org/v1/plot"
+//	"gonum.org/v1/plot/plotter"
+//	"gonum.org/v1/plot/plotutil"
+//	"gonum.org/v1/plot/vg"
+//	"gonum.org/v1/plot/vg/draw"
 )
 
 func main() {
@@ -64,12 +68,15 @@ func main() {
 
 
 
-	for _, row := range data {
+	for _, row := range data { //main loop
+		filename := strings.TrimSuffix(path.Base(row[0]), path.Ext(row[0]))
 
-	power := row[4]
-	filename := strings.TrimSuffix(path.Base(row[0]), path.Ext(row[0]))
+		plotname := plotsDir + "/" + row[4] + "_" + filename + ".png"
+		fmt.Println(plotname)
 
-	//fmt.Println(power + "_" + filename)
+		photometry_location := row[0]
+
+
 	}
 
 
