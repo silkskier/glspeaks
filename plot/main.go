@@ -9,11 +9,11 @@ import (
 	"path"
 	"strconv"
 
-//	"gonum.org/v1/plot"
-//	"gonum.org/v1/plot/plotter"
-//	"gonum.org/v1/plot/plotutil"
-//	"gonum.org/v1/plot/vg"
-//	"gonum.org/v1/plot/vg/draw"
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
 )
 
 func main() {
@@ -82,9 +82,10 @@ func main() {
 
 	for _, file := range data {	//main loop
 	filename := strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0]))
+	//frequency := file[1]
 
 	plotname := plotsDir + "/" + file[4] + "_" + filename + ".png"
-	fmt.Println(plotname)
+	//fmt.Println(plotname)
 
 	photometry_location := strings.Trim(file[0], `"`)
 
@@ -122,10 +123,39 @@ func main() {
 		return
 	}
 
-	// Print the array.
-	// fmt.Println(local_data)
-	for _, line := range local_data {
-		fmt.Println(line)
+	// Print the array	for _, line := range local_data {fmt.Println(line)}
+
+
+
+		//Plot the measurements
+		plot_data := make(plotter.XYs, len(local_data))
+	for i, line := range local_data {
+		plot_data[i].X = line[0]
+		plot_data[i].Y = line[1]
+	}
+
+	plt := plot.New()
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the scatter plot style to use filled circles.
+	s, err := plotter.NewScatter(plot_data)
+	if err != nil {
+		panic(err)
+	}
+	s.GlyphStyle.Shape = draw.CircleGlyph{}
+	s.GlyphStyle.Color = plotutil.DefaultColors[0]
+
+	plt.Add(s)
+
+	// Set the plot size in pixels (width x height).
+	widthPixels, heightPixels := 600, 300
+
+	// Save the plot to a file with the specified size in pixels.
+	err = plt.Save(vg.Length(widthPixels), vg.Length(heightPixels), plotname)
+	if err != nil {
+		panic(err)
 	}
 
 
