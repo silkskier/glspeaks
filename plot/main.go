@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+//	"strconv"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go <filename.tsv>")
+		fmt.Println("Usage: glspeaksplot <filename.tsv>")
 		return}
 
 	fileName := os.Args[1]
