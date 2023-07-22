@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sort"
+	"path"
 //	"strconv"
 
 //	"gonum.org/v1/plot"
@@ -16,6 +18,17 @@ func main() {
 		return}
 
 	fileName := os.Args[1]
+	parentDir := path.Dir(fileName)
+
+	plotsDir := path.Join(parentDir, "plots")
+	err := os.Mkdir(plotsDir, 0755) // 0755 sets permissions for the new directory
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
+
+
+
 	var data [][]string
 
 	// Open the file for reading.
@@ -39,12 +52,13 @@ func main() {
 		fmt.Println("Error reading file:", err)
 		return}
 
+	for _, row := range data {row[4] = strings.ReplaceAll(row[4], ".", "")
+	if len(row[4]) > 4 {row[4] = "9999"}}
+
+	sort.Slice(data, func(i, j int) bool {
+		return data[i][4] > data[j][4]})
+
 	// Print the array.
-		//fmt.Println(data)
-		//fmt.Println(data[3][3])
-
-
-
-
+	//fmt.Println(data)
 	for _, row := range data {fmt.Println(row)}
 }
