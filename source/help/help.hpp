@@ -4,7 +4,7 @@
 void print_help(){
 
 	printf("\n");
-std::cout<< " Generalised Lomb-Scargle periodogram for variable stars, version alpha 1.0.4\n"<<" Based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS).\n" <<" GitHub page of the project: https://github.com/silkskier/glspeaks \n" <<std::endl;
+std::cout<< " Generalised Lomb-Scargle periodogram for variable stars, version beta 1.0.3\n"<<" Based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS).\n" <<" GitHub page of the project: https://github.com/silkskier/glspeaks \n" <<std::endl;
 
 
 std::cout << " Usage: glspeaks" << " [OPTION] \n" << std::endl;
