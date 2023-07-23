@@ -9,16 +9,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(CMAKE_CXX_COMPILER "icpx")
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+# Set the path to the Qt5 installation
+#set(CMAKE_PREFIX_PATH "/home/kacper/Qt5static/5.15" CACHE PATH "Qt5 installation path")
 
+# Enforce the use of static Qt5 libraries
+#set(Qt5_USE_STATIC_LIBS ON)
+
+# Find the required Qt5 components
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OpenMP REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -fopenmp")
+# Set compiler flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -fopenmp")# -static
 
+# Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
-target_include_directories(glspeaks PRIVATE source)
-target_link_libraries(glspeaks PRIVATE OpenMP::OpenMP_CXX Qt5::Widgets)
 
+# Set the AUTOMOC flag for the target
+set_property(TARGET glspeaks PROPERTY AUTOMOC ON)
+
+# Link against the required libraries
+target_link_libraries(glspeaks PRIVATE
+    Qt5::Widgets
+    OpenMP::OpenMP_CXX
+)
+
+# Install the executable to /usr/local/bin
 install(TARGETS glspeaks DESTINATION /usr/local/bin/)
