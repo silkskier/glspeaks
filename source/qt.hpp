@@ -121,11 +121,11 @@ void continueButtonClicked(int mode, std::string argv[]) {
         std::string output = output_buffer.str();
         showText(output, 360, 540, "glspeaks - peaks mode");
     }
-    else if (mode == 3) //slow
-    {
+    else if (mode == 3){ //slow
     if (argv[1].empty()){
     showText("Error: Input directory not specified", 350, 60, "glspeaks - peaks mode");
     return;}
+
 
     char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
     std::thread t(main_batch, 10, argv_batch);

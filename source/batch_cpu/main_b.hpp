@@ -7,6 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include <locale>
 
 #include <QProgressDialog>
 #include <QCoreApplication>
@@ -39,6 +40,8 @@ bool filter(float frequency, float power, float min_value, float filter_range, f
 
 void main_batch(int argc, char *argv[]){
 
+std::locale::global(std::locale("C"));
+
 std::string mode(argv[1]);
 
 
@@ -55,14 +58,16 @@ const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
 if (argc > 4 && ((mode != "-g" && argv[4][0]) != '\0') || (mode == "-g" && argv[4][0]) != '\0'){max_frequency_temp = std::stof(argv[4]);}
-const float max_frequency = max_frequency_temp;
+const float max_frequency = max_frequency_temp; //0
 
 
 float step_size = pow(0.5, 12);
 if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){step_size = pow(0.5,std::stoi(argv[5]));}
 
-float min_power = 1;
-if (argc > 6 && ((mode != "-g" && argv[6][0]) != '\0') || (mode == "-g" && argv[6][0]) != '\0'){min_power = std::stof(argv[6]);}
+float min_power_temp = 1;
+if (argc > 6 && ((mode != "-g" && argv[6][0]) != '\0') || (mode == "-g" && argv[6][0]) != '\0'){min_power_temp = std::stof(argv[6]);}
+
+const float min_power = min_power_temp;
 
 float filter_range = 0.04;
 if (argc > 7 && ((mode != "-g" && argv[7][0]) != '\0') || (mode == "-g" && argv[7][0]) != '\0'){filter_range = std::stof(argv[7]);}
@@ -81,7 +86,7 @@ const unsigned int no_steps = (max_frequency - min_frequency)/step_size + 1;
 std::cout << "Number of steps: " << no_steps << "\n";
 std::cout << "Required avg/max power: " << min_power << "\n";
 std::cout << "Frequency filter range: " << filter_range << "\n";
-std::cout << "Amplitudes range: " << "[" << min_amplitude << " , " << max_amplitude << "]" << "\n";
+std::cout << "Amplitude range: " << "[" << min_amplitude << " , " << max_amplitude << "]" << "\n";
 
 //const int max_thread_number = std::thread::hardware_concurrency();
 
@@ -147,6 +152,8 @@ for (unsigned int i = j; i < min(j + files_per_cycle, file_count) ; i++)
 
 //for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true)
 //{output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}
+
+output_file << "file	frequency	period	amplitude	power" <<std::endl;
 
 std::vector<std::string> output_string(files_per_cycle);
 #pragma omp parallel for

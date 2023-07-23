@@ -1,6 +1,8 @@
 #include "qt.hpp"
 
 int main(int argc, char* argv[]) {
+
+
     if (argc < 2) {
         printf("\n Generalised Lomb-Scargle periodogram for variable stars, version alpha 1.0.4\n");
         printf(" Based on GLS algorithm by Mathias Zechmeister (https://github.com/mzechmeister/GLS).\n");
@@ -34,7 +36,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         }
-        else {
+        if (argc > 4) {
             if (std::stof(argv[4]) > pow(2, 23 - 12)) {
                 std::cout << "Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations" << std::endl;
                 return 1;
@@ -62,7 +64,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         }
-        else {
+        if (argc > 4) {
             if (std::stof(argv[4]) > pow(2, 23 - 12)) {
                 std::cout << "Error - glspeaks' --text='Max frequency greater, than 2^(23 - [Resolution]) unsupported due to 32-bit float limitations'" << std::endl;
                 return 1;

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm> //for sorting
+#include <locale>
 
 #include <boost/spirit/include/qi.hpp>
 
@@ -19,6 +20,8 @@ struct quad {
 };
 
 void main_peaks(int argc, char *argv[]){
+
+std::locale::global(std::locale("C"));
 
 if (argc < 3){return;} // || argv[3][0] //breaks gui
 

@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <locale>
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/karma.hpp>
@@ -17,6 +18,8 @@ using namespace std;
 
 
 void main_spectrum(int argc, char *argv[]){
+
+std::locale::global(std::locale("C"));
 
 std::cout << argc << argv[2] << std::endl;
 
