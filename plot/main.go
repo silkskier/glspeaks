@@ -127,6 +127,9 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	plt.X.Min = 0
 	plt.X.Max = 2
 
+	plt.X.Label.Text = "Label"
+	plt.Y.Label.Text = "Magnitude"
+
 	plt.Add(s)
 
 	// Customize the tick labels with a custom formatter
