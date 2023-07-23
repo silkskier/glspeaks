@@ -328,7 +328,7 @@ int qt(int argc, char *argv[]){
         lineEditFloat5.setEnabled(checked);
         lineEditFloat6.setEnabled(checked);
         radio8.setEnabled(checked);
-        radio10.setEnabled(!checked); //radio10.setEnabled(!checked); //change after implementing binary interface for batch modes
+        radio10.setEnabled(false); //radio10.setEnabled(!checked); //change after implementing binary interface for batch modes
     });
 
 QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checked) {
