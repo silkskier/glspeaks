@@ -36,26 +36,3 @@ target_link_libraries(glspeaks PRIVATE
 
 # Install the executable to /usr/local/bin
 install(TARGETS glspeaks DESTINATION /usr/local/bin/)
-
-add_custom_target(install_target
-    COMMAND make -f /path/to/plot/makefile install
-    DEPENDS glspeaks
-    COMMENT "Running make install for plotter"
-)
-
-add_custom_target(uninstall_target
-    COMMAND make -f /path/to/plot/makefile uninstall
-    DEPENDS glspeaks
-    COMMENT "Running make uninstall for plotter"
-)
-
-add_custom_target(make_target
-    COMMAND make -f /path/to/plot/makefile
-    DEPENDS glspeaks
-    COMMENT "Running make for plotter"
-)
-
-# Adding the custom targets to the default make target
-add_custom_target(install DEPENDS install_target)
-add_custom_target(uninstall DEPENDS uninstall_target)
-add_custom_target(make DEPENDS make_target)
