@@ -17,7 +17,6 @@ import (
 	"gonum.org/v1/plot/vg/draw"
 )
 
-// customYTicks is a custom tick formatter for the Y-axis
 type customYTicks struct{}
 
 // Ticks implements the plot.Ticker interface
@@ -26,7 +25,25 @@ func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 
 	// Calculate the desired tick spacing based on the range of Y-axis values
 	rangeY := max - min
-	tickSpacing := rangeY / 7.001 // Eight ticks between min and max
+	tickSpacing := rangeY * 0.124755859375 // Eight ticks between min and max
+
+	for v := min; v <= max; v += tickSpacing {
+		label := fmt.Sprintf("%.2f", math.Abs(v))
+		tick := plot.Tick{Value: v, Label: label}
+		ticks = append(ticks, tick)
+	}
+	return ticks
+}
+
+type customXTicks struct{}
+
+// Ticks implements the plot.Ticker interface
+func (customXTicks) Ticks(min, max float64) [] plot.Tick {
+	ticks := make([]plot.Tick, 0)
+
+	// Calculate the desired tick spacing based on the range of Y-axis values
+	rangeX := max - min
+	tickSpacing := rangeX * 0.124755859375 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
 		label := fmt.Sprintf("%.2f", math.Abs(v))
@@ -185,9 +202,9 @@ func main() {
 
 	plt.Add(s)
 
-	// Customize the Y-axis tick labels with a custom formatter
+	// Customize the tick labels with a custom formatter
 	plt.Y.Tick.Marker = customYTicks{}
-
+	plt.X.Tick.Marker = customXTicks{}
 
 
 	// Set the plot size in pixels (width x height).
