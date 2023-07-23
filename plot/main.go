@@ -21,12 +21,12 @@ import (
 type customYTicks struct{}
 
 // Ticks implements the plot.Ticker interface
-func (customYTicks) Ticks(min, max float64) []plot.Tick {
+func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 	ticks := make([]plot.Tick, 0)
 
 	// Calculate the desired tick spacing based on the range of Y-axis values
 	rangeY := max - min
-	tickSpacing := rangeY / 7.02 // Four ticks between min and max
+	tickSpacing := rangeY / 7.001 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
 		label := fmt.Sprintf("%.2f", math.Abs(v))
@@ -79,12 +79,13 @@ func main() {
 		return
 	}
 
+
 	for _, file := range data {
 		file[4] = strings.ReplaceAll(file[4], ".", "")
-		if len(file[4]) > 5 {
-			file[4] = "99999"
-		}
-	}
+		if len(file[4]) > 6 {
+			file[4] = "999999"}}
+
+	for _, file := range data {file[4] = file[4][:len(file[4])-2]}
 
 	sort.Slice(data, func(i, j int) bool {
 		return data[i][4] > data[j][4]
