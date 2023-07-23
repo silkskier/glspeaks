@@ -1,5 +1,5 @@
 all:
-	go build -o glspeaksplot main.go # -compiler=gccgo -gccgoflags="-O3"
+	go build -o glspeaksplot main.go
 install:
 	cp -t /usr/local/bin glspeaksplot
 uninstall:
