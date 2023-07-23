@@ -132,6 +132,7 @@ std::chrono::steady_clock::time_point currentTime;
 std::chrono::duration<double> elapsedTime;
 
 
+output_file << "file	frequency	period	amplitude	power" <<std::endl;
 
 for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
 
@@ -143,17 +144,13 @@ if (string(argv[1]) == "-g") {
 else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
 
 
-
 #pragma omp parallel for
 for (unsigned int i = j; i < min(j + files_per_cycle, file_count) ; i++)
 {auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]); best_frequencies[i] = frequency, amplitudes[i] =  amplitude, powers[i] =  max_power;}
 
 
-
 //for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true)
 //{output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}
-
-output_file << "file	frequency	period	amplitude	power" <<std::endl;
 
 std::vector<std::string> output_string(files_per_cycle);
 #pragma omp parallel for
