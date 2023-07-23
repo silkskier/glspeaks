@@ -92,6 +92,10 @@ void continueButtonClicked(int mode, std::string argv[]) {
 
     if (mode == 1) //spectrum
     {
+        if (argv[0].empty()){
+        showText("Error: Input file not specified", 300, 60, "glspeaks - spectrum mode");
+        return;}
+
         char* argv_spectrum[] = {"glspeaks", "-g", &*argv[0].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin()};
         main_spectrum(6, argv_spectrum);
 
@@ -102,6 +106,9 @@ void continueButtonClicked(int mode, std::string argv[]) {
     }
     else if (mode == 2) //peaks
     {
+        if (argv[0].empty()){
+        showText("Error: Input file not specified", 300, 60, "glspeaks - peaks mode");
+        return;}
 
         std::stringstream output_buffer;
         std::streambuf *coutbuf = std::cout.rdbuf();
@@ -116,6 +123,10 @@ void continueButtonClicked(int mode, std::string argv[]) {
     }
     else if (mode == 3) //slow
     {
+    if (argv[1].empty()){
+    showText("Error: Input directory not specified", 350, 60, "glspeaks - peaks mode");
+    return;}
+
     char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
     std::thread t(main_batch, 10, argv_batch);
     QProgressDialog progressDialog("Computation in progress", "Cancel", 0, 1000);
@@ -178,6 +189,8 @@ int qt(int argc, char *argv[]){
     QRadioButton radio2("Peaks");
     QRadioButton radio3("Batch (slow)");
     QRadioButton radio4("Help");
+    QRadioButton radio5("Batch (fast)  [WIP]");
+    QRadioButton radio6("Batch (GPU) [WIP]");
 
     radio4.setChecked(true);
 
@@ -185,6 +198,11 @@ int qt(int argc, char *argv[]){
     modeLayout.addWidget(&radio2, 1, 0);
     modeLayout.addWidget(&radio3, 0, 1);
     modeLayout.addWidget(&radio4, 1, 1);
+    modeLayout.addWidget(&radio5, 0, 2);
+    modeLayout.addWidget(&radio6, 1, 2);
+
+    radio5.setEnabled(false);
+    radio6.setEnabled(false);
 
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
@@ -277,6 +295,26 @@ int qt(int argc, char *argv[]){
     lineEditFloat6.setPlaceholderText(locale.toString(placeholderValue6));
     parametersLayout.addRow("Max amplitude [mag]:", &lineEditFloat6);
 
+    //batch mode buttons
+    // Line edits
+    QGroupBox batchGroupBox("Batch options");
+    QVBoxLayout batchLayout;
+    batchGroupBox.setLayout(&batchLayout);
+
+    QRadioButton radio8("Automatically generate phased plots of brightness");
+    QRadioButton radio9("Fine-tune the periodogram results while plotting [WIP]");
+    QRadioButton radio10("Use .npy files as an input [WIP]");
+
+
+    batchLayout.addWidget(&radio8);
+    batchLayout.addWidget(&radio9);
+    batchLayout.addWidget(&radio10);
+
+    radio8.setEnabled(false);
+    radio9.setEnabled(false);
+    radio10.setEnabled(false);
+
+
     // Connect buttons
     QObject::connect(&radio4, &QRadioButton::toggled, [&lineEditInt1, &lineEditFloat1, &lineEditFloat2](bool checked) {
         lineEditInt1.setEnabled(!checked);
@@ -284,12 +322,21 @@ int qt(int argc, char *argv[]){
         lineEditFloat2.setEnabled(!checked);
     });
 
-    QObject::connect(&radio3, &QRadioButton::toggled, [&lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6](bool checked) {
+    QObject::connect(&radio3, &QRadioButton::toggled, [&lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6, &radio8, &radio10](bool checked) {
         lineEditFloat3.setEnabled(checked);
         lineEditFloat4.setEnabled(checked);
         lineEditFloat5.setEnabled(checked);
         lineEditFloat6.setEnabled(checked);
+        radio8.setEnabled(checked);
+        radio10.setEnabled(!checked); //radio10.setEnabled(!checked); //change after implementing binary interface for batch modes
     });
+
+QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checked) {
+    if (radio3.isChecked() && checked) {
+        radio9.setEnabled(false); //radio9.setEnabled(true); - do zmiany po dodaniu fine-tuningu
+    } else {radio9.setEnabled(false);}
+});
+
 
     QObject::connect(&radio1, &QRadioButton::toggled, [&fileLineEdit, &fileButton](bool checked) {
         fileLineEdit.setEnabled(checked);
@@ -321,6 +368,7 @@ int qt(int argc, char *argv[]){
     layout.addWidget(&modeGroupBox);
     layout.addWidget(&dataGroupBox);
     layout.addWidget(&parametersGroupBox);
+    layout.addWidget(&batchGroupBox);
 
     hboxButtons->addWidget(&cancelButton);
     hboxButtons->addWidget(&continueButton);
