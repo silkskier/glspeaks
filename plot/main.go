@@ -9,7 +9,8 @@ import (
 	"sort"
 	"path"
 	"strconv"
-	//"sync"
+	"sync"
+	"runtime"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -208,19 +209,25 @@ func main() {
 
 	// Print the array.
 	// fmt.Println(data)
-	for _, file := range data {fmt.Println(file)}
+	//for _, file := range data {fmt.Println(file)}
 
 
 
-	for _, file := range data {  //call a function here
-		freq, err := strconv.ParseFloat(file[1], 64)
+	numCores := runtime.NumCPU()
+	runtime.GOMAXPROCS(numCores)
+
+	// Create a wait group to synchronize goroutines.
+	var wg sync.WaitGroup
+	for _, file := range data {
+		wg.Add(1) // Increment the wait group counter for each goroutine.
+		go func(file []string) {
+			defer wg.Done() // Decrement the wait group counter when the goroutine completes.
+			freq, err := strconv.ParseFloat(file[1], 64)
 			if err != nil {
-			fmt.Println("Error parsing float:", err)
-			return}
-		generatePlot(strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0])), plotsDir, freq, file[4], strings.Trim(file[0], `"`))
+				fmt.Println("Error parsing float:", err)
+				return}
+			generatePlot(strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0])), plotsDir, freq, file[4], strings.Trim(file[0], `"`))
+		}(file)
 	}
-
-
-
-
+	wg.Wait() // Wait for all goroutines to finish before continuing.
 }
