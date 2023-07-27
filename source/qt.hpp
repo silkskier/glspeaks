@@ -305,7 +305,6 @@ int qt(int argc, char *argv[]){
     QRadioButton radio9("Fine-tune the periodogram results while plotting [WIP]");
     QRadioButton radio10("Use .npy files as an input [WIP]");
 
-
     batchLayout.addWidget(&radio8);
     batchLayout.addWidget(&radio9);
     batchLayout.addWidget(&radio10);
