@@ -86,7 +86,7 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
 }
 
 
-void continueButtonClicked(int mode, std::string argv[]) {
+void continueButtonClicked(int mode, std::string argv[], bool plot) {
 
 
 
@@ -139,6 +139,8 @@ void continueButtonClicked(int mode, std::string argv[]) {
 
     progressDialog.exec();
 
+        if (plot == true){showText("Plotting", 600, 60, "glspeaks - batch mode");} //launch the glspeaksplot submodule
+
     //std::stringstream().swap(output_buffer);
     std::string output = "List of periodic variable candidates saved to\n" + argv[1] + "/GLS_output.tsv";
     showText(output, 600, 60, "glspeaks - batch mode");
@@ -169,6 +171,7 @@ void continueButtonClicked(int mode, std::string argv[]) {
 int qt(int argc, char *argv[]){
 
     int mode = 4;
+    bool plot = false;
     std::string argv_gui[9];
 
     QApplication app(argc, argv);
@@ -375,7 +378,7 @@ QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checke
 
     // Connect the "Continue" button to a custom function
     QObject::connect(&continueButton, &QPushButton::clicked, &window, &QWidget::close);
-    QObject::connect(&continueButton, &QPushButton::clicked, [&mode, &argv_gui, &fileLineEdit, &dirLineEdit, &lineEditInt1, &lineEditFloat1, &lineEditFloat2, &lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6]() {
+    QObject::connect(&continueButton, &QPushButton::clicked, [&mode, &plot, &argv_gui, &fileLineEdit, &dirLineEdit, &lineEditInt1, &lineEditFloat1, &lineEditFloat2, &lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6]() {
 
     argv_gui[0] = fileLineEdit.text().toStdString();
     argv_gui[1] = dirLineEdit.text().toStdString();
@@ -389,7 +392,7 @@ QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checke
 
     for (uint i = 3; i < 9; i++){std::replace(argv_gui[i].begin(), argv_gui[i].end(), ',', '.');}
 
-    continueButtonClicked(mode, argv_gui);
+    continueButtonClicked(mode, argv_gui, plot);
     });
 
 
@@ -405,7 +408,8 @@ QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checke
     QObject::connect(&radio4, &QRadioButton::toggled, [&mode](bool checked){
         if (checked) mode = 4;});
 
-
+    QObject::connect(&radio8, &QRadioButton::toggled, [&plot](bool checked){
+        if (checked) plot = true;});
 
 
 
