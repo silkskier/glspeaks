@@ -13,6 +13,8 @@
 #include "GLS_p_par.hpp"
 #include "GLS_p_seq.hpp"
 
+bool UseOpenMP = true;
+
 using namespace std;
 
 struct quad {
@@ -21,6 +23,13 @@ struct quad {
 };
 
 void main_peaks(int argc, char *argv[]){
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--OpenMP=false" || arg == "--UseOpenMP=false" || arg == "-nomp") {
+            UseOpenMP = false;
+            break; // No need to continue checking once found
+        }}
 
 std::locale::global(std::locale("C"));
 
@@ -33,15 +42,15 @@ const std::string files_location = argv[2];
 
 
 float min_frequency_temp = 0.003;
-if (argc > 3 && ((mode != "-g" && argv[3][0]) != '\0') || (mode == "-g" && argv[3][0]) != '\0'){min_frequency_temp = std::stof(argv[3]);}
+if (argc > 3 && ((mode != "-g" && argv[3][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[3][0] != '\0' && argv[3][0] != '-'))) min_frequency_temp = std::stof(argv[3]);
 const float min_frequency = min_frequency_temp;
 
 float max_frequency_temp = 10.0;
-if (argc > 4 && ((mode != "-g" && argv[4][0]) != '\0') || (mode == "-g" && argv[4][0]) != '\0'){max_frequency_temp = std::stof(argv[4]);}
+if (argc > 4 && ((mode != "-g" && argv[4][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[4][0] != '\0' && argv[4][0] != '-'))){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
 
 double step_size_0 = pow(0.5, 12);
-if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){step_size_0 = pow(0.5,std::stoi(argv[5]));}
+if (argc > 5 && ((mode != "-g" && argv[5][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[5][0] != '\0' && argv[5][0] != '-'))){step_size_0 = pow(0.5,std::stoi(argv[5]));}
 
     //std::cout << "\n" "Directory location: " << files_location << "\n";
     //std::cout << "Min frequency: " << min_frequency << "\n";
@@ -93,7 +102,8 @@ for (unsigned int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data
 data.clear();
 //  for (unsigned int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
 
-gls_p_par(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);
+if (UseOpenMP){gls_p_par(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
+else {gls_p_seq(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
 
 //        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 //  //prints input files directory
