@@ -15,6 +15,19 @@ import (
 	"gonum.org/v1/plot/vg/draw"
 )
 
+/*
+func min(arr []float64) float64 {
+	min := arr[0]
+	for _, value := range arr {if value < min {min = value}}
+return min
+}
+
+func max(arr []float64) float64 {
+	max := arr[0]
+	for _, value := range arr {if value > max {max = value}}
+return max
+}
+*/
 
 type customYTicks struct{}
 func (customYTicks) Ticks(min, max float64) [] plot.Tick {
