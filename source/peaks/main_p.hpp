@@ -10,7 +10,8 @@
 
 #include <boost/spirit/include/qi.hpp>
 
-#include "GLS_p.hpp"
+#include "GLS_p_par.hpp"
+#include "GLS_p_seq.hpp"
 
 using namespace std;
 
@@ -92,7 +93,7 @@ for (unsigned int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data
 data.clear();
 //  for (unsigned int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
 
-gls_p(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);
+gls_p_par(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);
 
 //        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 //  //prints input files directory
