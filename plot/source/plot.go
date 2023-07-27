@@ -15,9 +15,8 @@ import (
 	"gonum.org/v1/plot/vg/draw"
 )
 
-type customYTicks struct{}
 
-// Ticks implements the plot.Ticker interface
+type customYTicks struct{}
 func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 	ticks := make([]plot.Tick, 0)
 
@@ -27,15 +26,14 @@ func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 
 	for v := min; v <= max; v += tickSpacing {
 		label := fmt.Sprintf("%.2f", math.Abs(v))
+		if rangeY < 0.1 {label = fmt.Sprintf("%.2f", math.Abs(v))}
 		tick := plot.Tick{Value: v, Label: label}
 		ticks = append(ticks, tick)
 	}
-	return ticks
-}
+	return ticks}
+
 
 type customXTicks struct{}
-
-// Ticks implements the plot.Ticker interface
 func (customXTicks) Ticks(min, max float64) [] plot.Tick {
 	ticks := make([]plot.Tick, 0)
 
@@ -48,8 +46,11 @@ func (customXTicks) Ticks(min, max float64) [] plot.Tick {
 		tick := plot.Tick{Value: v, Label: label}
 		ticks = append(ticks, tick)
 	}
-	return ticks
-}
+	return ticks}
+
+
+
+
 
 func generatePlot(file string, outputDir string, frequency float64, match_strength string, photometry_location string){
 	plotname := outputDir + "/" + match_strength + "_" + file + ".png"
@@ -141,5 +142,4 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	if err != nil {
 		panic(err)
 	}
-
 }
