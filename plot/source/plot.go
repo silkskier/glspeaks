@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"strconv"
+	"sort"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -14,6 +15,18 @@ import (
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
 )
+
+type Measurement struct {
+  X float64
+  Y float64
+  Z float64
+}
+
+type ByZ []Measurement
+
+func (a ByZ) Len() int           { return len(a) }
+func (a ByZ) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByZ) Less(i, j int) bool { return a[i].Z < a[j].Z }
 
 /*
 func min(arr []float64) float64 {
@@ -29,7 +42,6 @@ return max
 }
 */
 
-var isEclipsing bool = false
 
 type customYTicks struct{}
 func (customYTicks) Ticks(min, max float64) [] plot.Tick {
@@ -68,7 +80,10 @@ func (customXTicks) Ticks(min, max float64) [] plot.Tick {
 
 
 func generatePlot(file string, outputDir string, frequency float64, match_strength string, photometry_location string){
+
 	plotname := outputDir + "/" + match_strength + "_" + file + ".png"
+
+	var isEclipsing bool = false
 
 	var err error
 
@@ -105,22 +120,22 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	}
 
 		// Print the array	for _, line := range local_data {fmt.Println(line)}
-	x := make([]float64, len(local_data))
-	y := make([]float64, len(local_data))
+	measurements := make([]Measurement, len(local_data))
 		for i, line := range local_data {
-			x[i] = line[0]
-			y[i] = line[1]
+			measurements[i].X = line[0]
+			measurements[i].Y = - line[1]
 	}
 
-		for i := range x {x[i] = math.Mod(x[i]*frequency, 2.0)}
-		for i := range y {y[i] = -y[i]}
+		for i := range measurements {measurements[i].Z = math.Mod(measurements[i].X*frequency, 1.0); measurements[i].X = math.Mod(measurements[i].X*frequency, 2.0)}
+
+		sort.Sort(ByZ(measurements))
 
 
 		//Plot the measurements
 		plot_data := make(plotter.XYs, len(local_data))
 	for i := range local_data {
-		plot_data[i].X = x[i]
-		plot_data[i].Y = y[i]
+		plot_data[i].X = measurements[i].X
+		plot_data[i].Y = measurements[i].Y
 	}
 
 	plt := plot.New()
@@ -139,7 +154,10 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	plt.X.Min = 0
 	plt.X.Max = 2
 
-	if isEclipsing {plt.X.Max = 1; for i := range plot_data {plot_data[i].X *= 0.5}}
+	//align the phase
+
+
+	if isEclipsing {plt.X.Max = 1; for i := range plot_data {plot_data[i].X *= 0.5}} //fix the phase for eclipsing binaries
 
 	plt.X.Label.Text = "Phase"
 	plt.Y.Label.Text = "Magnitude"
