@@ -29,6 +29,8 @@ return max
 }
 */
 
+var isEclipsing bool = false
+
 type customYTicks struct{}
 func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 	ticks := make([]plot.Tick, 0)
@@ -136,6 +138,8 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	plt.X.Min = 0
 	plt.X.Max = 2
+
+	if isEclipsing {plt.X.Max = 1; for i := range plot_data {plot_data[i].X *= 0.5}}
 
 	plt.X.Label.Text = "Phase"
 	plt.Y.Label.Text = "Magnitude"
