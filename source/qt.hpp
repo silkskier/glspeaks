@@ -34,6 +34,7 @@
 
 #include <chrono>
 #include <thread>
+#include <stdlib.h>
 
 #include "batch_cpu/main_b.hpp"
 #include "peaks/main_p.hpp"
@@ -138,14 +139,19 @@ void continueButtonClicked(int mode, std::string argv[], bool plot) {
     timer.start(1000); // Update the progress dialog every second
 
     progressDialog.exec();
-
-        if (plot == true){showText("Plotting", 600, 60, "glspeaks - batch mode");} //launch the glspeaksplot submodule
-
-    //std::stringstream().swap(output_buffer);
-    std::string output = "List of periodic variable candidates saved to\n" + argv[1] + "/GLS_output.tsv";
-    showText(output, 600, 60, "glspeaks - batch mode");
-
     t.join();
+
+    std::string outputdir = std::filesystem::path(argv[1]).filesystem::path::parent_path();
+    std::string outputfile = outputdir + "/GLS_output.tsv";
+
+
+    std::string plotcommand = "glspeaksplot " + outputfile;
+
+    if (plot == true){system(plotcommand.c_str()); showText("Plots being saved to " + outputdir + "/plots in background. Closing this window won't cancell plots generation, and the process will still be executed in background. \n\nWarning: This window isn't automatically closed after application finishes computation.", 900, 100, "glspeaks - batch mode");} //launch the glspeaksplot submodule
+
+
+    std::string output = "List of periodic variable candidates saved to\n" + outputfile;
+    showText(output, 600, 60, "glspeaks - batch mode");
 
     }
     else if (mode == 4) //help
