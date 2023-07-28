@@ -175,7 +175,7 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	for i := range averages {averages[i] = valueArray[i].sum / float64(valueArray[i].number)}
 	for i := range averages {fmt.Println(averages[i])}
 
-
+	pulsePhaseShift, eclipsePhaseShift, amplitude, eclipsing := calculatePhaseShift(averages)
 
 	//align the phase
 
