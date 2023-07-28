@@ -51,7 +51,7 @@ func calculatePhaseShift(arr []float64) (pulsePhaseShift float64, eclipsePhaseSh
 	if (NoTop25 * 2) >= len(arr) {eclipsing = true}
 
 	diff = maxValue - minValue
-	return float64(locMaxIndex) / float64(len(arr)), math.Mod(float64(locMinIndex + (len(arr) / 4)) / float64(len(arr)), 1.), diff, eclipsing
+	return float64(locMaxIndex) / float64(len(arr)), math.Mod(float64(locMinIndex + (len(arr) / 2)) / float64(len(arr)), 2.), diff, eclipsing
 }
 
 
@@ -184,7 +184,8 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 		//Plot the measurements
 		plot_data := make(plotter.XYs, len(local_data))
 	for i := range local_data {
-		plot_data[i].X = (math.Mod((measurements[i].X*frequency - pulsePhaseShift), 2.0)) // - phaseshift
+		if !eclipsing {plot_data[i].X = (math.Mod((measurements[i].X*frequency - pulsePhaseShift), 2.0))
+		}else {plot_data[i].X = (math.Mod((measurements[i].X*frequency - eclipsePhaseShift), 2.0))} // - phaseshift
 		plot_data[i].Y = measurements[i].Y}
 
 	if eclipsing {for i := range plot_data {plot_data[i].X *= 0.5}}
