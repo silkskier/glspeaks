@@ -29,7 +29,7 @@ type LocalAvg struct {
 
 func calculatePhaseShift(arr []float64) (pulsePhaseShift float64, eclipsePhaseShift float64, diff float64, eclipsing bool) {
 	var (
-		locMinIndex, locMaxIndex int
+		locMinIndex, locMaxIndex, NoTop25 int
 		minValue, maxValue = arr[0], arr[0]
 	)
 
@@ -45,6 +45,10 @@ func calculatePhaseShift(arr []float64) (pulsePhaseShift float64, eclipsePhaseSh
 	}
 
 	eclipsing = false
+	NoTop25 = 0
+
+	for _, val := range arr {if val > ((maxValue * 0.75) + (minValue * 0.25)) {NoTop25++}}
+	if (NoTop25 * 2) >= len(arr) {eclipsing = true}
 
 	diff = maxValue - minValue
 	return float64(locMinIndex) / float64(len(arr)), math.Mod(float64(locMaxIndex + (len(arr) / 4)) / float64(len(arr)), 1.), diff, eclipsing
@@ -173,6 +177,8 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 
 
+	//align the phase
+
 
 
 		//Plot the measurements
@@ -197,8 +203,6 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	plt.X.Min = 0
 	plt.X.Max = 2
-
-	//align the phase
 
 
 	if isEclipsing {plt.X.Max = 1; for i := range plot_data {plot_data[i].X *= 0.5}} //fix the phase for eclipsing binaries
