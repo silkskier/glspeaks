@@ -7,7 +7,7 @@ A simple [GLS](https://github.com/mzechmeister/GLS) periodogram for detection of
 
 Application based on [fnpeaks](http://helas.astro.uni.wroc.pl/deliverables.php?active=fnpeaks), with the goal of increasing performance, user-friendliness, and accuracy over its predecessor.
 
-### Recommended update/installation command for version beta 1.0.2:
+### Recommended update/installation command for version beta 1.0.3:
 ##### No releases are currently available. Compilation from the source is recommended.
 <!--```bash
 wget https://github.com/silkskier/glspeaks/releases/download/v1.0.4-alpha/glspeaks-alpha-1.0.4_installer.sh && chmod +x ./glspeaks-alpha-1.0.4_installer.sh && ./glspeaks-alpha-1.0.4_installer.sh
@@ -18,9 +18,12 @@ cd glspeaks
 cmake .
 make
 sudo make install
+cd plots
+make
+sudo make install
 rm -r ~/glspeaks
 ```
-##### For version 1.0.0 and later main package will switch to GNU Guix (a distribution-agnostic package manager). [PPA for x86-64 Debian-based systems](https://silkskier.github.io/ppa/), as well as static executable with installer script for incompatible distros and FreeBSD, will be available as an alternative. Windows binary currently does not hold a high priority due to performance loss in comparison to running Linux binary with WSL2 as well, as simple compilation failure (caused by std::thread) happening during attempted compilation with MinGW-w64.
+##### For version 1.0.0 and later [PPA for x86-64 Debian-based systems](https://silkskier.github.io/ppa/), as well as static executable with installer script for incompatible distros and FreeBSD, will be available as an alternative. Windows binary currently does not hold a high priority due to performance loss in comparison to running Linux binary with WSL2 as well, as simple compilation failure (caused by std::thread) happening during attempted compilation with MinGW-w64.
 
 ICPX (Intel oneAPI C++ Compiler) is a recommended compiler choice due to measured significant performance advantage over alternatives, however, g++ with O3 optimization level can be used to reduce output binary size from ~ 500 kB to less than 200 kB at a cost of ~15% increase of execution time.
 
