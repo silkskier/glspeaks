@@ -108,9 +108,8 @@ func calculateClosestSum(avgArray []LocalAvg) []LocalAvg {
 
 func generatePlot(file string, outputDir string, frequency float64, match_strength string, photometry_location string){
 
-	plotname := outputDir + "/" + match_strength + "_" + file + ".png"
-
 	var err error
+	var plotname string
 
 	var local_data [][]float64
 	loc_file, loc_err := os.Open(photometry_location)
@@ -177,9 +176,6 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	pulsePhaseShift, eclipsePhaseShift, amplitude, eclipsing := calculatePhaseShift(averages)
 
-	//align the phase
-	if eclipsing{fmt.Println("Eclipse or sth", pulsePhaseShift, eclipsePhaseShift, amplitude)}
-
 
 		//Plot the measurements
 		plot_data := make(plotter.XYs, len(local_data))
@@ -196,6 +192,7 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 		panic(err)
 	}
 
+
 	// Set the scatter plot style to use filled circles.
 	s, err := plotter.NewScatter(plot_data)
 	if err != nil {
@@ -209,8 +206,17 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	if eclipsing {plt.X.Max = 1} //fix the phase for eclipsing binaries ;
 
+	var label string
+	label = ""
+	if eclipsing {label += fmt.Sprintf("Orbital period: %.2f d", 1. / frequency)
+	}else {label += fmt.Sprintf("Period: %.2f d", 1. / frequency)}
+
+	label += fmt.Sprintf("        Amplitude: %.2f mag", amplitude)
+	if eclipsing {label += "        Predicted type: Eclipsing binary"}
+
 	plt.X.Label.Text = "Phase"
 	plt.Y.Label.Text = "Magnitude"
+	plt.Title.Text = label
 
 	plt.Add(s)
 
@@ -221,6 +227,9 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	// Set the plot size in pixels (width x height).
 	widthPixels, heightPixels := 600, 300
+
+	if eclipsing {plotname = outputDir + "/ecl/" + match_strength + "_" + file + ".png"
+	}else{plotname = outputDir + "/" + match_strength + "_" + file + ".png"}
 
 	// Save the plot to a file with the specified size in pixels.
 	err = plt.Save(vg.Length(widthPixels), vg.Length(heightPixels), plotname)

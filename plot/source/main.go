@@ -28,6 +28,11 @@ func main() {
 		fmt.Println("Error creating directory:", err)
 		return
 	}
+	err = os.Mkdir(plotsDir + "/ecl", 0755) // 0755 sets permissions for the new directory
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
 
 
 
