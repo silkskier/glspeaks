@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 	"strconv"
-	"sort"
+	//"sort"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -22,25 +22,33 @@ type Measurement struct {
   Z float64
 }
 
-type ByZ []Measurement
-
-func (a ByZ) Len() int           { return len(a) }
-func (a ByZ) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByZ) Less(i, j int) bool { return a[i].Z < a[j].Z }
-
-/*
-func min(arr []float64) float64 {
-	min := arr[0]
-	for _, value := range arr {if value < min {min = value}}
-return min
+type LocalAvg struct {
+  sum float64
+  number int
 }
 
-func max(arr []float64) float64 {
-	max := arr[0]
-	for _, value := range arr {if value > max {max = value}}
-return max
+func calculatePhaseShift(arr []float64) (pulsePhaseShift float64, eclipsePhaseShift float64, diff float64, eclipsing bool) {
+	var (
+		locMinIndex, locMaxIndex int
+		minValue, maxValue = arr[0], arr[0]
+	)
+
+	for i, val := range arr {
+		if val < minValue {
+			locMinIndex = i
+			minValue = val
+		}
+		if val > maxValue {
+			locMaxIndex = i
+			maxValue = val
+		}
+	}
+
+	eclipsing = false
+
+	diff = maxValue - minValue
+	return float64(locMinIndex) / float64(len(arr)), math.Mod(float64(locMaxIndex + (len(arr) / 4)) / float64(len(arr)), 1.), diff, eclipsing
 }
-*/
 
 
 type customYTicks struct{}
@@ -52,8 +60,8 @@ func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 	tickSpacing := rangeY * 0.124755859375 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
-		label := fmt.Sprintf("%.2f", math.Abs(v))
-		if rangeY < 0.1 {label = fmt.Sprintf("%.2f", math.Abs(v))}
+		label := fmt.Sprintf("%.2f", - v)
+		if rangeY < 0.1 {label = fmt.Sprintf("%.2f", - v)}
 		tick := plot.Tick{Value: v, Label: label}
 		ticks = append(ticks, tick)
 	}
@@ -69,13 +77,26 @@ func (customXTicks) Ticks(min, max float64) [] plot.Tick {
 	tickSpacing := rangeX * 0.124755859375 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
-		label := fmt.Sprintf("%.2f", math.Abs(v))
+		label := fmt.Sprintf("%.2f", v)
 		tick := plot.Tick{Value: v, Label: label}
 		ticks = append(ticks, tick)
 	}
 	return ticks}
 
 
+func calculateClosestSum(avgArray []LocalAvg) []LocalAvg {
+	avgArray2 := make([]LocalAvg, len(avgArray))
+
+	for i := range avgArray {
+		prevIndex := (i - 1 + len(avgArray)) % len(avgArray)
+		nextIndex := (i + 1) % len(avgArray)
+
+		avgArray2[i].sum = avgArray[prevIndex].sum + avgArray[i].sum + avgArray[nextIndex].sum
+		avgArray2[i].number = avgArray[prevIndex].number + avgArray[i].number + avgArray[nextIndex].number
+	}
+
+	return avgArray2
+}
 
 
 
@@ -126,15 +147,38 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 			measurements[i].Y = - line[1]
 	}
 
-		for i := range measurements {measurements[i].Z = math.Mod(measurements[i].X*frequency, 1.0); measurements[i].X = math.Mod(measurements[i].X*frequency, 2.0)}
+		for i := range measurements {measurements[i].Z = math.Mod(measurements[i].X*frequency, 1.0)}
 
-		sort.Sort(ByZ(measurements))
+		//sort.Sort(ByZ(measurements))
+
+		// Create the array of 128 LocalAvg structs
+		partialAvgs := make([]LocalAvg, 128)
+
+		for _, m := range measurements {
+		index := int(m.Z * 128) // Calculate the index corresponding to Z range
+
+		// Update the sum and number of measurements for the corresponding Z range
+		partialAvgs[index].sum += m.Y
+		partialAvgs[index].number++}
+
+		valueArray := calculateClosestSum(partialAvgs)
+
+	// Print the array of LocalAvg structs
+	for i := range valueArray {if valueArray[i].number == 0 {valueArray[i].sum = math.NaN(); valueArray[i].number = 1}}
+	//for i, avg := range valueArray {fmt.Printf("Z range %.3f-%.3f: Sum=%.2f, Number of Measurements=%d\n", float64(i)/128.0, float64(i+1)/128.0, avg.sum, avg.number)}
+
+	averages := make([] float64, 128)
+	for i := range averages {averages[i] = valueArray[i].sum / float64(valueArray[i].number)}
+	for i := range averages {fmt.Println(averages[i])}
+
+
+
 
 
 		//Plot the measurements
 		plot_data := make(plotter.XYs, len(local_data))
 	for i := range local_data {
-		plot_data[i].X = measurements[i].X
+		plot_data[i].X = math.Mod(measurements[i].X*frequency, 2.0) // - phaseshift
 		plot_data[i].Y = measurements[i].Y
 	}
 
