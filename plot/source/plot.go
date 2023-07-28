@@ -51,7 +51,7 @@ func calculatePhaseShift(arr []float64) (pulsePhaseShift float64, eclipsePhaseSh
 	if (NoTop25 * 2) >= len(arr) {eclipsing = true}
 
 	diff = maxValue - minValue
-	return float64(locMinIndex) / float64(len(arr)), math.Mod(float64(locMaxIndex + (len(arr) / 4)) / float64(len(arr)), 1.), diff, eclipsing
+	return float64(locMaxIndex) / float64(len(arr)), math.Mod(float64(locMinIndex + (len(arr) / 4)) / float64(len(arr)), 1.), diff, eclipsing
 }
 
 
@@ -61,7 +61,7 @@ func (customYTicks) Ticks(min, max float64) [] plot.Tick {
 
 	// Calculate the desired tick spacing based on the range of Y-axis values
 	rangeY := max - min
-	tickSpacing := rangeY * 0.124755859375 // Eight ticks between min and max
+	tickSpacing := rangeY * 0.124969482421875 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
 		label := fmt.Sprintf("%.2f", - v)
@@ -78,10 +78,12 @@ func (customXTicks) Ticks(min, max float64) [] plot.Tick {
 
 	// Calculate the desired tick spacing based on the range of Y-axis values
 	rangeX := max - min
-	tickSpacing := rangeX * 0.124755859375 // Eight ticks between min and max
+	tickSpacing := rangeX * 0.124969482421875 // Eight ticks between min and max
 
 	for v := min; v <= max; v += tickSpacing {
-		label := fmt.Sprintf("%.2f", v)
+		var label string
+		if rangeX < 1.1 {label = fmt.Sprintf("%.3f", v)
+		} else {label = fmt.Sprintf("%.2f", v)}
 		tick := plot.Tick{Value: v, Label: label}
 		ticks = append(ticks, tick)
 	}
@@ -107,8 +109,6 @@ func calculateClosestSum(avgArray []LocalAvg) []LocalAvg {
 func generatePlot(file string, outputDir string, frequency float64, match_strength string, photometry_location string){
 
 	plotname := outputDir + "/" + match_strength + "_" + file + ".png"
-
-	var isEclipsing bool = false
 
 	var err error
 
@@ -173,20 +173,22 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 
 	averages := make([] float64, 128)
 	for i := range averages {averages[i] = valueArray[i].sum / float64(valueArray[i].number)}
-	for i := range averages {fmt.Println(averages[i])}
+	//for i := range averages {fmt.Println(averages[i])}
 
 	pulsePhaseShift, eclipsePhaseShift, amplitude, eclipsing := calculatePhaseShift(averages)
 
 	//align the phase
-
+	if eclipsing{fmt.Println("Eclipse or sth", pulsePhaseShift, eclipsePhaseShift, amplitude)}
 
 
 		//Plot the measurements
 		plot_data := make(plotter.XYs, len(local_data))
 	for i := range local_data {
-		plot_data[i].X = math.Mod(measurements[i].X*frequency, 2.0) // - phaseshift
-		plot_data[i].Y = measurements[i].Y
-	}
+		plot_data[i].X = (math.Mod((measurements[i].X*frequency - pulsePhaseShift), 2.0)) // - phaseshift
+		plot_data[i].Y = measurements[i].Y}
+
+	if eclipsing {for i := range plot_data {plot_data[i].X *= 0.5}}
+
 
 	plt := plot.New()
 	if err != nil {
@@ -204,8 +206,7 @@ func generatePlot(file string, outputDir string, frequency float64, match_streng
 	plt.X.Min = 0
 	plt.X.Max = 2
 
-
-	if isEclipsing {plt.X.Max = 1; for i := range plot_data {plot_data[i].X *= 0.5}} //fix the phase for eclipsing binaries
+	if eclipsing {plt.X.Max = 1} //fix the phase for eclipsing binaries ;
 
 	plt.X.Label.Text = "Phase"
 	plt.Y.Label.Text = "Magnitude"
