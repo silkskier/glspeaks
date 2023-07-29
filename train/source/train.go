@@ -13,7 +13,7 @@ func train_forest(dataset string) {
         // Load in a dataset, with headers. Header attributes will be stored.
     // Think of instances as a Data Frame structure in R or Pandas.
     // You can also create instances from scratch.
-    rawData, err := base.ParseCSVToInstances(dataset, false)
+    rawData, err := base.ParseCSVToInstances(dataset, true)
     if err != nil {
         panic(err)
     }

@@ -29,4 +29,6 @@ func main() {
 
 	if train{train_forest("datasets/iris.csv")}
 
+	if generate{filelist, _ := listFiles(input); fmt.Println(filelist)}
+
 }
