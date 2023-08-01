@@ -146,11 +146,13 @@ void continueButtonClicked(int mode, std::string argv[], bool plot) {
 
 
     std::string plotcommand = "glspeaksplot " + outputfile;
+    std::string displaycommand = "xdg-open " + outputdir;
 
     if (plot == true){system(plotcommand.c_str()); showText("Plots being saved to " + outputdir + "/plots in background. Closing this window won't cancell plots generation, and the process will still be executed in background. \n\nWarning: This window isn't automatically closed after application finishes computation.", 900, 100, "glspeaks - batch mode");} //launch the glspeaksplot submodule
 
 
     std::string output = "List of periodic variable candidates saved to\n" + outputfile;
+    system(displaycommand.c_str());
     showText(output, 600, 60, "glspeaks - batch mode");
 
     }
