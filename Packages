@@ -1,0 +1,70 @@
+Package: fswm
+Version: 1.0.0
+Architecture: amd64
+Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
+Installed-Size: 227
+Depends: libomp5 | libomp5-14 | libomp5-15 | libomp5-16
+Filename: ./packages/fswm/fswm_1.0.0_amd64.deb
+Size: 65360
+MD5sum: b16993f235bf965e56db09df8b2edb8f
+SHA1: 4ef6a23a461df0033d1dffe34fcb817c994e1814
+SHA256: 90003f88dbb723425bcd07598090fc77b4613f218be02973fc865d49c43d2984
+Priority: optional
+Description: The Filtered Spaced Word Matches Approach
+
+Package: glspeaks
+Version: 0.1.3.4
+Architecture: amd64
+Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
+Installed-Size: 6000
+Depends: libqt5widgets5, libqt5gui5, libqt5core5a, libgl1, libstdc++6, libc6, libgcc-s1, libc6, libpng16-16, zlib1g, libharfbuzz0b, libmd4c0, libdouble-conversion3, libpcre2-16-0, libzstd1, libglib2.0-0, libglvnd0, libglx0, libfreetype6, libgraphite2-3, libicu73 | libicu72 | libicu71 | libicu70 | libicu69 | libicu68, libpcre2-8-0, libx11-6, libbrotli1, libxcb1, libbrotli1, libxau6, libxdmcp6, libbsd0, libmd0
+Filename: ./packages/glspeaks/glspeaks_0.1.3.4_amd64.deb
+Size: 3367880
+MD5sum: 550fe9491152590e605d60b05471a9e3
+SHA1: a97ef3304c5461d23599d4399cfe044a53ccdabc
+SHA256: 5ec562d3e9dbe609467636d80cc059d566bb016b84961641c369b273aa44d078
+Priority: optional
+Description: A Simple Generalised Lomb-Scargle periodogram for variable stars photometry.
+
+Package: julia
+Version: 1.9.2
+Architecture: amd64
+Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
+Installed-Size: 507691
+Filename: ./packages/julia/julia_1.9.2_amd64.deb
+Size: 968
+MD5sum: fc6be58aaca772dc3188158e908bd304
+SHA1: e9bd6eb5772fb895f461e9dbf1b2eb2c023027c4
+SHA256: 210c3a0b2ef4d4ba77c660bd929f511759139422d1505b770c99c0d1106a08d9
+Priority: optional
+Description: Installation script for official Julia programming language binary.
+
+Package: mingw-w64-libbost-dev
+Version: 1.78.0
+Architecture: all
+Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
+Installed-Size: 1130366
+Pre-Depends: rpm2cpio, wget, sed, cpio
+Depends: mingw-w64
+Filename: ./packages/mingw-w64-libboost-dev/mingw-w64-libboost-dev_1.78.0_all.deb
+Size: 1396
+MD5sum: 8181894f459bd1886f69ca1d87031c1b
+SHA1: b6a74503900be91e43ce89f494bc9d54568da801
+SHA256: 84529fc62f88678467f15c2719d928fe7cbb21a93c6db4a47132808f23e54d69
+Priority: optional
+Description: MinGW Windows port of Boost C++ Libraries.
+
+Package: mummer4
+Version: 4.0.0
+Architecture: amd64
+Maintainer: Kacper Rutkowski <kk.rutkowski@student.uw.edu.pl>
+Installed-Size: 17182
+Depends: libomp5 | libomp5-14 | libomp5-15 | libomp5-16, perl, sed, awk, fig2dev, gnuplot, xfig
+Filename: ./packages/mummer/mummer_4.0.0_amd64.deb
+Size: 2341084
+MD5sum: f23160b7f64362798a2034ef398c816e
+SHA1: 3ff6eb8a7e86aa4d2e89c30e028cd2107fba8c90
+SHA256: e2a600eeb2e65a06d11b5acfaa4f3d7790c5334abe249306ed98e2710cae8751
+Priority: optional
+Description: Efficient sequence alignment of full genomes.
+
