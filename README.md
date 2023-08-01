@@ -36,7 +36,7 @@ As for now, the application is *almost* fully functional. Planned improvements i
 
 #### Potential alternatives to this application;
 1. [AstroPy](https://github.com/astropy/astropy) - Python Library containing alternative implementations of all periodograms used in this application as well, as many other tools.
-2. [VStar](https://github.com/AAVSO/VStar)https://github.com/AAVSO/VStar) - Alternative GUI OpenSource application allowing for batch searches.
+2. [VStar](https://github.com/AAVSO/VStar) - Alternative GUI OpenSource application allowing for batch searches.
 3. [UPSILoN](https://github.com/dwkim78/upsilon/tree/master) - Automatic variable stars classifier based on the Random Forest model.
 4. [Peransi](https://www.cbabelgium.com/peranso/index.html) - Proprietary GUI application allowing for analysis of variable stars' periodicity with many different periodograms included.
 5. [FastChi$^{2}$](https://public.lanl.gov/palmer/fastchi.html) - Reasonably performant periodogram for batch searches (CLI only).
