@@ -52,3 +52,5 @@ As for now, the application is *almost* fully functional. Planned improvements i
 6. [Deep Forward Thinking Random Forest ensemble learning method](https://arxiv.org/abs/1705.07366)
 7. [randomForest Go machine learning library](https://github.com/malaschitz/randomForest)
 8. [GoLearn machine learning library](https://github.com/sjwhitworth/golearn)
+9. [Friedman, J. H. (1984) A variable span scatterplot smoother](https://www.slac.stanford.edu/pubs/slacpubs/3250/slac-pub-3477.pdf)
+10. [supersmoother Python package](https://github.com/jakevdp/supersmoother)
