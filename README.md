@@ -1,7 +1,7 @@
 # glspeaks
 Repository under construction.
 
-1.0 release planned for August 2023, currently development is on hold.
+1.0 release planned for late 2023.
 
 A simple [GLS](https://github.com/mzechmeister/GLS) periodogram for detection of periodic variable stats candidates. Possibly useful for other periodic brightness change detections (like search for rotation period in asteroids), however not tested for these purposes.
 
