@@ -12,6 +12,7 @@
 
 #include "GLS_p_par.hpp"
 #include "GLS_p_seq.hpp"
+#include "../extras/vertex.hpp"
 
 bool UseOpenMP = true;
 
@@ -105,12 +106,9 @@ data.clear();
 if (UseOpenMP){gls_p_par(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
 else {gls_p_seq(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
 
-//        for (int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
-//  //prints input files directory
-                                            //string path = filesystem::path(file); string output_path = path + "_output.csv"; ofstream output_file(output_path); //creates and opens output file
+//defines constants
+const double normalization_constant = log2(length_of_data) * 2.;
 
-// output_file << "Frequency Power" "\n";
-//for (unsigned int i = 0; i < no_steps; i++) output_file << frequencies[i] <<" "<< powers[i] <<std::endl; //prints frequencies and corresponding frequencies to a text file
 
 std::vector<quad> output_data;
 
@@ -148,10 +146,12 @@ for (unsigned int i = 0; i < 20; i++) {
   for (unsigned int k = i; k <= i;) {
     if (sorted_data[j].power > output_data[sorted_data[j].index - 1].power && sorted_data[j].power > output_data[sorted_data[j].index + 1].power) {
 
-    std::cout << " " << sorted_data[j].frequency << "\t" << 1/sorted_data[j].frequency << "\t" << sorted_data[j].amplitude << "\t" << sorted_data[j].power / (log2(length_of_data) * 2.) << std::endl;
+    std::cout << " " << sorted_data[j].frequency << "\t" << 1/sorted_data[j].frequency << "\t" << sorted_data[j].amplitude << "\t" << sorted_data[j].power / normalization_constant << std::endl;
   j++;k++;
 } else {j++;}
 
 }}
+
+std::cout << "\nNormalization constant: " << normalization_constant <<std::endl;
 free(frequencies); free(powers); free(amplitudes);
 return;}

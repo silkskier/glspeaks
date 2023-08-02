@@ -1,4 +1,4 @@
-#ifndef QT_H
+#ifndef QT_HPP
 #define QT_HPP
 
 #include <QObject>
@@ -146,13 +146,12 @@ void continueButtonClicked(int mode, std::string argv[], bool plot) {
 
 
     std::string plotcommand = "glspeaksplot " + outputfile;
-    std::string displaycommand = "xdg-open " + outputdir;
+    std::string displaycommand = "xdg-open " + outputdir + "/plots";
 
-    if (plot == true){system(plotcommand.c_str()); showText("Plots being saved to " + outputdir + "/plots in background. Closing this window won't cancell plots generation, and the process will still be executed in background. \n\nWarning: This window isn't automatically closed after application finishes computation.", 900, 100, "glspeaks - batch mode");} //launch the glspeaksplot submodule
+    if (plot == true){system(plotcommand.c_str()); showText("Plots being saved to " + outputdir + "/plots in background. Closing this window won't cancell plots generation, and the process will still be executed in background. \n\nWarning: This window isn't automatically closed after application finishes computation.", 900, 100, "glspeaks - batch mode");std::this_thread::sleep_for(std::chrono::seconds(1)); system(displaycommand.c_str());} //launch the glspeaksplot submodule
 
 
     std::string output = "List of periodic variable candidates saved to\n" + outputfile;
-    system(displaycommand.c_str());
     showText(output, 600, 60, "glspeaks - batch mode");
 
     }
@@ -198,9 +197,9 @@ int qt(int argc, char *argv[]){
 
     QRadioButton radio1("Spectrum");
     QRadioButton radio2("Peaks");
-    QRadioButton radio3("Batch (slow)");
+    QRadioButton radio3("Batch");
     QRadioButton radio4("Help");
-    QRadioButton radio5("Batch (fast)  [WIP]");
+    QRadioButton radio5("Peaks (GPU)  [WIP]");
     QRadioButton radio6("Batch (GPU) [WIP]");
 
     radio4.setChecked(true);
@@ -214,6 +213,24 @@ int qt(int argc, char *argv[]){
 
     radio5.setEnabled(false);
     radio6.setEnabled(false);
+
+    QGroupBox algorithmGroupBox("Algorithm selection");
+    QGridLayout algorithmLayout;
+    algorithmGroupBox.setLayout(&algorithmLayout);
+    QRadioButton radio7("GLS (recursive)");
+    QRadioButton radio8("GLS (NFFT3) [WIP]");
+    QRadioButton radio9("FastChi (NFFT3) [WIP]");
+    QRadioButton radio10("Conditional entropy [WIP]");
+
+    radio7.setChecked(true);
+    radio8.setEnabled(false);
+    radio9.setEnabled(false);
+    radio10.setEnabled(false);
+
+    algorithmLayout.addWidget(&radio7, 0, 0);
+    algorithmLayout.addWidget(&radio8, 1, 0);
+    algorithmLayout.addWidget(&radio9, 0, 1);
+    algorithmLayout.addWidget(&radio10, 1, 1);
 
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
@@ -312,17 +329,17 @@ int qt(int argc, char *argv[]){
     QVBoxLayout batchLayout;
     batchGroupBox.setLayout(&batchLayout);
 
-    QRadioButton radio8("Automatically generate phased plots of brightness");
-    QRadioButton radio9("Fine-tune the periodogram results while plotting [WIP]");
-    QRadioButton radio10("Use .npy files as an input [WIP]");
+    QRadioButton radio11("Automatically generate phased plots of brightness");
+    QRadioButton radio12("Fine-tune the periodogram results while plotting [WIP]");
+    QRadioButton radio13("Use .npy files as an input [WIP]");
 
-    batchLayout.addWidget(&radio8);
-    batchLayout.addWidget(&radio9);
-    batchLayout.addWidget(&radio10);
+    batchLayout.addWidget(&radio11);
+    batchLayout.addWidget(&radio12);
+    batchLayout.addWidget(&radio13);
 
-    radio8.setEnabled(false);
-    radio9.setEnabled(false);
-    radio10.setEnabled(false);
+    radio11.setEnabled(false);
+    radio12.setEnabled(false);
+    radio13.setEnabled(false);
 
 
     // Connect buttons
@@ -332,19 +349,19 @@ int qt(int argc, char *argv[]){
         lineEditFloat2.setEnabled(!checked);
     });
 
-    QObject::connect(&radio3, &QRadioButton::toggled, [&lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6, &radio8, &radio10](bool checked) {
+    QObject::connect(&radio3, &QRadioButton::toggled, [&lineEditFloat3, &lineEditFloat4, &lineEditFloat5, &lineEditFloat6, &radio11, &radio13](bool checked) {
         lineEditFloat3.setEnabled(checked);
         lineEditFloat4.setEnabled(checked);
         lineEditFloat5.setEnabled(checked);
         lineEditFloat6.setEnabled(checked);
-        radio8.setEnabled(checked);
-        radio10.setEnabled(false); //radio10.setEnabled(!checked); //change after implementing binary interface for batch modes
+        radio11.setEnabled(checked);
+        radio13.setEnabled(false); //radio13.setEnabled(!checked); //change after implementing binary interface for batch modes
     });
 
-QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checked) {
+QObject::connect(&radio11, &QRadioButton::toggled, [&radio3, &radio12](bool checked) {
     if (radio3.isChecked() && checked) {
-        radio9.setEnabled(false); //radio9.setEnabled(true); - do zmiany po dodaniu fine-tuningu
-    } else {radio9.setEnabled(false);}
+        radio12.setEnabled(false); //radio12.setEnabled(true); - do zmiany po dodaniu fine-tuningu
+    } else {radio12.setEnabled(false);}
 });
 
 
@@ -376,6 +393,7 @@ QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checke
     QObject::connect(&cancelButton, &QPushButton::clicked, &QCoreApplication::quit);
 
     layout.addWidget(&modeGroupBox);
+    layout.addWidget(&algorithmGroupBox);
     layout.addWidget(&dataGroupBox);
     layout.addWidget(&parametersGroupBox);
     layout.addWidget(&batchGroupBox);
@@ -416,7 +434,7 @@ QObject::connect(&radio8, &QRadioButton::toggled, [&radio3, &radio9](bool checke
     QObject::connect(&radio4, &QRadioButton::toggled, [&mode](bool checked){
         if (checked) mode = 4;});
 
-    QObject::connect(&radio8, &QRadioButton::toggled, [&plot](bool checked){
+    QObject::connect(&radio11, &QRadioButton::toggled, [&plot](bool checked){
         if (checked) plot = true;});
 
 
