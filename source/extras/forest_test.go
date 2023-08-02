@@ -11,7 +11,7 @@ import (
 
 
 // Function to save the deep forest to a binary file
-// Function to save the deep forest to a binary file
+
 func saveDeepForestToFile(deepForest randomforest.DeepForest, filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
@@ -46,7 +46,8 @@ func loadDeepForestFromFile(filename string) (randomforest.DeepForest, error) {
 
 	return deepForest, nil
 }
-/*
+/* 
+//ordinary random forest
 func main() {
 	xData := [][]float64{}
 	yData := []int{}
@@ -64,7 +65,7 @@ func main() {
 	fmt.Println("Vote", forest.Vote([]float64{0.9, 0.9, 0.9, 0.9}))
 }
 */
-
+//DFTRF with save/load functions test
 func main() {
 	xData := [][]float64{}
 	yData := []int{}
