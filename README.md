@@ -42,3 +42,13 @@ As for now, the application is *almost* fully functional. Planned improvements i
 5. [FastChi$^{2}$](https://public.lanl.gov/palmer/fastchi.html) - Reasonably performant periodogram for batch searches (CLI only).
 6. [PDM2](http://www.stellingwerf.com/rfs-bin/index.cgi?action=PageView&id=29) - Accurate low-performance periodogram.
 7. [Plotypus](https://github.com/astroswego/plotypus) - Not maintained Python library useful for finding periods as well as lightcurve generation.
+
+#### Inspired by (list does not include software and/or articles mentioned previously in alternatives);
+1. [FNPeaks](http://helas.astro.uni.wroc.pl/deliverables.php?active=fnpeaks) - a simple recursive Lomb-Scargle periodogram (CLI only)
+2. [AstryPy's periodograms' implementations](https://github.com/astropy/astropy/tree/662528102179cc93ab9e4b21a31b7cbc1d4c299f/astropy/timeseries/periodograms/lombscargle/implementations)
+3. [nfft.nfft_adjoint function from nfft Python package](https://github.com/jakevdp/nfft)
+4. [adjoint CUNFFT from CUNFFT library](https://github.com/sukunis/CUNFFT)
+5. [Matthew J. Graham at all - A comparison of period finding algorithms](https://arxiv.org/pdf/1307.2209.pdf)
+6. [Deep Forward Thinking Random Forest ensemble learning method](https://arxiv.org/abs/1705.07366)
+7. [randomForest Go machine learning library](https://github.com/malaschitz/randomForest)
+8. [GoLearn machine learning library](https://github.com/sjwhitworth/golearn)
