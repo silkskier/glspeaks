@@ -179,7 +179,7 @@ int qt(int argc, char *argv[]){
 
     int mode = 4;
     bool plot = false;
-    std::string argv_gui[9];
+    std::string argv_gui[11];
 
     QApplication app(argc, argv);
 
@@ -221,16 +221,19 @@ int qt(int argc, char *argv[]){
     QRadioButton radio8("GLS (NFFT3) [WIP]");
     QRadioButton radio9("FastChi (NFFT3) [WIP]");
     QRadioButton radio10("Conditional entropy [WIP]");
+    QRadioButton radio14("Double Normalised Kolmogorov-Smirnov");
 
     radio7.setChecked(true);
     radio8.setEnabled(false);
     radio9.setEnabled(false);
     radio10.setEnabled(false);
+    radio14.setEnabled(true);
 
     algorithmLayout.addWidget(&radio7, 0, 0);
     algorithmLayout.addWidget(&radio8, 1, 0);
     algorithmLayout.addWidget(&radio9, 0, 1);
     algorithmLayout.addWidget(&radio10, 1, 1);
+    algorithmLayout.addWidget(&radio14, 2, 0);
 
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
