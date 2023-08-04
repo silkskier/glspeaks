@@ -1,12 +1,9 @@
 #include <cmath>
+#include "../extras/vertex.hpp"
 
 //const float tau = 6.283185307179586;
 using namespace std;
 
-struct output_data {
-	float power, amplitude, frequency;
-	double sum_of_powers;
-};
 
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01

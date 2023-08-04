@@ -3,4 +3,14 @@
 
 #include <iostream>
 
+struct output_data {
+	float power, amplitude, frequency;
+	double sum_of_powers;
+};
+
+struct measurement {
+    double x;
+    double y;
+};
+
 #endif
