@@ -35,7 +35,7 @@ void dnks_s(double* t,double* y, unsigned int n, unsigned int nk, double* f, dou
 	y_norm = 2. / y_norm; for (unsigned int i=0; i<n; ++i) {input[i].y *= y_norm;}
 
 
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (unsigned int i=0; i<nk; ++i) {	//main loop
 
 		double x_uuf = 0, y_uuf = 0; //ununiformity of x and y values
