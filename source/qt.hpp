@@ -221,7 +221,7 @@ int qt(int argc, char *argv[]){
     QRadioButton radio8("GLS (NFFT3) [WIP]");
     QRadioButton radio9("FastChi (NFFT3) [WIP]");
     QRadioButton radio10("Conditional entropy [WIP]");
-    QRadioButton radio14("Double Normalised Kolmogorov-Smirnov");
+    QRadioButton radio14("Double Normalised Kuiper");
 
     radio7.setChecked(true);
     radio8.setEnabled(false);
