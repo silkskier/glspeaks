@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(CMAKE_C_COMPILER "icx")
 #set(CMAKE_CXX_COMPILER "icpx")
+set(CUDA_FLAGS) ""
+#set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
 set(CMAKE_AUTOMOC ON)
 # Set the path to the Qt5 installation
@@ -20,7 +22,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -fopenmp")# -static
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -O3 -ffast-math -fopenmp")# -static
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
