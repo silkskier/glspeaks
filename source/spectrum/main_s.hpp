@@ -11,7 +11,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/karma.hpp>
 
-#include "GLS_s.hpp"
+#include "GLS/GLS_s.hpp"
 
 using namespace std;
 

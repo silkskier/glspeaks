@@ -5,7 +5,7 @@
 #include <tuple>
 #include <cmath>
 
-#include "GLS_b.hpp"
+#include "GLS/GLS_b.hpp"
 #include <boost/spirit/include/qi.hpp>
 
 using namespace std;

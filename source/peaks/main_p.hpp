@@ -10,8 +10,8 @@
 
 #include <boost/spirit/include/qi.hpp>
 
-#include "GLS_p_par.hpp"
-#include "GLS_p_seq.hpp"
+#include "GLS/GLS_p_par.hpp"
+#include "GLS/GLS_p_seq.hpp"
 #include "../extras/vertex_64.hpp"
 
 bool UseOpenMP = true;
