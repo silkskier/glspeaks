@@ -22,7 +22,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -O3 -ffast-math -fopenmp")# -static
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -O3 -ffast-math -fopenmp -mavx -mavx2 -msse -msse2 -fno-sanitize=all")# -static
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
