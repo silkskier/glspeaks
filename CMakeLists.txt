@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(CMAKE_C_COMPILER "icx")
 #set(CMAKE_CXX_COMPILER "icpx")
-set(CUDA_FLAGS) ""
+#set(CUDA_FLAGS) ""
 #set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
 set(CMAKE_AUTOMOC ON)
