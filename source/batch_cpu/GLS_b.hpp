@@ -1,5 +1,5 @@
 #include <cmath>
-#include "../extras/vertex.hpp"
+#include "../extras/vertex_32.hpp"
 
 //const float tau = 6.283185307179586;
 using namespace std;

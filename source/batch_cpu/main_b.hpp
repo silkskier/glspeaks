@@ -19,7 +19,8 @@
 
 using namespace std;
 
-std::atomic<int> progressValue(0), timeLeft(0);
+std::atomic<float> progressValue(0);
+std::atomic<int> timeLeft(0), filesComputed(0);
 
 bool filter(float frequency, float power, float min_value, float filter_range, float amplitude, float min_amplitude, float max_amplitude){
 
@@ -36,7 +37,21 @@ bool filter(float frequency, float power, float min_value, float filter_range, f
     return true;
 }
 
-
+void printProgress(int max_progress, const std::chrono::steady_clock::time_point startTime) {
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if (filesComputed.load() == max_progress) {
+            return;
+        }
+        int currentFilesComputed = filesComputed.load();
+        float progress = 100. * static_cast<float>(currentFilesComputed) / static_cast<float>(max_progress);
+        std::chrono::duration<double> elapsedTime = std::chrono::steady_clock::now() - startTime;
+        float localTimeLeft = static_cast<float>(elapsedTime.count()) * (float(max_progress) - float(currentFilesComputed)) / float(currentFilesComputed);
+        progressValue.store(10 * progress);
+        timeLeft.store(int(localTimeLeft));
+        std::cout << std::fixed << std::setprecision(2) << "\r" << progress << "% complete, " << localTimeLeft << " seconds left." << std::flush;
+    }
+}
 
 void main_batch(int argc, char *argv[]){
 
@@ -50,7 +65,6 @@ const std::string files_location = argv[2];
 
 if (argc < 3){return;} // || argv[3][0] == '\0' - breaks gui
 
-//if (mode == "-g"){printf("true");}
 
 float min_frequency_temp = 0.003;
 if (argc > 3 && ((mode != "-g" && argv[3][0]) != '\0') || (mode == "-g" && argv[3][0]) != '\0'){min_frequency_temp = std::stof(argv[3]);}
@@ -103,6 +117,13 @@ for (auto& entry : directory_iterator)
 std::cout <<"Number of files in directory: " << file_count << "\n" << std::endl;
 // for(unsigned int i=0; i < files.size(); i++) std::cout << files.at(i) << ','; //prints list of files
 
+const std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+
+std::thread printThread;
+    printThread = std::thread([&]() {
+        printProgress(file_count, startTime);
+    });
+
 std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
 //output_file << "<path_to_file>\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
@@ -124,54 +145,49 @@ int status;
 for (i = 0; i < max_thread_number; ++i) wait(&status);
 /*/
 
-const unsigned int files_per_cycle = 1024; const unsigned int number_of_cycles = ceil(file_count/files_per_cycle);
-float best_frequencies[file_count]; float powers[file_count]; float amplitudes[file_count];
-
-std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
-std::chrono::steady_clock::time_point currentTime;
-std::chrono::duration<double> elapsedTime;
-
 
 output_file << "file	frequency	period	amplitude	power" <<std::endl;
 
-for (unsigned int j = 0; j< file_count; min(j+=files_per_cycle, file_count)){ //loops code execution
-
+/*
 if (string(argv[1]) == "-g") {
         currentTime = std::chrono::steady_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
-        progressValue.store(static_cast<int>(1000 * static_cast<float>(j) / static_cast<float>(file_count)));
-        timeLeft.store(static_cast<int>(elapsedTime.count() * ((static_cast<float>(file_count) - static_cast<float>(j)) / static_cast<float>(j))));}
-else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(j)/float(file_count) << "% complete" << std::flush;}
+        progressValue.store(static_cast<int>(1000 * static_cast<float>(0) / static_cast<float>(file_count)));
+else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(0)/float(file_count) << "% complete" << std::flush;}
+*/
 
 
 #pragma omp parallel for
-for (unsigned int i = j; i < min(j + files_per_cycle, file_count) ; i++)
-{auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]); best_frequencies[i] = frequency, amplitudes[i] =  amplitude, powers[i] =  max_power;}
+for (unsigned int i = 0; i < file_count; i++) {
+    auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]);
 
 
-//for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true)
-//{output_file <<std::fixed << std::setprecision(8) << files.at(i) << "	" << best_frequencies[i] << "	" << 1/best_frequencies[i] << "	" << amplitudes[i] << "	" << powers[i] << std::endl;}
+    if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
+        std::string output_string;
+        // Generate formatted string
+        boost::spirit::karma::generate(std::back_inserter(output_string),
+            boost::spirit::stream(files[i])
+            << "\t" << boost::spirit::float_(frequency)
+            << "\t" << boost::spirit::float_(1/frequency)
+            << "\t" << boost::spirit::float_(amplitude)
+            << "\t" << boost::spirit::float_(max_power)
+        );
 
-std::vector<std::string> output_string(files_per_cycle);
-#pragma omp parallel for
-for (unsigned int i = j; i < min(j + files_per_cycle, file_count); i++) if(filter(best_frequencies[i], powers[i], min_power, filter_range, amplitudes[i], min_amplitude, max_amplitude)==true){
-
-
-  boost::spirit::karma::generate
-	(std::back_inserter(output_string[i-j]),
-	boost::spirit::stream(files[i])
-	<< "\t"<< boost::spirit::float_(best_frequencies[i])
-	<< "\t"<< boost::spirit::float_(1/best_frequencies[i])
-	<< "\t"<< boost::spirit::float_(amplitudes[i])
-	<< "\t"<< boost::spirit::float_(powers[i]));}
-
-	output_string.erase(remove(output_string.begin(), output_string.end(), ""), output_string.end());
-
-for (unsigned int i = 0; i < output_string.size(); i++) output_file << output_string[i] <<std::endl; output_string.clear();
+        // Enter critical section to write to the file
+        #pragma omp critical
+        {
+            output_file << output_string << std::endl;
+        }
+    }
+#pragma omp critical
+{filesComputed += 1;}
 }
+
+
 
 if (string(argv[1]) == "-g") {progressValue.store(static_cast<int>(1000)), timeLeft.store(static_cast<int>(0));}
 else {std::cout << "\r" << "Complete" << std::endl;}
 
+printThread.join();
 
 output_file.close(); return;}

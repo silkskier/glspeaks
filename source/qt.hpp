@@ -49,7 +49,7 @@ public:
 
 public slots:
     void updateProgress() {
-        int progress = progressValue.load(); // Read the progress value
+        float progress = progressValue.load(); // Read the progress value
         int value = timeLeft.load();
         int seconds = value % 60;
         int minutes = (value / 60) % 60;
