@@ -13,7 +13,7 @@ Application based on [fnpeaks](http://helas.astro.uni.wroc.pl/deliverables.php?a
 wget https://github.com/silkskier/glspeaks/releases/download/v1.0.4-alpha/glspeaks-alpha-1.0.4_installer.sh && chmod +x ./glspeaks-alpha-1.0.4_installer.sh && ./glspeaks-alpha-1.0.4_installer.sh
 ```-->
 ```bash
-git clone https://github.com/silkskier/glspeaks
+git clone --depth=1 https://github.com/silkskier/glspeaks
 cd glspeaks
 cmake .
 make
