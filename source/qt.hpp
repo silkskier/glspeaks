@@ -89,7 +89,8 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
 
 void continueButtonClicked(int mode, std::string argv[], bool plot) {
 
-
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
 
     if (mode == 1) //spectrum
     {
@@ -125,11 +126,16 @@ void continueButtonClicked(int mode, std::string argv[], bool plot) {
     else if (mode == 3){ //slow
     if (argv[1].empty()){
     showText("Error: Input directory not specified", 350, 60, "glspeaks - peaks mode");
+
+
     return;}
 
 
     char* argv_batch[] = {"glspeaks", "-g", &*argv[1].begin(), &*argv[3].begin(), &*argv[4].begin(), &*argv[2].begin(), &*argv[5].begin(),  &*argv[6].begin(),  &*argv[7].begin(),  &*argv[8].begin()};
     std::thread t(main_batch, 10, argv_batch);
+
+    #pragma GCC diagnostic pop
+
     QProgressDialog progressDialog("Computation in progress", "Cancel", 0, 1000);
     progressDialog.setWindowModality(Qt::WindowModal);
 
