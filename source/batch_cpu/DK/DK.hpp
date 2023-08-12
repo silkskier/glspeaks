@@ -55,9 +55,8 @@ output_data dnks_b(float* t,float* y, unsigned int n, unsigned int nk, float* f)
 		measurement* input_temp = (measurement*)malloc(n * sizeof(measurement)); std::copy(input, input + n, input_temp);
 		for (unsigned int j=0; j<n; ++j) {input_temp[j].x *= f[i]; input_temp[j].x -= float(int(input_temp[j].x));}// fmod is 6 times slower than that
 
-		pdqsort(input_temp, input_temp + n, [](const measurement& a, const measurement& b) {
-            return a.x < b.x;
-        }); //sort the input array by phase, stable_sort is >4x faster, than std::sort
+		pdqsort_branchless(input_temp, input_temp + n, [](const measurement& a, const measurement& b) {
+            		return a.x < b.x;}); //sort the input array by phase, pdqsort_branchless is ~2x faster, than std::sort
 
 		for (unsigned int j=0; j<n; ++j) {
 		y_cumsum += input_temp[j].y;
