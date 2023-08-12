@@ -34,6 +34,8 @@ set_property(TARGET glspeaks PROPERTY AUTOMOC ON)
 target_link_libraries(glspeaks PRIVATE
     Qt5::Widgets
     OpenMP::OpenMP_CXX
+    nfft3
+    fftw3
 )
 
 # Install the executable to /usr/local/bin
