@@ -4,9 +4,8 @@
 #include <cmath>
 #include <complex>
 
-extern "C" {
 #include <nfft3.h>
-}
+
 
 void nfft(const double* t, const double* y, int n, int m, fftw_complex* d)
 {
