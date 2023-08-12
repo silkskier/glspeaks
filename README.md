@@ -60,3 +60,4 @@ As for now, the application is *almost* fully functional. Planned improvements i
 14. [supersmoother Python package](https://github.com/jakevdp/supersmoother)
 15. [pdqsort library](https://github.com/orlp/pdqsort)
 16. [VkFFT library](https://github.com/DTolm/VkFFT)
+17. [Kaixi Hou at all - bb_segsort algoruthm](https://kaixih.github.io/assets/slides/ics'17-segsort-slides.pdf)
