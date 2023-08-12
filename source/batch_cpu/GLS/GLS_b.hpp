@@ -8,7 +8,7 @@ using namespace std;
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-inline output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
+output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
 
 output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
