@@ -2,8 +2,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <math.h>
 
 #include "../../extras/vertex.hpp"
+#include "../../extras/pdqsort.h"
+
 
    /*
     * t : time array
@@ -24,6 +27,7 @@ output_data dnks_b(float* t,float* y, unsigned int n, unsigned int nk, float* f)
 	measurement *input = (measurement *) malloc(n * sizeof(measurement));
 	const float n_inv = 1. / float(n);
 	const float n_float = float(n);
+	const float crit = 1 / sqrt(n);
 
 	for (unsigned int i=0; i<n; ++i) {
 		input[i].x = t[i];
@@ -51,7 +55,9 @@ output_data dnks_b(float* t,float* y, unsigned int n, unsigned int nk, float* f)
 		measurement* input_temp = (measurement*)malloc(n * sizeof(measurement)); std::copy(input, input + n, input_temp);
 		for (unsigned int j=0; j<n; ++j) {input_temp[j].x *= f[i]; input_temp[j].x -= float(int(input_temp[j].x));}// fmod is 6 times slower than that
 
-		std::stable_sort(input_temp, input_temp + n, [](const measurement& a, const measurement& b) {return a.x < b.x;}); //sort the input array by phase, stable_sort is >4x faster, than std::sort
+		pdqsort(input_temp, input_temp + n, [](const measurement& a, const measurement& b) {
+            return a.x < b.x;
+        }); //sort the input array by phase, stable_sort is >4x faster, than std::sort
 
 		for (unsigned int j=0; j<n; ++j) {
 		y_cumsum += input_temp[j].y;
@@ -69,7 +75,9 @@ output_data dnks_b(float* t,float* y, unsigned int n, unsigned int nk, float* f)
 			else if (x_diff > x_cumsum_max) {x_cumsum_max = x_diff;}
 		}
 
-		p -= 2 * (x_cumsum_max - x_cumsum_min) * n_inv; //works - ununiformity index of x axis (related to probability of aliasing)
+		float x_ununiform = 2 * (x_cumsum_max - x_cumsum_min) * n_inv;
+		p -= x_ununiform; //works - ununiformity index of x axis (related to probability of aliasing)
+		//if ((p < 0) || (x_ununiform > crit)) { p = 0.; }
 
 		if (p > float(best_frequency.power)) {best_frequency.power = p; best_frequency.frequency = f[i];}
 
