@@ -7,15 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(CMAKE_C_COMPILER "icx")
 #set(CMAKE_CXX_COMPILER "icpx")
-#set(CUDA_FLAGS) ""
-#set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
+# set(CUDA_FLAGS) ""
+# set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
 set(CMAKE_AUTOMOC ON)
 # Set the path to the Qt5 installation
-#set(CMAKE_PREFIX_PATH "/home/kacper/Qt5static/5.15" CACHE PATH "Qt5 installation path")
+# set(CMAKE_PREFIX_PATH "/home/kacper/Qt5static/5.15" CACHE PATH "Qt5 installation path")
 
 # Enforce the use of static Qt5 libraries
-#set(Qt5_USE_STATIC_LIBS ON)
+# set(Qt5_USE_STATIC_LIBS ON)
 
 # Find the required Qt5 components
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
