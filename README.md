@@ -58,4 +58,5 @@ As for now, the application is *almost* fully functional. Planned improvements i
 12. [GoLearn machine learning library](https://github.com/sjwhitworth/golearn)
 13. [Friedman, J. H. (1984) A variable span scatterplot smoother](https://www.slac.stanford.edu/pubs/slacpubs/3250/slac-pub-3477.pdf)
 14. [supersmoother Python package](https://github.com/jakevdp/supersmoother)
-15. [VkFFT library](https://github.com/DTolm/VkFFT)
+15. [pdqsort library](https://github.com/orlp/pdqsort)
+16. [VkFFT library](https://github.com/DTolm/VkFFT)
