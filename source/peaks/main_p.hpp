@@ -5,7 +5,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <algorithm> //for sorting
 #include <locale>
 
 #include <boost/sort/pdqsort/pdqsort.hpp>
