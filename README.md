@@ -61,3 +61,10 @@ As for now, the application is *almost* fully functional. Planned improvements i
 15. [pdqsort library](https://github.com/orlp/pdqsort)
 16. [VkFFT library](https://github.com/DTolm/VkFFT)
 17. [Kaixi Hou at all - bb_segsort algoruthm](https://kaixih.github.io/assets/slides/ics'17-segsort-slides.pdf)
+18. [FINUFFT](https://github.com/flatironinstitute/finufft)
+19. [Sheng Shi, Runkai Yang and Haihang You - NFFT.jl](https://arxiv.org/abs/2208.00049)
+20. [Haitham Hassanieh, Piotr Indyk, Dina Katabi, Eric Price - Nearly Optimal Sparse Fourier Transform](https://arxiv.org/abs/1201.2501v1)
+21. [sFFT-4.0](http://www.scielo.org.co/scielo.php?script=sci_arttext&pid=S1794-91652015000200004)
+22. [Sheng Shi, Runkai Yang, Haihang You - ATSFFT](https://arxiv.org/abs/1908.02461)
+
+<!--  https://sourceforge.net/projects/sfft40/ - sFFT-4.0 library  -->
