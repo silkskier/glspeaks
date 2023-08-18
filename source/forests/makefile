@@ -1,2 +1,2 @@
 all:
-	g++ -c forest.cpp -o forest -lboost_serialization
+	g++ forest.cpp -o forest -lboost_serialization
