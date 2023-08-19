@@ -10,8 +10,6 @@ namespace DeepForest {
 
 struct Branch;
 
-void deserializeBranch(boost::archive::binary_iarchive& ar, Branch*& branch);
-
 struct Branch {
     int Attribute;
     float Value;
@@ -20,15 +18,37 @@ struct Branch {
     float Gini;
     float GiniGain;
     int Size;
-    Branch* Branch0;
-    Branch* Branch1;
+    int Branch0Index; // Index of the first branch
+    int Branch1Index; // Index of the second branch
     int Depth;
 
-    Branch() : Branch0(nullptr), Branch1(nullptr) {}
+    Branch() : IsLeaf(true), Branch0Index(-1), Branch1Index(-1) {}
 
-    ~Branch() {
-        delete Branch0;
-        delete Branch1;
+    bool operator==(const Branch& other) const {
+    return Attribute == other.Attribute &&
+            Value == other.Value &&
+            IsLeaf == other.IsLeaf &&
+            LeafValue == other.LeafValue &&
+            Gini == other.Gini &&
+            GiniGain == other.GiniGain &&
+            Size == other.Size &&
+            Branch0Index == other.Branch0Index &&
+            Branch1Index == other.Branch1Index &&
+            Depth == other.Depth;
+    }
+
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version) {
+        ar & Attribute;
+        ar & Value;
+        ar & IsLeaf;
+        ar & LeafValue;
+        ar & Gini;
+        ar & GiniGain;
+        ar & Size;
+        ar & Branch0Index;
+        ar & Branch1Index;
+        ar & Depth;
     }
 
     template<class Archive>
@@ -40,6 +60,8 @@ struct Branch {
         ar & Gini;
         ar & GiniGain;
         ar & Size;
+        ar & Branch0Index;
+        ar & Branch1Index;
         ar & Depth;
     }
 
@@ -52,50 +74,11 @@ struct Branch {
         ar & Gini;
         ar & GiniGain;
         ar & Size;
+        ar & Branch0Index;
+        ar & Branch1Index;
         ar & Depth;
-
-        if (!IsLeaf) {
-            deserializeBranch(ar, Branch0);
-            deserializeBranch(ar, Branch1);
-        }
     }
-
-    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
-
-void deserializeBranch(boost::archive::binary_iarchive& ar, Branch*& branch) {
-    int attribute;
-    float value;
-    bool isLeaf;
-    std::vector<float> leafValue;
-    float gini;
-    float giniGain;
-    int size;
-    int depth;
-    ar & attribute;
-    ar & value;
-    ar & isLeaf;
-    ar & leafValue;
-    ar & gini;
-    ar & giniGain;
-    ar & size;
-    ar & depth;
-
-    branch = new Branch;
-    branch->Attribute = attribute;
-    branch->Value = value;
-    branch->IsLeaf = isLeaf;
-    branch->LeafValue = leafValue;
-    branch->Gini = gini;
-    branch->GiniGain = giniGain;
-    branch->Size = size;
-    branch->Depth = depth;
-
-    if (!isLeaf) {
-        deserializeBranch(ar, branch->Branch0);
-        deserializeBranch(ar, branch->Branch1);
-    }
-}
 
 struct ForestData {
     std::vector<std::vector<float>> X;
@@ -109,18 +92,19 @@ struct ForestData {
 };
 
 struct Tree {
-    Branch Root;
+    std::vector<Branch> Branches; // Actual branches of the tree
     float Validation;
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
-        ar & Root;
+        ar & Branches;
         ar & Validation;
     }
 };
 
 struct Forest {
     ForestData Data;
+    std::vector<Branch> Branches;
     std::vector<Tree> Trees;
     int Features;
     int Classes;
@@ -134,6 +118,7 @@ struct Forest {
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar & Data;
+        ar & Branches;
         ar & Trees;
         ar & Features;
         ar & Classes;
@@ -148,46 +133,108 @@ struct Forest {
 
 } // namespace DeepForest
 
+
+
 // test serialization and deserialization
+
+bool compare_forests(const DeepForest::Forest& forest1, const DeepForest::Forest& forest2) {
+    // Compare forest parameters
+    if (forest1.Features != forest2.Features ||
+        forest1.Classes != forest2.Classes ||
+        forest1.LeafSize != forest2.LeafSize ||
+        forest1.MFeatures != forest2.MFeatures ||
+        forest1.NTrees != forest2.NTrees ||
+        forest1.NSize != forest2.NSize ||
+        forest1.MaxDepth != forest2.MaxDepth ||
+        forest1.FeatureImportance != forest2.FeatureImportance) {
+        return false;
+    }
+
+    // Compare tree count
+    if (forest1.Trees.size() != forest2.Trees.size()) {
+        return false;
+    }
+
+    // Compare each tree and its branches
+    for (std::size_t i = 0; i < forest1.Trees.size(); ++i) {
+        if (forest1.Trees[i].Branches != forest2.Trees[i].Branches ||
+            forest1.Trees[i].Validation != forest2.Trees[i].Validation) {
+            return false;
+        }
+    }
+
+    // ... (you can add more comparisons for other parts of the forest if needed)
+
+    return true;
+}
+
+
 int main() {
-    // Create an empty Forest object
-    DeepForest::Forest emptyForest;
+    // Create a test Forest object
+    DeepForest::Forest testForest;
+
+    DeepForest::Tree tree1;
+    DeepForest::Tree tree2;
+
+    // Initialize boolean variables for leaves
+    DeepForest::Branch leaf1, leaf2;
+    leaf1.IsLeaf = true;
+    leaf2.IsLeaf = true;
+    tree1.Branches.push_back(leaf1);
+    tree1.Branches.push_back(leaf2);
+
+    // Initialize boolean variables for leaves and branches
+    DeepForest::Branch branch1, branch2, leaf3, leaf4;
+    leaf3.IsLeaf = true;
+    leaf4.IsLeaf = true;
+    branch1.IsLeaf = false; // This is a branch, not a leaf
+    branch2.IsLeaf = false; // This is a branch, not a leaf
+    branch2.Branch0Index = tree1.Branches.size();
+    branch2.Branch1Index = tree1.Branches.size() + 1;
+    tree1.Branches.push_back(leaf3);
+    tree1.Branches.push_back(leaf4);
+    tree2.Branches.push_back(branch1);
+    tree2.Branches.push_back(branch2);
+
+    // ... (set other parameters of testForest)
 
     // Specify the filename for saving
-    std::string filename = "empty_forest.rf";
+    std::string filename = "test_forest.rf";
 
     // Serialize and save the Forest object to the binary file
     std::ofstream ofs(filename, std::ios::binary);
     if (ofs.is_open()) {
         boost::archive::binary_oarchive archive(ofs);
-        archive << emptyForest;
+        archive << testForest;
         ofs.close();
-        std::cout << "Empty Forest saved to " << filename << std::endl;
+        std::cout << "Test Forest saved to " << filename << std::endl;
     } else {
         std::cerr << "Failed to open " << filename << " for writing." << std::endl;
     }
 
-    // Simple deserialization attempt
-    DeepForest::Forest loadedForest;
-
-    // Load and deserialize the Forest object from the binary file
+       // Deserialize and read the Forest object from the binary file
     std::ifstream ifs(filename, std::ios::binary);
     if (ifs.is_open()) {
+        DeepForest::Forest loadedForest;
         boost::archive::binary_iarchive archive(ifs);
         archive >> loadedForest;
-
-        /*
-        // The following loop calls the deserializeBranch function for each tree's root branch. Not neccessary because of .load
-        for (auto& tree : loadedForest.Trees) {
-            DeepForest::deserializeBranch(archive, tree.Root.Branch0);
-            DeepForest::deserializeBranch(archive, tree.Root.Branch1);
-        }*/
-
         ifs.close();
-        std::cout << "Empty Forest loaded from " << filename << std::endl;
+        std::cout << "Test Forest loaded from " << filename << std::endl;
+
+        // Compare the loadedForest with the original testForest
+        if (compare_forests(testForest, loadedForest)) {
+            std::cout << "Loaded forest is the same as the original forest." << std::endl;
+        } else {
+            std::cerr << "Error: Loaded forest is not the same as the original forest." << std::endl;
+        }
+
+        // Now you can access and use the loadedForest object
+        // ... (perform actions with loadedForest)
     } else {
         std::cerr << "Failed to open " << filename << " for reading." << std::endl;
+        return 1;
     }
+
 
     return 0;
 }
