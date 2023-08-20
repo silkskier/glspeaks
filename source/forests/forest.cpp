@@ -87,7 +87,7 @@ struct ForestData {
 
     bool operator==(const ForestData& other) const {return X == other.X && Class == other.Class;}
     //for some reason that structs needs to have != operator defined separately - in any other case it doesn't compile
-    bool operator!=(const ForestData& other) const {return !(X == other.X && Class == other.Class);}
+    bool operator!=(const ForestData& other) const {return !(*this == other);}
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -164,6 +164,8 @@ struct Forest {
         }
     return true;
     }
+
+    bool operator!=(const Forest& other) const {return !(*this == other);}
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -245,10 +247,10 @@ int main() {
     newForest.Trees.push_back(newTree);
 
     // Compare the newForest with the loadedForest
-    if (newForest == loadedForest) {
-        std::cerr << "Error:New forest is the same as the loaded forest." << std::endl;
-    } else {
+    if (newForest != loadedForest) {
         std::cout << "New forest is not the same as the loaded forest." << std::endl;
+    } else {
+        std::cerr << "Error:New forest is the same as the loaded forest." << std::endl;
     }
 
     return 0;
