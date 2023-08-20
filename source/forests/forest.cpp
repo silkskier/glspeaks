@@ -98,6 +98,7 @@ struct ForestData {
 
 struct Tree {
     std::vector<Branch> Branches; // Actual branches of the tree
+    // Root = Branches[0]
     float Validation;
 
     bool operator==(const Tree& other) const {
@@ -113,7 +114,6 @@ struct Tree {
 
 struct Forest {
     ForestData Data;
-    std::vector<Branch> Branches;
     std::vector<Tree> Trees;
     int Features;
     int Classes;
@@ -168,7 +168,6 @@ struct Forest {
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar & Data;
-        ar & Branches;
         ar & Trees;
         ar & Features;
         ar & Classes;
