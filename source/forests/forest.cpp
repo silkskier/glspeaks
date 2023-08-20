@@ -234,7 +234,22 @@ int main() {
         std::cerr << "Error: Loaded forest is not the same as the original forest." << std::endl;
     }
 
+    // Create a new Forest object with one tree containing one leaf
+    DeepForest::Forest newForest;
 
+    DeepForest::Tree newTree;
+    DeepForest::Branch newLeaf;
+    newLeaf.IsLeaf = true;
+    newTree.Branches.push_back(newLeaf);
+
+    newForest.Trees.push_back(newTree);
+
+    // Compare the newForest with the loadedForest
+    if (newForest == loadedForest) {
+        std::cerr << "Error:New forest is the same as the loaded forest." << std::endl;
+    } else {
+        std::cout << "New forest is not the same as the loaded forest." << std::endl;
+    }
 
     return 0;
 }
