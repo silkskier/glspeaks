@@ -84,6 +84,11 @@ struct ForestData {
     std::vector<std::vector<float>> X;
     std::vector<int> Class;
 
+
+    bool operator==(const ForestData& other) const {return X == other.X && Class == other.Class;}
+    //for some reason that structs needs to have != operator defined separately - in any other case it doesn't compile
+    bool operator!=(const ForestData& other) const {return !(X == other.X && Class == other.Class);}
+
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
         ar & X;
@@ -94,6 +99,10 @@ struct ForestData {
 struct Tree {
     std::vector<Branch> Branches; // Actual branches of the tree
     float Validation;
+
+    bool operator==(const Tree& other) const {
+    return Branches == other.Branches && Validation == other.Validation;
+    }
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -114,6 +123,47 @@ struct Forest {
     int NSize;
     int MaxDepth;
     std::vector<float> FeatureImportance;
+
+    void save(const std::string& filename) const {
+        std::ofstream ofs(filename, std::ios::binary);
+        if (ofs.is_open()) {
+            boost::archive::binary_oarchive archive(ofs);
+            archive << *this;
+            ofs.close();
+            std::cout << "Forest saved to " << filename << std::endl;
+        } else {
+            std::cerr << "Failed to open " << filename << " for writing." << std::endl;
+        }
+    }
+
+    void load(const std::string& filename) {
+        std::ifstream ifs(filename, std::ios::binary);
+        if (ifs.is_open()) {
+            boost::archive::binary_iarchive archive(ifs);
+            archive >> *this;
+            ifs.close();
+            std::cout << "Forest loaded from " << filename << std::endl;
+        } else {
+            std::cerr << "Failed to open " << filename << " for reading." << std::endl;
+        }
+    }
+
+    bool operator==(const Forest& other) const {
+        // Compare forest parameters
+        if (Data != other.Data ||
+            Features != other.Features ||
+            Classes != other.Classes ||
+            LeafSize != other.LeafSize ||
+            MFeatures != other.MFeatures ||
+            NTrees != other.NTrees ||
+            NSize != other.NSize ||
+            MaxDepth != other.MaxDepth ||
+            FeatureImportance != other.FeatureImportance ||
+            Trees != other.Trees) {
+            return false;
+        }
+    return true;
+    }
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
@@ -136,37 +186,6 @@ struct Forest {
 
 
 // test serialization and deserialization
-
-bool compare_forests(const DeepForest::Forest& forest1, const DeepForest::Forest& forest2) {
-    // Compare forest parameters
-    if (forest1.Features != forest2.Features ||
-        forest1.Classes != forest2.Classes ||
-        forest1.LeafSize != forest2.LeafSize ||
-        forest1.MFeatures != forest2.MFeatures ||
-        forest1.NTrees != forest2.NTrees ||
-        forest1.NSize != forest2.NSize ||
-        forest1.MaxDepth != forest2.MaxDepth ||
-        forest1.FeatureImportance != forest2.FeatureImportance) {
-        return false;
-    }
-
-    // Compare tree count
-    if (forest1.Trees.size() != forest2.Trees.size()) {
-        return false;
-    }
-
-    // Compare each tree and its branches
-    for (std::size_t i = 0; i < forest1.Trees.size(); ++i) {
-        if (forest1.Trees[i].Branches != forest2.Trees[i].Branches ||
-            forest1.Trees[i].Validation != forest2.Trees[i].Validation) {
-            return false;
-        }
-    }
-
-    // ... (you can add more comparisons for other parts of the forest if needed)
-
-    return true;
-}
 
 
 int main() {
@@ -202,39 +221,22 @@ int main() {
     std::string filename = "test_forest.rf";
 
     // Serialize and save the Forest object to the binary file
-    std::ofstream ofs(filename, std::ios::binary);
-    if (ofs.is_open()) {
-        boost::archive::binary_oarchive archive(ofs);
-        archive << testForest;
-        ofs.close();
-        std::cout << "Test Forest saved to " << filename << std::endl;
+    // Save the forest using the save method
+    testForest.save(filename);
+
+    // Deserialize and read the Forest object from the binary file
+    DeepForest::Forest loadedForest;
+    loadedForest.load("test_forest.rf");
+
+    // Compare the loadedForest with the original testForest
+    if (testForest == loadedForest) {
+        std::cout << "Loaded forest is the same as the original forest." << std::endl;
     } else {
-        std::cerr << "Failed to open " << filename << " for writing." << std::endl;
+        std::cerr << "Error: Loaded forest is not the same as the original forest." << std::endl;
     }
 
-       // Deserialize and read the Forest object from the binary file
-    std::ifstream ifs(filename, std::ios::binary);
-    if (ifs.is_open()) {
-        DeepForest::Forest loadedForest;
-        boost::archive::binary_iarchive archive(ifs);
-        archive >> loadedForest;
-        ifs.close();
-        std::cout << "Test Forest loaded from " << filename << std::endl;
-
-        // Compare the loadedForest with the original testForest
-        if (compare_forests(testForest, loadedForest)) {
-            std::cout << "Loaded forest is the same as the original forest." << std::endl;
-        } else {
-            std::cerr << "Error: Loaded forest is not the same as the original forest." << std::endl;
-        }
-
-        // Now you can access and use the loadedForest object
-        // ... (perform actions with loadedForest)
-    } else {
-        std::cerr << "Failed to open " << filename << " for reading." << std::endl;
-        return 1;
-    }
 
 
     return 0;
 }
+
