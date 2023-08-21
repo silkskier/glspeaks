@@ -66,5 +66,6 @@ As for now, the application is *almost* fully functional. Planned improvements i
 20. [Haitham Hassanieh, Piotr Indyk, Dina Katabi, Eric Price - Nearly Optimal Sparse Fourier Transform](https://arxiv.org/abs/1201.2501v1)
 21. [sFFT-4.0](http://www.scielo.org.co/scielo.php?script=sci_arttext&pid=S1794-91652015000200004)
 22. [Sheng Shi, Runkai Yang, Haihang You - ATSFFT](https://arxiv.org/abs/1908.02461)
+23. [GPU-accelerated supersmoother](https://github.com/mgowanlock/gpu_supersmoother)
 
 <!--  https://sourceforge.net/projects/sfft40/ - sFFT-4.0 library  -->
