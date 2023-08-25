@@ -1,6 +1,8 @@
 #include <cmath>
 #include "../../extras/vertex_32.hpp"
 
+#include "../../extras/NFFT.hpp"
+
 //const float tau = 6.283185307179586;
 using namespace std;
 
@@ -8,7 +10,7 @@ using namespace std;
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
+inline output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
 
 output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
