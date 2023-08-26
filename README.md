@@ -7,6 +7,8 @@ A simple [GLS](https://github.com/mzechmeister/GLS) periodogram for detection of
 
 Application based on [fnpeaks](http://helas.astro.uni.wroc.pl/deliverables.php?active=fnpeaks), with the goal of increasing performance, user-friendliness, and accuracy over its predecessor.
 
+/include subdirectory does contain copy of [niXman/yas](https://github.com/niXman/yas) serializer.
+
 ### Recommended update/installation command for version beta 1.0.3:
 ##### No releases are currently available. Compilation from the source is recommended.
 <!--```bash
