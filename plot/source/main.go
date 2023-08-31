@@ -9,7 +9,7 @@ import (
 	"path"
 	"strconv"
 	"sync"
-	"runtime"
+	"runtime" //runtime.GC()
 )
 
 
@@ -80,21 +80,40 @@ func main() {
 
 
 
-	numCores := runtime.NumCPU()
-	runtime.GOMAXPROCS(numCores)
+	 numCores := runtime.NumCPU()
+    runtime.GOMAXPROCS(numCores)
 
-	// Create a wait group to synchronize goroutines.
-	var wg sync.WaitGroup
-	for _, file := range data {
-		wg.Add(1) // Increment the wait group counter for each goroutine.
-		go func(file []string) {
-			defer wg.Done() // Decrement the wait group counter when the goroutine completes.
-			freq, err := strconv.ParseFloat(file[1], 64)
-			if err != nil {
-				fmt.Println("Error parsing float:", err)
-				return}
-			generatePlot(strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0])), plotsDir, freq, file[4], strings.Trim(file[0], `"`))
-		}(file)
-	}
-	wg.Wait() // Wait for all goroutines to finish before continuing.
+    // Create a wait group to synchronize goroutines.
+    var wg sync.WaitGroup
+
+    // Create a channel to send data to goroutines.
+    dataChannel := make(chan []string, numCores)
+    defer close(dataChannel) // Close the channel when done.
+
+    // Start numCores goroutines.
+    for grID := 0; grID < numCores; grID++ {
+        wg.Add(1)
+        go func(grID int) {
+            defer wg.Done()
+            for file := range dataChannel {
+                freq, err := strconv.ParseFloat(file[1], 64)
+                if err != nil {
+                    fmt.Println("Error parsing float:", err)
+                    continue
+                }
+                generatePlot(strings.TrimSuffix(path.Base(file[0]), path.Ext(file[0])), plotsDir, freq, file[4], strings.Trim(file[0], `"`))
+            }
+        }(grID)
+    }
+
+    // Feed data to goroutines in a loop.
+    for _, file := range data {
+        dataChannel <- file
+    }
+
+    // Close the data channel to signal goroutines to exit when done.
+    close(dataChannel)
+
+    // Wait for all goroutines to finish.
+    wg.Wait()
 }
