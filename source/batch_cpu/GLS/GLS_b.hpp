@@ -4,8 +4,6 @@
 
 #include "../../extras/NFFT.hpp"
 
-const float tau = 6.283185307179586;
-
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
