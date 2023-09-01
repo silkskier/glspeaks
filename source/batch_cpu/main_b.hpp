@@ -126,36 +126,7 @@ std::thread printThread;
 
 std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
 
-//output_file << "<path_to_file>\t<frequency>\t<period>\t<amplitude>\t<avg/max>" << std::endl;
-
-// calculates best-fitting period time and its power for each file using generalized Lomb-Scargle periodogram.
-
-/*/
-const int max_thread_number = std::thread::hardware_concurrency();
-int i = 0;
-for (i = 0; i < max_thread_number; ++i) {
-    if (fork() == 0) {
-int j;
-for (j=i; j< file_count; j+= max_thread_number){auto [frequency, period, max_power] = periodogram(frequencies, step_size, no_steps, files.at(j));
-if(filter(frequency, max_power, min_power, filter_range)==true) {output_file << files.at(j) << " " << frequency << " " << period << " " << max_power << std::endl;}}
-exit(0);
-}}
-// wait all child processes
-int status;
-for (i = 0; i < max_thread_number; ++i) wait(&status);
-/*/
-
-
 output_file << "file	frequency	period	amplitude	power" <<std::endl;
-
-/*
-if (string(argv[1]) == "-g") {
-        currentTime = std::chrono::steady_clock::now();
-        elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
-        progressValue.store(static_cast<int>(1000 * static_cast<float>(0) / static_cast<float>(file_count)));
-else {std::cout << std::fixed << std::setprecision(1) << "\r" << 100*float(0)/float(file_count) << "% complete" << std::flush;}
-*/
-
 
 #pragma omp parallel for
 for (unsigned int i = 0; i < file_count; i++) {
