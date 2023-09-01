@@ -5,7 +5,7 @@
 #include <boost/spirit/include/qi.hpp>
 
 struct photometry {
-    std::vector<float> x;
+    std::vector<double> x; // Change to double
     std::vector<float> y;
     std::vector<float> dy;
 };
@@ -42,10 +42,10 @@ photometry read_dat(const std::string& in_file) {
         char const* end = it + dataBuffer.size();
 
         while (it < end) {
-            std::vector<float> tempVec;
+            std::vector<double> tempVec; // Change to double
             const char* line_end = std::find(it, end, '\n');
 
-            bool success = boost::spirit::qi::phrase_parse(it, line_end, *boost::spirit::qi::float_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
+            bool success = boost::spirit::qi::phrase_parse(it, line_end, *boost::spirit::qi::double_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
 
             if (success && it == line_end) {
                 data.x.push_back(tempVec[0]);

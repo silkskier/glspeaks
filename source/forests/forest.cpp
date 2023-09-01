@@ -8,8 +8,6 @@
 
 namespace DeepForest {
 
-struct Branch;
-
 struct Branch {
     int Attribute;
     float Value;

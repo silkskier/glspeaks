@@ -20,8 +20,8 @@ inline void gls_freq(const uint &k, const uint &n,
       for (uint i=0; i<n; ++i) {
          if (k % 256 == 0) {
             /* init/refresh recurrences to stop error propagation */
-            cosx[i] = cos(tau * f[k] * t[i]);
-            sinx[i] = sin(tau * f[k] * t[i]);
+            cosx[i] = cos(2 * M_PI * f[k] * t[i]);
+            sinx[i] = sin(2 * M_PI * f[k] * t[i]);
          }
 
          C += w[i] * cosx[i];              /* Eq. (8) */
@@ -69,7 +69,7 @@ if (power > best_frequency.power){
 
 
 
-output_data gls_b(float* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
+output_data gls_b(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
 output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
    /*
@@ -84,7 +84,8 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
     */
 
    float wsum=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, self_a, self_b, tmp;
-   float *w = (float *) malloc(n * sizeof(float)),
+   float *ts = (float *) malloc(n * sizeof(float)), //single precision float representation of time
+         *w = (float *) malloc(n * sizeof(float)),
           *wy = (float *) malloc(n * sizeof(float)),
           *cosx = (float *) malloc(n * sizeof(float)),
           *sinx = (float *) malloc(n * sizeof(float)),
@@ -96,7 +97,9 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
       /* weights */
       w[i] = 1 / (e_y[i] * e_y[i]);
       wsum += w[i];
+      ts[i] = float(t[i]);
    }
+
    for (i=0; i<n; ++i) {
       /* mean */
       w[i] /= wsum;                 /* normalised weights */
@@ -109,8 +112,8 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
       wy[i] *= w[i];                /* attach weights */
 
       /* Prepare trigonometric recurrences cos(dx)+i sin(dx) */
-      cosdx[i] = cos(2 * M_PI * fstep * t[i]);
-      sindx[i] = sin(2 * M_PI * fstep * t[i]);
+      cosdx[i] = cos(2 * M_PI * fstep * ts[i]);
+      sindx[i] = sin(2 * M_PI * fstep * ts[i]);
    }
 
 
@@ -118,11 +121,11 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
    for (k=0; k<nk; ++k) {
          gls_freq(k, n,
          SS, YY,
-         f, t, w, wy, cosx, sinx, cosdx, sindx,
+         f, ts, w, wy, cosx, sinx, cosdx, sindx,
          best_frequency);
 
      }
 
-   free(w); free(wy); free(cosx); free(sinx); free(cosdx); free(sindx);
+   free(w); free(wy); free(cosx); free(sinx); free(cosdx); free(sindx), free(ts);
 //std::cout << best_frequency.power << std::endl;
 return best_frequency;}

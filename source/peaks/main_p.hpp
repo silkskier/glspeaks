@@ -5,9 +5,9 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <algorithm> //for sorting
 #include <locale>
 
-#include <boost/sort/pdqsort/pdqsort.hpp>
 #include <boost/spirit/include/qi.hpp>
 
 #include "GLS/GLS_p_par.hpp"
@@ -132,7 +132,7 @@ sorted_data.push_back(output_data[i]);
 // double average_power = sum_of_powers/no_steps;
 
 //frequencies.clear(), powers.clear(); // removes lists from memory - doesn't work on lists
-boost::sort::pdqsort_branchless(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &b) {
+std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &b) {
     return a.power > b.power;
 });
 
