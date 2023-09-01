@@ -4,14 +4,14 @@
 #include <string>
 #include <boost/spirit/include/qi.hpp>
 
-struct photometry {
-    std::vector<double> x; // Change to double
+struct star {
+    std::vector<double> x;
     std::vector<float> y;
     std::vector<float> dy;
 };
 
-photometry read_dat(const std::string& in_file) {
-    photometry data;
+star read_dat(const std::string& in_file) {
+    star data;
     std::ifstream input_file(in_file);
 
     if (input_file) {
@@ -41,22 +41,23 @@ photometry read_dat(const std::string& in_file) {
         char const* it = dataBuffer.data();
         char const* end = it + dataBuffer.size();
 
+        double tempX;
+        float tempY;
+        float tempDY;
         while (it < end) {
-            std::vector<double> tempVec; // Change to double
-            const char* line_end = std::find(it, end, '\n');
 
-            bool success = boost::spirit::qi::phrase_parse(it, line_end, *boost::spirit::qi::double_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::float_), boost::spirit::qi::space, tempVec);
 
-            if (success && it == line_end) {
-                data.x.push_back(tempVec[0]);
-                data.y.push_back(tempVec[1]);
-                data.dy.push_back(tempVec[2]);
-                it = line_end + 1; // Move to the next line
-            } else {
-                std::cout << "Parsing failed" << std::endl;
-                break;
-            }
-        }
+    bool success = boost::spirit::qi::phrase_parse(it, end, boost::spirit::qi::double_ >> boost::spirit::qi::float_ >> boost::spirit::qi::float_, boost::spirit::qi::space, tempX, tempY, tempDY);
+
+    if (success) {
+        data.x.push_back(tempX);
+        data.y.push_back(tempY);
+        data.dy.push_back(tempDY);
+    } else {
+        std::cout << "Parsing failed" << std::endl;
+        break;
+    }
+}
 
         //std::cout << "Lines read: " << lines << std::endl;
     } else {
