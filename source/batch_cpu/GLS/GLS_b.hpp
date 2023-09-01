@@ -4,28 +4,26 @@
 
 #include "../../extras/NFFT.hpp"
 
-//const float tau = 6.283185307179586;
-using namespace std;
-
+const float tau = 6.283185307179586;
 
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
 
 inline void gls_freq(const uint &k, const uint &n,
-      float &D, float &SS, float &YY, float *f,
+      float &SS, float &YY, float *f,
       const float* const t, const float* const w, const float* const wy, float* cosx, float* sinx,  const float* const cosdx, const float* const sindx,
       output_data &best_frequency){
 
-      float C, S, YC, YS, CC, CS, tmp, self_a, self_b;
-      C = S = YC = YS = CC = CS = tmp = self_a = self_b = 0;
+      float C, D, S, YC, YS, CC, CS, tmp, self_a, self_b;
+      C = D = S = YC = YS = CC = CS = tmp = self_a = self_b = 0;
 	  float power = 0, amplitude = 0; //declares output variables
 
       for (uint i=0; i<n; ++i) {
          if (k % 256 == 0) {
             /* init/refresh recurrences to stop error propagation */
-            cosx[i] = cos(2 * M_PI * f[k] * t[i]);
-            sinx[i] = sin(2 * M_PI * f[k] * t[i]);
+            cosx[i] = cos(tau * f[k] * t[i]);
+            sinx[i] = sin(tau * f[k] * t[i]);
          }
 
          C += w[i] * cosx[i];              /* Eq. (8) */
@@ -121,7 +119,7 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
 
    for (k=0; k<nk; ++k) {
          gls_freq(k, n,
-         D, SS, YY,
+         SS, YY,
          f, t, w, wy, cosx, sinx, cosdx, sindx,
          best_frequency);
 
