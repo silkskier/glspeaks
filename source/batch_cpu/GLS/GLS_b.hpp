@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-#include "../../extras/vertex_32.hpp"
+#include "../../extras/vertex.hpp"
 
 #include "../../extras/NFFT.hpp"
 

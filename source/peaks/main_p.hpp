@@ -12,7 +12,7 @@
 
 #include "GLS/GLS_p_par.hpp"
 #include "GLS/GLS_p_seq.hpp"
-#include "../extras/vertex_64.hpp"
+#include "../extras/vertex.hpp"
 
 bool UseOpenMP = true;
 
