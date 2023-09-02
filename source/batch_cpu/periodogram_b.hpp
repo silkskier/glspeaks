@@ -32,7 +32,7 @@ best_frequency = gls_b(data.x.data(), data.y.data(), data.dy.data(), length_of_d
 float powers_average = best_frequency.sum_of_powers / number_of_steps; //calculates average power for the input data
 
 
-std::tuple<float, float, float> output_tuple = make_tuple(best_frequency.frequency, best_frequency.amplitude, best_frequency.power / (powers_average * 2. * log2(length_of_data) ));
+std::tuple<double, float, float> output_tuple = make_tuple(best_frequency.frequency, best_frequency.amplitude, best_frequency.power / (powers_average * 2. * log2(length_of_data) ));
 
 return output_tuple;
 }
