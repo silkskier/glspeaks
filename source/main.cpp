@@ -113,6 +113,9 @@ int main(int argc, char* argv[]) {
     else if (option == "-g" || option == "--gui") {
         qt(argc, argv);
     }
+    else if (option == "-S" || option == "--serialize") {
+        main_serialization(argc, argv);
+    }
     else {
         std::cerr << "Error: Invalid mode selected." << std::endl;
         return 1;

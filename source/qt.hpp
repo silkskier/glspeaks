@@ -41,6 +41,8 @@
 #include "spectrum/main_s.hpp"
 #include "help/help.hpp"
 
+#include "serialization/serialization.hpp"
+
 class ProgressUpdater : public QObject {
     Q_OBJECT
 
