@@ -1,14 +1,55 @@
+#ifndef READOUT_HPP
+#define READOUT_HPP
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
+#include <filesystem>
+#include <fstream>
+#include <unordered_map>
+
 #include <boost/spirit/include/qi.hpp>
 
+#include "../../include/yas/mem_streams.hpp"
+#include "../../include/yas/binary_iarchive.hpp"
+#include "../../include/yas/binary_oarchive.hpp"
+#include "../../include/yas/std_types.hpp"
+#include "../../include/yas/file_streams.hpp"
+
+
 struct star {
+    std::string id;
     std::vector<double> x;
     std::vector<float> y;
     std::vector<float> dy;
+
+    template <typename Archive>
+    inline void serialize(Archive& ar) {
+    ar & id & x & y & dy;
+    }
 };
+
+struct photometry {
+    std::vector<star> stars;
+    std::unordered_map<std::string, int> id;
+
+    template <typename Archive>
+    void serialize(Archive& ar) {
+        ar & stars & id;
+    }
+
+    void save(const std::string& filename) {
+        const char* filename_cstr = filename.c_str();
+
+        yas::file_ostream fos(filename_cstr);
+        yas::binary_oarchive<yas::file_ostream> oa(fos);
+
+        // Serialize and save the photometry struct
+        oa & *this;
+    }
+};
+
 
 star read_dat(const std::string& in_file) {
     star data;
@@ -67,3 +108,5 @@ star read_dat(const std::string& in_file) {
     input_file.close();
     return data;
 }
+
+#endif
