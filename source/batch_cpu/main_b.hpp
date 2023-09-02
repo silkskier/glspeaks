@@ -138,8 +138,8 @@ for (unsigned int i = 0; i < file_count; i++) {
         // Generate formatted string
         boost::spirit::karma::generate(std::back_inserter(output_string),
             boost::spirit::stream(files[i])
-            << "\t" << boost::spirit::float_(frequency)
-            << "\t" << boost::spirit::float_(1/frequency)
+            << "\t" << boost::spirit::double_(frequency)
+            << "\t" << boost::spirit::double_(1/frequency)
             << "\t" << boost::spirit::float_(amplitude)
             << "\t" << boost::spirit::float_(max_power)
         );
