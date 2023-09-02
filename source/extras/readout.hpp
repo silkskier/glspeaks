@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <unordered_map>
+#include <mutex>
 
 #include <boost/spirit/include/qi.hpp>
 
@@ -24,15 +25,75 @@ struct star {
     std::vector<float> y;
     std::vector<float> dy;
 
+    // Member function to read data from a file into the star struct
+    inline void read_dat(const std::string& in_file) {
+        std::ifstream input_file(in_file);
+
+        if (input_file) {
+            static const auto BUFFER_SIZE = 16 * 1024;
+            char buf[BUFFER_SIZE + 1];
+            uintmax_t lines = 0;
+            std::vector<char> dataBuffer; // To store the loaded data
+
+            while (input_file) {
+                input_file.read(buf, BUFFER_SIZE);
+                size_t bytes_read = input_file.gcount();
+
+                if (bytes_read == 0) {
+                    break;
+                }
+
+                dataBuffer.insert(dataBuffer.end(), buf, buf + bytes_read); // Append data to buffer
+
+                for (size_t i = 0; i < bytes_read; ++i) {
+                    if (buf[i] == '\n') {
+                        ++lines;
+                    }
+                }
+            }
+
+            // Set up iterators for parsing from dataBuffer
+            char const* it = dataBuffer.data();
+            char const* end = it + dataBuffer.size();
+
+            double tempX;
+            float tempY;
+            float tempDY;
+            while (it < end) {
+                bool success = boost::spirit::qi::phrase_parse(it, end, boost::spirit::qi::double_ >> boost::spirit::qi::float_ >> boost::spirit::qi::float_, boost::spirit::qi::space, tempX, tempY, tempDY);
+
+                if (success) {
+                    x.push_back(tempX);
+                    y.push_back(tempY);
+                    dy.push_back(tempDY);
+                } else {
+                    std::cout << "Parsing failed" << std::endl;
+                    break;
+                }
+            }
+
+            id = in_file.substr(in_file.find_last_of('/') + 1, in_file.find_last_of('.') - in_file.find_last_of('/') - 1); // Add star id to the struct
+        } else {
+            std::cout << "File cannot be opened" << std::endl;
+        }
+
+        input_file.close();
+    }
+
     template <typename Archive>
     inline void serialize(Archive& ar) {
     ar & id & x & y & dy;
     }
 };
 
+
+
+
+
 struct photometry {
     std::vector<star> stars;
     std::unordered_map<std::string, int> id;
+    std::mutex mutex;
 
     template <typename Archive>
     void serialize(Archive& ar) {
@@ -48,65 +109,29 @@ struct photometry {
         // Serialize and save the photometry struct
         oa & *this;
     }
-};
 
+    inline void add(const star &star) {
+    std::lock_guard<std::mutex> lock(mutex);
 
-star read_dat(const std::string& in_file) {
-    star data;
-    std::ifstream input_file(in_file);
+    stars.push_back(star);
+    id[star.id] = stars.size() - 1;
+    }
 
-    if (input_file) {
-        static const auto BUFFER_SIZE = 16 * 1024;
-        char buf[BUFFER_SIZE + 1];
-        uintmax_t lines = 0;
-        std::vector<char> dataBuffer; // To store the loaded data
-
-        while (input_file) {
-            input_file.read(buf, BUFFER_SIZE);
-            size_t bytes_read = input_file.gcount();
-
-            if (bytes_read == 0) {
-                break;
-            }
-
-            dataBuffer.insert(dataBuffer.end(), buf, buf + bytes_read); // Append data to buffer
-
-            for (size_t i = 0; i < bytes_read; ++i) {
-                if (buf[i] == '\n') {
-                    ++lines;
-                }
+    void load_dat(std::string in_dir){
+        std::vector<std::filesystem::path> files;
+        for (auto& entry : std::filesystem::directory_iterator(in_dir)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".dat") {
+                files.push_back(entry.path());
             }
         }
 
-        // Set up iterators for parsing from dataBuffer
-        char const* it = dataBuffer.data();
-        char const* end = it + dataBuffer.size();
-
-        double tempX;
-        float tempY;
-        float tempDY;
-        while (it < end) {
-
-
-    bool success = boost::spirit::qi::phrase_parse(it, end, boost::spirit::qi::double_ >> boost::spirit::qi::float_ >> boost::spirit::qi::float_, boost::spirit::qi::space, tempX, tempY, tempDY);
-
-    if (success) {
-        data.x.push_back(tempX);
-        data.y.push_back(tempY);
-        data.dy.push_back(tempDY);
-    } else {
-        std::cout << "Parsing failed" << std::endl;
-        break;
+        #pragma omp parallel for
+        for (unsigned int i = 0; i < files.size(); i++) {
+            star data;
+            data.read_dat(files[i]);
+            add(data);}
     }
-}
+};
 
-        //std::cout << "Lines read: " << lines << std::endl;
-    } else {
-        std::cout << "File cannot be opened" << std::endl;
-    }
-
-    input_file.close();
-    return data;
-}
 
 #endif
