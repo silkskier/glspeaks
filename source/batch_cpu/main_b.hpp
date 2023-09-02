@@ -108,7 +108,7 @@ float *frequencies = (float *) malloc(no_steps * sizeof(float)); // creates freq
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size * step;} //fills frequency vector
 
 //creates files array
-std::vector<std::filesystem::path> files;
+std::vector<filesystem::path> files;
 auto directory_iterator = std::filesystem::directory_iterator(argv[2]);
 unsigned int file_count = 0;
 for (auto& entry : directory_iterator)
@@ -134,11 +134,10 @@ for (unsigned int i = 0; i < file_count; i++) {
 
 
     if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
-        std::string output_string;
+        std::string output_string = files[i];
         // Generate formatted string
         boost::spirit::karma::generate(std::back_inserter(output_string),
-            boost::spirit::stream(files[i])
-            << "\t" << boost::spirit::double_(frequency)
+            "\t" << boost::spirit::double_(frequency)
             << "\t" << boost::spirit::double_(1/frequency)
             << "\t" << boost::spirit::float_(amplitude)
             << "\t" << boost::spirit::float_(max_power)
