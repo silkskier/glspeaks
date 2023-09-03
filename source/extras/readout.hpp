@@ -10,8 +10,7 @@
 #include <unordered_map>
 #include <mutex>
 
-#include <boost/spirit/include/qi.hpp>
-
+#include "../../include/fast_float.h"
 #include "../../include/yas/mem_streams.hpp"
 #include "../../include/yas/binary_iarchive.hpp"
 #include "../../include/yas/binary_oarchive.hpp"
@@ -59,17 +58,48 @@ struct star {
             double tempX;
             float tempY;
             float tempDY;
-            while (it < end) {
-                bool success = boost::spirit::qi::phrase_parse(it, end, boost::spirit::qi::double_ >> boost::spirit::qi::float_ >> boost::spirit::qi::float_, boost::spirit::qi::space, tempX, tempY, tempDY);
 
-                if (success) {
-                    x.push_back(tempX);
-                    y.push_back(tempY);
-                    dy.push_back(tempDY);
-                } else {
+            while (it < end) {
+                auto temp = fast_float::from_chars(it, end, tempX);
+
+                if (temp.ec != std::errc()) {
                     std::cout << "Parsing failed" << std::endl;
                     break;
                 }
+                if(temp.ptr[0] != ' ' && temp.ptr[0] != '\n' ) {
+                    std::cout << "Unexpected delimiter" << std::endl;
+                }
+
+
+                temp = fast_float::from_chars(temp.ptr + 1, end, tempY);
+
+                if (temp.ec != std::errc()) {
+                    std::cout << "Parsing failed" << std::endl;
+                    break;
+                }
+
+                if(temp.ptr[0] != ' ' && temp.ptr[0] != '\n' ) {
+                    std::cout << "Unexpected delimiter" << std::endl;
+                }
+
+
+                temp = fast_float::from_chars(temp.ptr + 1, end, tempDY);
+
+                if (temp.ec != std::errc()) {
+                    std::cout << "Parsing failed" << std::endl;
+                    break;
+                }
+
+                if(temp.ptr[0] != ' ' && temp.ptr[0] != '\n' ) {
+                    std::cout << "Unexpected delimiter" << std::endl;
+                }
+
+
+                it = temp.ptr + 1;
+
+                x.push_back(tempX);
+                y.push_back(tempY);
+                dy.push_back(tempDY);
             }
 
             id = in_file.substr(in_file.find_last_of('/') + 1, in_file.find_last_of('.') - in_file.find_last_of('/') - 1); // Add star id to the struct
