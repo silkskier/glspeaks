@@ -123,15 +123,14 @@ std::thread printThread;
 
 std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv";
 ofstream output_file(output_path);
- //output_file << "file	frequency	period	amplitude	power" <<std::endl;
  output_file.close(); //creates and closes output file
 
 auto out = fmt::output_file(output_path, std::ios_base::app);
+{out.print("file	frequency	period	amplitude	power\n");}
 
 #pragma omp parallel for
 for (unsigned int i = 0; i < file_count; i++) {
     auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]);
-    if (i == 0){out.print("file	frequency	period	amplitude	power\n");}
 
     if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
         #pragma omp critical
