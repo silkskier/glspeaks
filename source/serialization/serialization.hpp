@@ -4,7 +4,7 @@ void main_serialization(int argc, char *argv[]){
 
     std::string mode = std::string(argv[1]);
 
-    if (mode == "-S" || mode == "-serialize"){
+    if (mode == "-S" || mode == "--serialize"){
 
     if (argc < 3){std::cout << "No source directory specified" << std::endl; return;}
     std::cout << "Source directory:\t" << argv[2] << std::endl;
