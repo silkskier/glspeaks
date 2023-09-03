@@ -8,7 +8,7 @@ using namespace std;
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-void gls_p_par(double* t,double* y,double* e_y, unsigned int n, unsigned int nk, double fstep,double* f,double* p, double* a) { //
+void gls_p_par(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, double fstep,double* f,double* p, double* a) { //
 
 
    /*
