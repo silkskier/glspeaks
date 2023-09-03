@@ -6,7 +6,6 @@
 #include <cmath>
 
 #include "GLS/GLS_b.hpp"
-#include <boost/spirit/include/qi.hpp>
 #include "../extras/readout.hpp"
 
 using namespace std;

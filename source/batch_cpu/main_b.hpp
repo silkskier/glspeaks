@@ -12,9 +12,6 @@
 #include <QProgressDialog>
 #include <QCoreApplication>
 
-#include <boost/spirit/include/karma.hpp>
-#include <boost/spirit/include/karma_real.hpp>
-
 #include "periodogram_b.hpp"
 
 using namespace std;
@@ -108,7 +105,7 @@ float *frequencies = (float *) malloc(no_steps * sizeof(float)); // creates freq
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size * step;} //fills frequency vector
 
 //creates files array
-std::vector<filesystem::path> files;
+std::vector<std::string> files;
 auto directory_iterator = std::filesystem::directory_iterator(argv[2]);
 unsigned int file_count = 0;
 for (auto& entry : directory_iterator)
@@ -124,31 +121,25 @@ std::thread printThread;
         printProgress(file_count, startTime);
     });
 
-std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv"; ofstream output_file(output_path); //creates and opens output file
+std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv";
+ofstream output_file(output_path);
+ //output_file << "file	frequency	period	amplitude	power" <<std::endl;
+ output_file.close(); //creates and closes output file
 
-output_file << "file	frequency	period	amplitude	power" <<std::endl;
+auto out = fmt::output_file(output_path, std::ios_base::app);
 
 #pragma omp parallel for
 for (unsigned int i = 0; i < file_count; i++) {
     auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]);
-
+    if (i == 0){out.print("file	frequency	period	amplitude	power\n");}
 
     if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
-        std::string output_string = files[i];
-        // Generate formatted string
-        boost::spirit::karma::generate(std::back_inserter(output_string),
-            "\t" << boost::spirit::double_(frequency)
-            << "\t" << boost::spirit::double_(1/frequency)
-            << "\t" << boost::spirit::float_(amplitude)
-            << "\t" << boost::spirit::float_(max_power)
-        );
-
-        // Enter critical section to write to the file
         #pragma omp critical
-        {
-            output_file << output_string << std::endl;
-        }
+        {// Enter critical section to write to the file
+            out.print(fmt::format("{:}\t{:.6f}\t{:.4f}\t{:.3f}\t{:.3f}\n",files[i], frequency, 1/frequency, amplitude, max_power));
+        };
     }
+
 #pragma omp critical
 {filesComputed += 1;}
 }
@@ -160,4 +151,4 @@ else {std::cout << "\r" << "Complete" << std::endl;}
 
 printThread.join();
 
-output_file.close(); return;}
+return;}
