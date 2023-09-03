@@ -29,7 +29,14 @@ void main_serialization(int argc, char *argv[]){
 
     else if (mode == "-D" || mode == "--deserialize"){
     if (argc < 3){std::cout << "No source file specified" << std::endl; return;}
-    std::cout << "Mode not implemented" << std::endl;
+
+    std::string output_path = std::string(argv[2]).substr(0, std::string(argv[2]).find_last_of('.'));
+
+    std::cout << "Path without extension: " << output_path << std::endl;
+
+    photometry photometry;
+    photometry.load(argv[2]);
+    photometry.save_dat(output_path);
     }
 
 
