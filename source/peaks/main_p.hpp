@@ -8,7 +8,8 @@
 #include <algorithm> //for sorting
 #include <locale>
 
-#include <boost/spirit/include/qi.hpp>
+#include "../extras/readout.hpp"
+#include "../../include/pdqsort.h"
 
 #include "GLS/GLS_p_par.hpp"
 #include "GLS/GLS_p_seq.hpp"
@@ -68,43 +69,13 @@ double *frequencies = (double *) malloc(no_steps * sizeof(double)),
 for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size_0 * step;} //fills frequency vector
 //    for(int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
 
+star data;
+data.read(file);
 
-std::vector<std::vector<double>> data;
+uint length_of_data = data.x.size();
 
-std::ifstream input_file(file);
-
-    if (input_file) {
-        std::string line;
-        while (std::getline(input_file, line)) {
-            std::vector<double> tempVec;
-            std::string::const_iterator it = line.begin();
-            std::string::const_iterator end = line.end();
-
-            bool success = boost::spirit::qi::phrase_parse(it, end, *boost::spirit::qi::double_ >> *(boost::spirit::qi::lit(',') >> boost::spirit::qi::double_), boost::spirit::qi::space, tempVec);
-
-            if (success && it == end) {
-                data.emplace_back(tempVec);
-            } else {
-                std::cout << "Parsing failed" << std::endl;
-                break;
-            }}
-    } else {
-        std::cout << "file cannot be opened" << std::endl;}
-
-    input_file.close();
-//  for(unsigned int i=0; i<data.size(); i++) {for(unsigned int j=0; j<data[i].size(); j++) cout<<data[i][j]<<" "; cout<<endl;} // prints data array
-
-
-
-        //applies Generalized Lomb-Scargle periodogram for all the frequencies
-unsigned int length_of_data = size(data);
-double t[length_of_data]; double y[length_of_data]; double e_y[length_of_data];
-for (unsigned int i = 0; i < length_of_data; i++) t[i] = data[i][0], y[i] = data[i][1], e_y[i] = data[i][2]; //transpose vectors
-data.clear();
-//  for (unsigned int i = 0; i < length_of_data; i++) std::cout<< t[i] <<" "<< y[i] <<" "<< e_y[i] <<std::endl; //prints transposed data array
-
-if (UseOpenMP){gls_p_par(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
-else {gls_p_seq(t, y, e_y, length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
+if (UseOpenMP){gls_p_par(data.x.data(), data.y.data(), data.dy.data(), length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
+else {gls_p_seq(data.x.data(), data.y.data(), data.dy.data(), length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
 
 //defines constants
 const double normalization_constant = log2(length_of_data) * 2.;
@@ -139,14 +110,13 @@ std::sort(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &
 std::cout <<"\n" << "File: "<< files_location << "\n";
 
 std::cout <<"\n " <<"f[1/d] 	P[d]	Amp[mag]	Power" << std::endl; //<< std::endl
-std::cout << std::fixed;  std::cout<< std::setprecision(5); //sets cout's precision
+//std::cout << std::fixed;  std::cout<< std::setprecision(5); //sets cout's precision
 
 unsigned int j = 0;
 for (unsigned int i = 0; i < 20; i++) {
   for (unsigned int k = i; k <= i;) {
     if (sorted_data[j].power > output_data[sorted_data[j].index - 1].power && sorted_data[j].power > output_data[sorted_data[j].index + 1].power) {
-
-    std::cout << " " << sorted_data[j].frequency << "\t" << 1/sorted_data[j].frequency << "\t" << sorted_data[j].amplitude << "\t" << sorted_data[j].power / normalization_constant << std::endl;
+    fmt::print(" {:.5f}\t{:.5f}\t{:.3f}\t{:.3f}\n", sorted_data[j].frequency, 1/sorted_data[j].frequency, sorted_data[j].amplitude, sorted_data[j].power / normalization_constant);
   j++;k++;
 } else {j++;}
 
