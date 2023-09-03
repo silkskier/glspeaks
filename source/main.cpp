@@ -126,6 +126,11 @@ int main(int argc, char* argv[]) {
                         main_serialization(argc, argv);
                     }
                     break;
+                                case 'D':
+                    if (option == "-D" || option == "--deserialize") {
+                        main_serialization(argc, argv);
+                    }
+                    break;
                 default:
                     break;
             }
