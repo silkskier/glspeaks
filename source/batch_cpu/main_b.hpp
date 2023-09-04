@@ -12,6 +12,7 @@
 #include <QProgressDialog>
 #include <QCoreApplication>
 
+#include "../extras/grid.hpp"
 #include "periodogram_b.hpp"
 
 using namespace std;
@@ -71,9 +72,8 @@ float max_frequency_temp = 10.0;
 if (argc > 4 && ((mode != "-g" && argv[4][0]) != '\0') || (mode == "-g" && argv[4][0]) != '\0'){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp; //0
 
-
-float step_size = pow(0.5, 12);
-if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){step_size = pow(0.5,std::stoi(argv[5]));}
+float resolution = 12;
+if (argc > 5 && ((mode != "-g" && argv[5][0]) != '\0') || (mode == "-g" && argv[5][0]) != '\0'){resolution = std::stoi(argv[5]);}
 
 float min_power_temp = 1;
 if (argc > 6 && ((mode != "-g" && argv[6][0]) != '\0') || (mode == "-g" && argv[6][0]) != '\0'){min_power_temp = std::stof(argv[6]);}
@@ -89,20 +89,22 @@ if (argc > 8 && ((mode != "-g" && argv[8][0]) != '\0') || (mode == "-g" && argv[
 float max_amplitude = 8;
 if (argc > 9 && ((mode != "-g" && argv[9][0]) != '\0') || (mode == "-g" && argv[9][0]) != '\0'){max_amplitude = std::stof(argv[9]);}
 
+grid grid; grid.generate(min_frequency, max_frequency, resolution);
+
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
 std::cout << "Max frequency: " << max_frequency << "\n";
-std::cout << "Step size: " << step_size << "\n";
-const unsigned int no_steps = (max_frequency - min_frequency)/step_size + 1;
+std::cout << "Step size: " << grid.fstep << "\n";
+
+const unsigned int no_steps = grid.freq.size();
+
+
 std::cout << "Number of steps: " << no_steps << "\n";
 std::cout << "Required avg/max power: " << min_power << "\n";
 std::cout << "Frequency filter range: " << filter_range << "\n";
 std::cout << "Amplitude range: " << "[" << min_amplitude << " , " << max_amplitude << "]" << "\n";
 
 //const int max_thread_number = std::thread::hardware_concurrency();
-
-float *frequencies = (float *) malloc(no_steps * sizeof(float)); // creates frequencies and array
-for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size * step;} //fills frequency vector
 
 //creates files array
 std::vector<std::string> files;
@@ -130,7 +132,7 @@ auto out = fmt::output_file(output_path, std::ios_base::app);
 
 #pragma omp parallel for
 for (unsigned int i = 0; i < file_count; i++) {
-    auto [frequency, amplitude, max_power] = periodogram(frequencies, step_size, no_steps, files[i]);
+    auto [frequency, amplitude, max_power] = periodogram(grid, files[i]);
 
     if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
         #pragma omp critical
