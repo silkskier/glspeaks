@@ -45,7 +45,7 @@ struct star {
     auto out = fmt::output_file(file_path);
 
     for (unsigned int i = 0; i < x.size(); i++){
-        out.print(fmt::format("{:.5f} {:.3f} {:.3f}\n", x[i], y[i], std::max(dy[i], 0.001)));
+        out.print(fmt::format("{:.5f} {:.3f} {:.3f}\n", x[i], y[i], std::max(dy[i], float(0.001))));
     }}
 
     inline void read(const std::string& in_file) {
