@@ -1,15 +1,15 @@
 #include <cmath>
 #include <iostream>
 #include "../../extras/vertex.hpp"
-
-#include "../../extras/NFFT.hpp"
+#include "../../extras/grid.hpp"
+//#include "../../extras/NFFT.hpp"
 
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
 
 inline void gls_freq(const uint &k, const uint &n, //function used for GLS calculation for each frequency
-      float &SS, float &YY, float *f,
+      float &SS, float &YY, const float* const f,
       const float* const t, const float* const w, const float* const wy, float* cosx, float* sinx,  const float* const cosdx, const float* const sindx,
       output_data &best_frequency){
 
@@ -122,7 +122,7 @@ if (power > best_frequency.power){
 
 
 
-output_data gls_b(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, float* f) { //
+output_data gls_b(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, const float* f) { //
 output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
    /*
