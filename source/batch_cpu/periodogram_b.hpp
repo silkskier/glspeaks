@@ -28,7 +28,7 @@ std::tuple<float, float, float> periodogram(const grid &grid, std::filesystem::p
 
 	float powers_average = best_frequency.sum_of_powers / grid.freq.size(); //calculates average power for the input data
 
-	std::tuple<double, float, float> output_tuple = make_tuple(best_frequency.frequency, best_frequency.amplitude, best_frequency.power / (powers_average * 2. * log2(length_of_data) ));
+	std::tuple<double, float, float> output_tuple = make_tuple(best_frequency.frequency, best_frequency.amplitude, best_frequency.power / (powers_average * 2. * log2(data.x.size()) ));
 
 return output_tuple;
 }
