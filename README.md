@@ -70,5 +70,7 @@ As for now, the application is *almost* fully functional. Planned improvements i
 22. [Sheng Shi, Runkai Yang, Haihang You - ATSFFT](https://arxiv.org/abs/1908.02461)
 23. [GPU-accelerated supersmoother](https://github.com/mgowanlock/gpu_supersmoother)
 24. [KuiperVnStatistic](https://github.com/GrAbsRD/KuiperVnStatistic)
+25. [GPU accelerated Conditional Entropy periodogram](https://academic.oup.com/mnras/article/503/2/2665/6158396), [Github repo](https://github.com/mikekatz04/gce)
+    
 
 <!--  https://sourceforge.net/projects/sfft40/ - sFFT-4.0 library  -->
