@@ -1,14 +1,9 @@
 #include <cmath>
 
-//const double tau = 6.283185307179586;
-using namespace std;
-
-
-
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
-void gls_p_seq(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, double fstep,double* f,double* p, double* a) { //
+void gls_p_seq(const double* const t, const float* const y, const float* const e_y, const unsigned int n, const unsigned int nk, const float fstep,const float* const f,float* p, float* a) { //
 
 
    /*
