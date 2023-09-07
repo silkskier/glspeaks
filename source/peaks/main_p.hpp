@@ -28,7 +28,7 @@ void main_peaks(int argc, char *argv[]){
         std::string arg = argv[i];
         if (arg == "--OpenMP=false" || arg == "--UseOpenMP=false" || arg == "-nomp") {
             UseOpenMP = false;
-            break; // No need to continue checking once found
+            break;
         }}
 
 std::locale::global(std::locale("C"));
@@ -49,31 +49,25 @@ float max_frequency_temp = 10.0;
 if (argc > 4 && ((mode != "-g" && argv[4][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[4][0] != '\0' && argv[4][0] != '-'))){max_frequency_temp = std::stof(argv[4]);}
 const float max_frequency = max_frequency_temp;
 
-double step_size_0 = pow(0.5, 12);
-if (argc > 5 && ((mode != "-g" && argv[5][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[5][0] != '\0' && argv[5][0] != '-'))){step_size_0 = pow(0.5,std::stoi(argv[5]));}
+double res_0 = 12;
+if (argc > 5 && ((mode != "-g" && argv[5][0] != '\0' && argv[3][0] != '-') || (mode == "-g" && argv[5][0] != '\0' && argv[5][0] != '-'))){res_0 = std::stoi(argv[5]);}
 
-    //std::cout << "\n" "Directory location: " << files_location << "\n";
-    //std::cout << "Min frequency: " << min_frequency << "\n";
-    //std::cout << "Max frequency: " << max_frequency << "\n";
-    //std::cout << "Step size: " << step_size_0 << "\n";
 
 //creates frequency array
-const unsigned int no_steps = (max_frequency - min_frequency)/step_size_0 + 1;
-    //std::cout << "Number of steps: " << no_steps << "\n";
+grid grid; grid.generate(min_frequency, max_frequency, res_0);
 
-double *frequencies = (double *) malloc(no_steps * sizeof(double)),
-*powers = (double *) malloc(no_steps * sizeof(double)),  *amplitudes = (double *) malloc(no_steps * sizeof(double)); //vectors storing step frequencies and powers for each frequency
 
-for(unsigned int step=0; step < no_steps;step++){frequencies[step] = min_frequency + step_size_0 * step;} //fills frequency vector
-//    for(int i = 0; i < no_steps ; i++) printf("%f, ", frequencies[i]); // prints frequencies vector
+float *amplitudes = (float *) malloc(grid.freq.size() * sizeof(float)), *powers = (float *) malloc(grid.freq.size() * sizeof(float)); //vectors storing step grid.freq.data() and powers for each frequency
+
+//    for(int i = 0; i < grid.freq.size() ; i++) printf("%f, ", grid.freq[i]]); // prints grid.freq.data() vector
 
 star data;
 data.read(file);
 
 uint length_of_data = data.x.size();
 
-if (UseOpenMP){gls_p_par(data.x.data(), data.y.data(), data.dy.data(), length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
-else {gls_p_seq(data.x.data(), data.y.data(), data.dy.data(), length_of_data, no_steps, step_size_0, frequencies, powers, amplitudes);}
+if (UseOpenMP){gls_p_par(data.x.data(), data.y.data(), data.dy.data(), length_of_data, grid.freq.size(), grid.fstep, grid.freq.data(), powers, amplitudes);}
+else {gls_p_seq(data.x.data(), data.y.data(), data.dy.data(), length_of_data, grid.freq.size(), grid.fstep, grid.freq.data(), powers, amplitudes);}
 
 //defines constants
 const double normalization_constant = log2(length_of_data) * 2.;
@@ -83,24 +77,22 @@ std::vector<quad> output_data;
 
 double powers_sum = 0;
 
-for (unsigned int i=0; i < no_steps; i++){output_data.emplace_back(quad{i, powers[i], amplitudes[i], frequencies[i]}); if(isnormal(powers[i])){powers_sum += powers[i];};};
+for (unsigned int i=0; i < grid.freq.size(); i++){output_data.emplace_back(quad{i, powers[i], amplitudes[i], grid.freq[i]}); if(isnormal(powers[i])){powers_sum += powers[i];};};
 
-double ony_by_powers_average = no_steps / powers_sum;
+double ony_by_powers_average = grid.freq.size() / powers_sum;
 
-for (unsigned int i=0; i < no_steps; i++){output_data[i].power *= ony_by_powers_average;}
+for (unsigned int i=0; i < grid.freq.size(); i++){output_data[i].power *= ony_by_powers_average;}
 
 
 
 std::vector<quad> sorted_data;
 
-for (unsigned int i=0; i < no_steps; i++){
+for (unsigned int i=0; i < grid.freq.size(); i++){
 if (output_data[i].power > 2){
 sorted_data.push_back(output_data[i]);
 }}
 
-// double average_power = sum_of_powers/no_steps;
 
-//frequencies.clear(), powers.clear(); // removes lists from memory - doesn't work on lists
 pdqsort_branchless(sorted_data.begin(), sorted_data.end(), [](const quad &a, const quad &b) {
     return a.power > b.power;
 });
@@ -108,7 +100,6 @@ pdqsort_branchless(sorted_data.begin(), sorted_data.end(), [](const quad &a, con
 std::cout <<"\n" << "File: "<< files_location << "\n";
 
 std::cout <<"\n " <<"f[1/d] 	P[d]	Amp[mag]	Power" << std::endl; //<< std::endl
-//std::cout << std::fixed;  std::cout<< std::setprecision(5); //sets cout's precision
 
 unsigned int j = 0;
 for (unsigned int i = 0; i < 20; i++) {
@@ -121,5 +112,5 @@ for (unsigned int i = 0; i < 20; i++) {
 }}
 
 std::cout << "\nNormalization constant: " << normalization_constant <<std::endl;
-free(frequencies); free(powers); free(amplitudes);
+free(powers); free(amplitudes);
 return;}
