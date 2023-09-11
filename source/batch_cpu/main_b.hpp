@@ -12,7 +12,7 @@
 #include <QProgressDialog>
 #include <QCoreApplication>
 
-#include "../extras/grid.hpp"
+#include "../utils/grid.hpp"
 #include "periodogram_b.hpp"
 
 using namespace std;

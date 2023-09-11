@@ -1,6 +1,6 @@
 #include <cmath>
 #include <complex>
-#include "../../extras/vertex_32.hpp"
+#include "../../utils/vertex.hpp"
 #include <stdlib.h>
 
 #include "trig_sum.hpp"

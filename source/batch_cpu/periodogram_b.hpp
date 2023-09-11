@@ -6,8 +6,8 @@
 #include <cmath>
 
 #include "GLS/GLS_b.hpp"
-#include "../extras/grid.hpp"
-#include "../extras/readout.hpp"
+#include "../utils/grid.hpp"
+#include "../utils/readout.hpp"
 
 using namespace std;
 

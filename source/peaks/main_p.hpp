@@ -6,12 +6,12 @@
 #include <sstream>
 #include <locale>
 
-#include "../extras/readout.hpp"
+#include "../utils/readout.hpp"
 #include "../../include/pdqsort.h"
 
 #include "GLS/GLS_p_par.hpp"
 #include "GLS/GLS_p_seq.hpp"
-#include "../extras/vertex.hpp"
+#include "../utils/vertex.hpp"
 
 bool UseOpenMP = true;
 

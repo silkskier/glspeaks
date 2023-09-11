@@ -8,9 +8,9 @@
 #include <sstream>
 #include <locale>
 
-#include "../extras/readout.hpp"
-#include "../extras/grid.hpp"
-#include "../extras/vertex.hpp"
+#include "../utils/readout.hpp"
+#include "../utils/grid.hpp"
+#include "../utils/vertex.hpp"
 
 #include "GLS/GLS_s.hpp"
 

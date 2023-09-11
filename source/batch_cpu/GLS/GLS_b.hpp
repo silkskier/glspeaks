@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
-#include "../../extras/vertex.hpp"
-#include "../../extras/grid.hpp"
+#include "../../utils/vertex.hpp"
+#include "../../utils/grid.hpp"
 //#include "../../extras/NFFT.hpp"
 
 /* Author: Mathias Zechmeister
