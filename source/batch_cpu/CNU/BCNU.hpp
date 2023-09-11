@@ -46,7 +46,21 @@ output_data bncu_b(const star &data, const grid &grid) {
         case 1: //weighted linear
 
             for (i=0; i<data.x.size(); ++i) {
+                wy[i] = (y[i] - y_avg) * w[i];
+                wsum += wy[i];
             }
+            wsum /= data.x.size();
+            for (i=0; i<data.x.size(); ++i) {
+                wy[i] -= wsum;
+                AAD += fabs(wy[i]);
+            }
+            wsum_inv = 2/AAD;
+            AAD /= data.x.size(); //idk what to do with that, so I just leave it here.
+
+            for (i=0; i<data.x.size(); ++i) {
+                wy[i] *= wsum_inv;
+            }
+
             break;
 
         case 2: //simple quadratic
@@ -58,7 +72,6 @@ output_data bncu_b(const star &data, const grid &grid) {
             }
 
             wsum_inv = 2/AAD; //because sum of normalised Kuiper before weighting lies between 0 and 1/2
-            AAD /= data.x.size();
 
             for (i=0; i<data.x.size(); ++i) {
                 wy[i] *= wsum_inv;
@@ -68,11 +81,25 @@ output_data bncu_b(const star &data, const grid &grid) {
 
         case 3: //weighted quadratic
             for (i=0; i<data.x.size(); ++i) {
+                wy[i] = (y[i] - y_avg) * fabs(y[i] - y_avg) * w[i];
+                wsum += wy[i];
             }
+            wsum /= data.x.size();
+            for (i=0; i<data.x.size(); ++i) {
+                wy[i] -= wsum;
+                AAD += fabs(wy[i]);
+            }
+            wsum_inv = 2/AAD;
+            AAD /= data.x.size(); //idk what to do with that, so I just leave it here.
+
+            for (i=0; i<data.x.size(); ++i) {
+                wy[i] *= wsum_inv;
+            }
+
             break;
 
         default:
-            std::cout << "Invalid choice" << std::endl;
+            std::cout << "Invalid choice of normalization" << std::endl;
     }
     */
 
