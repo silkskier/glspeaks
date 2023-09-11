@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../../utils/vertex.hpp"
 #include "../../utils/grid.hpp"
+#include "../../utils/readout.hpp"
 //#include "../../extras/NFFT.hpp"
 
 /* Author: Mathias Zechmeister
@@ -122,59 +123,59 @@ if (power > best_frequency.power){
 
 
 
-output_data gls_b(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, const float* f) { //
+//output_data gls_b(double* t,float* y,float* e_y, unsigned int n, unsigned int nk, float fstep, const float* f) { //
+output_data gls_b(const star &data, const grid &grid) { //
 output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; best_frequency.sum_of_powers = 0;
 
    /*
-    * t : time array
-    * y : data array
-    * e_y : uncertainties array
-    * n : length of data
-        * fbeg : start frequencies
-        * nk : number of frequencies
-        * fstep : step size for frequency
-    * f : frequency array
+    * data.x : time array
+    * data.y : data array
+    * data.dy : uncertainties array
+    * data.x.size() : length of data
+        * grid.freq.size() : number of frequencies
+        * grid.fstep : step size for frequency
+    * grid.freq : frequency array
     */
 
    float wsum=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, self_a, self_b, tmp;
-   float *ts = (float *) malloc(n * sizeof(float)), //single precision float representation of time
-         *w = (float *) malloc(n * sizeof(float)),
-          *wy = (float *) malloc(n * sizeof(float)),
-          *cosx = (float *) malloc(n * sizeof(float)),
-          *sinx = (float *) malloc(n * sizeof(float)),
-          *cosdx = (float *) malloc(n * sizeof(float)),
-          *sindx = (float *) malloc(n * sizeof(float));
+   float *ts = (float *) malloc(data.x.size() * sizeof(float)), //single precision float representation of time
+         *w = (float *) malloc(data.x.size() * sizeof(float)),
+          *wy = (float *) malloc(data.x.size() * sizeof(float)),
+          *cosx = (float *) malloc(data.x.size() * sizeof(float)),
+          *sinx = (float *) malloc(data.x.size() * sizeof(float)),
+          *cosdx = (float *) malloc(data.x.size() * sizeof(float)),
+          *sindx = (float *) malloc(data.x.size() * sizeof(float));
    unsigned int i, k;
 
-   for (i=0; i<n; ++i) {
+   for (i=0; i<data.x.size(); ++i) {
       /* weights */
-      w[i] = 1 / (e_y[i] * e_y[i]);
+      w[i] = 1 / (data.dy[i] * data.dy[i]);
       wsum += w[i];
-      ts[i] = float(t[i]);
+      ts[i] = float(data.x[i]);
    }
 
-   for (i=0; i<n; ++i) {
+   for (i=0; i<data.x.size(); ++i) {
       /* mean */
       w[i] /= wsum;                 /* normalised weights */
-      Y += w[i] * y[i];             /* Eq. (7) */
+      Y += w[i] * data.y[i];             /* Eq. (7) */
    }
-   for (i=0; i<n; ++i) {
+   for (i=0; i<data.x.size(); ++i) {
       /* variance */
-      wy[i] = y[i] - Y;             /* Subtract weighted mean */
-      YY += w[i] * wy[i] * wy[i];   /* Eq. (10) */
+      wy[i] = data.y[i] - Y;             /* Subtract weighted mean */
+      YY += w[i] * data.y[i] * data.y[i];   /* Eq. (10) */
       wy[i] *= w[i];                /* attach weights */
 
       /* Prepare trigonometric recurrences cos(dx)+i sin(dx) */
-      cosdx[i] = cos(2 * M_PI * fstep * ts[i]);
-      sindx[i] = sin(2 * M_PI * fstep * ts[i]);
+      cosdx[i] = cos(2 * M_PI * grid.fstep * ts[i]);
+      sindx[i] = sin(2 * M_PI * grid.fstep * ts[i]);
    }
 
 
 
-   for (k=0; k<nk; ++k) {
-         gls_freq(k, n,
+   for (k=0; k<grid.freq.size(); ++k) {
+         gls_freq(k, data.x.size(),
          SS, YY,
-         f, ts, w, wy, cosx, sinx, cosdx, sindx,
+         grid.freq.data(), ts, w, wy, cosx, sinx, cosdx, sindx,
          best_frequency);
 
      }
@@ -182,20 +183,20 @@ output_data best_frequency; best_frequency.power = 0; best_frequency.power = 0; 
    free(cosdx); free(sindx); free(ts); free(cosx); free(sinx);
    //fine-tune the resulting frequency in order to increase precision
 
-   double dfstep = fstep;
+   double dfstep = grid.fstep;
 
     for (k=0; k<8; ++k) {
     double f0 = best_frequency.frequency - dfstep;
     double f1 = best_frequency.frequency + dfstep;
 
-    gls_dfreq(n,
+    gls_dfreq(data.x.size(),
     YY, f0,
-    t, w, wy,
+    data.x.data(), w, wy,
     best_frequency);
 
-    gls_dfreq(n,
+    gls_dfreq(data.x.size(),
     YY, f1,
-    t, w, wy,
+    data.x.data(), w, wy,
     best_frequency);
 
     dfstep *= 0.5;

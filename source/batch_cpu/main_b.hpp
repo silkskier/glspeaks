@@ -15,8 +15,6 @@
 #include "../utils/grid.hpp"
 #include "periodogram_b.hpp"
 
-using namespace std;
-
 std::atomic<float> progressValue(0);
 std::atomic<int> timeLeft(0), filesComputed(0);
 
@@ -123,8 +121,8 @@ std::thread printThread;
         printProgress(file_count, startTime);
     });
 
-std::filesystem::path path = filesystem::path(files_location).parent_path(); string output_path = path.string() + "/GLS_output.tsv";
-ofstream output_file(output_path);
+std::filesystem::path path = std::filesystem::path(files_location).parent_path(); std::string output_path = path.string() + "/GLS_output.tsv";
+std::ofstream output_file(output_path);
  output_file.close(); //creates and closes output file
 
 auto out = fmt::output_file(output_path, std::ios_base::app);
@@ -147,7 +145,7 @@ for (unsigned int i = 0; i < file_count; i++) {
 
 
 
-if (string(argv[1]) == "-g") {progressValue.store(static_cast<int>(1000)), timeLeft.store(static_cast<int>(0));}
+if (std::string(argv[1]) == "-g") {progressValue.store(static_cast<int>(1000)), timeLeft.store(static_cast<int>(0));}
 else {std::cout << "\r" << "Complete" << std::endl;}
 
 printThread.join();
