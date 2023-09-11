@@ -28,6 +28,7 @@ output_data bncu_b(const star &data, const grid &grid) {
     switch (normalization) {
 
         case 0: //simple linear
+
             for (i=0; i<data.x.size(); ++i) {
                 wy[i] = y[i] - y_avg;
                 AAD += fabs(wy[i]);
@@ -43,11 +44,13 @@ output_data bncu_b(const star &data, const grid &grid) {
             break;
 
         case 1: //weighted linear
+
             for (i=0; i<data.x.size(); ++i) {
             }
             break;
 
         case 2: //simple quadratic
+
             for (i=0; i<data.x.size(); ++i) {
                 wy[i] = y[i] - y_avg;
                 wy[i] = wy[i] * fabs(wy[i]);
