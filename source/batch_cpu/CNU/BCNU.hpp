@@ -101,7 +101,7 @@ output_data bncu_b(const star &data, const grid &grid) {
         default:
             std::cout << "Invalid choice of normalization" << std::endl;
     }
-    */
+    
 
 
 
