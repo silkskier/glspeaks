@@ -24,7 +24,7 @@ output_data best_frequency;
     * grid.freq : frequency array
     */
 
-   float wsum=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, self_a, self_b, tmp;
+   float wsum=0, wsum_inv=0, Y=0, YY=0, C, S, YC, YS, CC, SS, CS, D, self_a, self_b, tmp;
    float *ts = (float *) malloc(data.x.size() * sizeof(float)), //single precision float representation of time
          *w = (float *) malloc(data.x.size() * sizeof(float)),
           *wy = (float *) malloc(data.x.size() * sizeof(float)),
@@ -41,9 +41,11 @@ output_data best_frequency;
       ts[i] = float(data.x[i]);
    }
 
+   wsum_inv = 1 / wsum;
+
    for (i=0; i<data.x.size(); ++i) {
       /* mean */
-      w[i] /= wsum;                 /* normalised weights */
+      w[i] *= wsum_inv;                 /* normalised weights */
       Y += w[i] * data.y[i];             /* Eq. (7) */
    }
    for (i=0; i<data.x.size(); ++i) {
