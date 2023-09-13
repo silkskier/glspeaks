@@ -107,12 +107,14 @@ output_data bncu_b(const star &data, const grid &grid) {
 
 
     float bins[32];
+    int idx;
     for (k=0; k<grid.freq.size(); ++k) {
          for (i=0; i<32; ++i) {bins[i] = 0;}
 
         float min = 0, max = 0, power = 0;
         for (i=0; i<data.x.size(); ++i) {
-            bins[std::min(int(32 * ((data.x[i] * grid.freq[k]) - float(int((data.x[i] * grid.freq[k]))))), 31)] += wy[i];
+            idx = std::min(int(32 * ((data.x[i] * grid.freq[k]) - float(int((data.x[i] * grid.freq[k]))))), 31);
+            bins[idx] += wy[i];
             }
 
         if (bins[0] > 0) {max = bins[0];}
