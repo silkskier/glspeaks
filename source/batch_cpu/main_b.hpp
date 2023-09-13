@@ -125,7 +125,7 @@ std::filesystem::path path = std::filesystem::path(files_location).parent_path()
 std::ofstream output_file(output_path);
  output_file.close(); //creates and closes output file
 
-auto out = fmt::output_file(output_path, std::ios_base::app);
+auto out = fmt::output_file(output_path);
 {out.print("file	frequency	period	amplitude	power\n");}
 
 #pragma omp parallel for
@@ -136,6 +136,7 @@ for (unsigned int i = 0; i < file_count; i++) {
         #pragma omp critical
         {// Enter critical section to write to the file
             out.print(fmt::format("{:}\t{:.6f}\t{:.4f}\t{:.3f}\t{:.3f}\n",files[i], frequency, 1/frequency, amplitude, max_power));
+            out.flush();
         };
     }
 
