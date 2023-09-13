@@ -1,5 +1,8 @@
 #include <cmath>
-#include "../../extras/vertex.hpp"
+#include "../../utils/vertex.hpp"
+#include "../../utils/periodograms.hpp"
+#include "../../utils/grid.hpp"
+#include "../../utils/readout.hpp"
 
 output_data bncu_b(const star &data, const grid &grid) {
         uint normalization = 0; //comment after implementing switch statement
@@ -11,8 +14,8 @@ output_data bncu_b(const star &data, const grid &grid) {
 
      float *ts = (float *) malloc(data.x.size() * sizeof(float)), //single precision float representation of time
          *w = (float *) malloc(data.x.size() * sizeof(float)),
-         *wy = (float *) malloc(data.x.size() * sizeof(float)),
-    unsigned int i, k;
+         *wy = (float *) malloc(data.x.size() * sizeof(float));
+    uint i, k;
 
 
     for (i=0; i<data.x.size(); ++i) {
@@ -30,7 +33,7 @@ output_data bncu_b(const star &data, const grid &grid) {
         case 0: //simple linear
 
             for (i=0; i<data.x.size(); ++i) {
-                wy[i] = y[i] - y_avg;
+                wy[i] = data.y[i] - y_avg;
                 AAD += fabs(wy[i]);
             }
 
@@ -46,7 +49,7 @@ output_data bncu_b(const star &data, const grid &grid) {
         case 1: //weighted linear
 
             for (i=0; i<data.x.size(); ++i) {
-                wy[i] = (y[i] - y_avg) * w[i];
+                wy[i] = (data.y[i] - y_avg) * w[i];
                 wsum += wy[i];
             }
             wsum /= data.x.size();
@@ -66,7 +69,7 @@ output_data bncu_b(const star &data, const grid &grid) {
         case 2: //simple quadratic
 
             for (i=0; i<data.x.size(); ++i) {
-                wy[i] = y[i] - y_avg;
+                wy[i] = data.y[i] - y_avg;
                 wy[i] = wy[i] * fabs(wy[i]);
                 AAD += fabs(wy[i]);
             }
@@ -81,7 +84,7 @@ output_data bncu_b(const star &data, const grid &grid) {
 
         case 3: //weighted quadratic
             for (i=0; i<data.x.size(); ++i) {
-                wy[i] = (y[i] - y_avg) * fabs(y[i] - y_avg) * w[i];
+                wy[i] = (data.y[i] - y_avg) * fabs(data.y[i] - y_avg) * w[i];
                 wsum += wy[i];
             }
             wsum /= data.x.size();
@@ -101,8 +104,39 @@ output_data bncu_b(const star &data, const grid &grid) {
         default:
             std::cout << "Invalid choice of normalization" << std::endl;
     }
-    
 
 
+    float bins[32];
+    for (k=0; k<grid.freq.size(); ++k) {
+         for (i=0; i<32; ++i) {bins[i] = 0;}
 
-    }
+        float min = 0, max = 0, power = 0;
+        for (i=0; i<data.x.size(); ++i) {
+            bins[std::min(int(32 * ((data.x[i] * grid.freq[k]) - float(int((data.x[i] * grid.freq[k]))))), 31)] += wy[i];
+            }
+
+        if (bins[0] > 0) {max = bins[0];}
+            else {min = bins[0];}
+
+        for (i=1; i<32; i++){
+            bins[i] += bins[i - 1];
+            if (bins[i] > max) {max = bins[i];}
+                else if (bins[i] < min) {min = bins[i];}
+        }
+
+        power = max - min;
+
+            //update output data struct
+        if (power > best_frequency.power){
+            best_frequency.frequency = grid.freq[k];
+            best_frequency.amplitude = 1;
+            best_frequency.power = power;
+            }
+        }
+
+
+    best_frequency.sum_of_powers = grid.freq.size();
+    best_frequency.power *= 25; //?!?!? - wyniki się nie zgadzają, ~20x za mała wartość 'power'
+
+free(ts); free(w); free(wy);
+return best_frequency;}
