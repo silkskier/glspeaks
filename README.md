@@ -25,13 +25,11 @@ make
 sudo make install
 rm -r ~/glspeaks
 ```
-##### For version 1.0.0 and later [PPA for x86-64 Debian-based systems](https://silkskier.github.io/ppa/), as well as static executable with installer script for incompatible distros and FreeBSD, will be available as an alternative. Windows binary currently does not hold a high priority due to performance loss in comparison to running Linux binary with WSL2 as well, as simple compilation failure (caused by std::thread) happening during attempted compilation with MinGW-w64.
+##### For version 1.0.0 and later [PPA for x86-64 Debian-based systems](https://silkskier.github.io/ppa/) will be available.
 
-ICPX (Intel oneAPI C++ Compiler) is a recommended compiler choice due to measured significant performance advantage over alternatives, however, g++ with O3 optimization level can be used to reduce output binary size from ~ 500 kB to less than 200 kB at a cost of ~15% increase of execution time.
+ICPX (Intel oneAPI C++ Compiler) is a recommended compiler choice due to measured significant performance advantage over alternatives, however, g++ with O3 optimization level can be used to reduce output binary size from ~ 500 kB to less than 200 kB at a cost of ~5% increase of execution time.
 
-The program is designed to work with data stored on flash memory - on HDDs accessing data 'all over the place' due to the usage of OpenMP to parse the input may cause significant overhead. Implementation of buffering algorithm for HDD drives is possible, however, currently, its implementation is not planned due to added complication of the project and limited impact for possible real-life implementations.
-
-
+The program is designed to work with data stored on flash memory - on HDDs accessing data 'all over the place' due to the usage of OpenMP to parse the input may cause significant overhead.
 
 
 As for now, the application is *almost* fully functional. Planned improvements include [NFFT3](https://github.com/NFFT/nfft) and [conditional entropy](https://academic.oup.com/mnras/article/434/3/2629/1044188)-based algorithms available as an alternative for current batch mode and SyCL GPGPU implementation for 1.3 update (planned to be fully bottlenecked by CPU during data parsing, needs to solve the issue of limited static GPU memory, to be implemented efficiently). The stock [FastChi](https://public.lanl.gov/palmer/fastchi.html) algorithm implementation is not planned due to its underwhelming performance (~3 stars/second * core on Ryzen 5 4600H) with precision inferior to CE. Modified implementation is possible at future release. The current performance of [recursive](https://academic.oup.com/mnras/article/213/4/773/951672) [GLS](https://arxiv.org/abs/0901.2573) is close to ~75 stars/second*core on the same hardware at the resolution set to 13 (which results in accuracy close to limitations of the algorithm).
