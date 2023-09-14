@@ -137,8 +137,75 @@ output_data bncu_b(const star &data, const grid &grid) {
         }
 
 
+
+    double dfstep = grid.fstep;
+
+    for (int j=0; j<12; ++j) {
+    double f0 = best_frequency.frequency - dfstep;
+    double f1 = best_frequency.frequency + dfstep;
+
+    float bins[32];
+    int idx;
+         for (i=0; i<32; ++i) {bins[i] = 0;}
+
+        float min = 0, max = 0, power = 0;
+        for (i=0; i<data.x.size(); ++i) {
+            idx = std::min(int(32 * ((data.x[i] * f0) - float(int((data.x[i] * f0))))), 31);
+            bins[idx] += wy[i];
+            }
+
+        if (bins[0] > 0) {max = bins[0];}
+            else {min = bins[0];}
+
+        for (i=1; i<32; i++){
+            bins[i] += bins[i - 1];
+            if (bins[i] > max) {max = bins[i];}
+                else if (bins[i] < min) {min = bins[i];}
+        }
+
+        power = max - min;
+
+            //update output data struct
+        if (power > best_frequency.power){
+            best_frequency.frequency = f0;
+            best_frequency.amplitude = 1;
+            best_frequency.power = power;
+            }
+
+
+
+         for (i=0; i<32; ++i) {bins[i] = 0;}
+
+        min = 0, max = 0, power = 0;
+        for (i=0; i<data.x.size(); ++i) {
+            idx = std::min(int(32 * ((data.x[i] * f1) - float(int((data.x[i] * f1))))), 31);
+            bins[idx] += wy[i];
+            }
+
+        if (bins[0] > 0) {max = bins[0];}
+            else {min = bins[0];}
+
+        for (i=1; i<32; i++){
+            bins[i] += bins[i - 1];
+            if (bins[i] > max) {max = bins[i];}
+                else if (bins[i] < min) {min = bins[i];}
+        }
+
+        power = max - min;
+
+            //update output data struct
+        if (power > best_frequency.power){
+            best_frequency.frequency = f1;
+            best_frequency.amplitude = 1;
+            best_frequency.power = power;
+            }
+
+    dfstep *= 0.5;
+    }
+
+
     best_frequency.sum_of_powers = grid.freq.size();
-    best_frequency.power *= 25; //?!?!? - wyniki się nie zgadzają, ~20x za mała wartość 'power'
+    best_frequency.power *= 10; //?!?!? - wyniki się nie zgadzają, ~20x za mała wartość 'power'
 
 free(ts); free(w); free(wy);
 return best_frequency;}
