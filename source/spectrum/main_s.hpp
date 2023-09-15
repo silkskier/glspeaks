@@ -15,9 +15,7 @@
 #include "GLS/GLS_s.hpp"
 #include "NCU/BNCU_s.hpp"
 #include "CE/CE.hpp"
-
-using namespace std;
-
+#include "NFFT/NFFT.hpp"
 
 
 void main_spectrum(int argc, char *argv[]){
@@ -66,6 +64,7 @@ unsigned int length_of_data = data.x.size();
 gls_s(data.x.data(), data.y.data(), data.dy.data(), length_of_data, grid.freq.size(), grid.fstep, grid.freq.data(), powers);
 //bncu_s(data, grid, powers);
 //ce_s(data, grid, powers);
+//nfft_s(data, grid, powers);
 
 //        for (unsigned int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
 // std::cout<< std::filesystem::path(file).filesystem::path::parent_path() <<std::endl; //prints input files directory
