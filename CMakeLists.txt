@@ -49,6 +49,7 @@ target_link_libraries(glspeaks PRIVATE
     OpenMP::OpenMP_CXX
     fmt::fmt
     fftw3
+    finufft_static
 )
 
 # Install the executable to /usr/local/bin
