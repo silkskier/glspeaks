@@ -22,8 +22,20 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(fmt REQUIRED)
 
+include(cmake/CPM.cmake)
+
+CPMAddPackage(
+  NAME             Finufft
+  GIT_REPOSITORY   https://github.com/flatironinstitute/finufft.git
+  GIT_TAG          master
+  GIT_SHALLOW      Yes
+  GIT_PROGRESS     Yes
+  EXCLUDE_FROM_ALL Yes
+  SYSTEM
+)
+
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -m64 -mavx2 -fno-sanitize=all")# -static
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2")# -march=native -fno-sanitize=all -static -Ofast
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
@@ -31,13 +43,11 @@ add_executable(glspeaks source/main.cpp source/qt.h)
 # Set the AUTOMOC flag for the target
 set_property(TARGET glspeaks PROPERTY AUTOMOC ON)
 
-
 # Link against the required libraries
 target_link_libraries(glspeaks PRIVATE
     Qt5::Widgets
     OpenMP::OpenMP_CXX
     fmt::fmt
-    nfft3
     fftw3
 )
 
