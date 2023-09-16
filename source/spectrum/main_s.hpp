@@ -15,7 +15,7 @@
 #include "GLS/GLS_s.hpp"
 #include "NCU/BNCU_s.hpp"
 #include "CE/CE.hpp"
-#include "NFFT/NFFT.hpp"
+#include "GLS/GLS_NFFT.hpp"
 
 
 void main_spectrum(int argc, char *argv[]){
