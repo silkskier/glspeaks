@@ -54,7 +54,7 @@ if (argc > 5 && ((mode != "-g" && argv[5][0] != '\0' && argv[3][0] != '-') || (m
 
 
 //creates frequency array
-grid grid; grid.generate(min_frequency, max_frequency, res_0);
+Grid grid; grid.generate(min_frequency, max_frequency, res_0);
 
 
 float *amplitudes = (float *) malloc(grid.freq.size() * sizeof(float)), *powers = (float *) malloc(grid.freq.size() * sizeof(float)); //vectors storing step grid.freq.data() and powers for each frequency
