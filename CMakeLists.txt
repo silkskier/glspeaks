@@ -36,11 +36,18 @@ CPMAddPackage(
   CMAKE_ARGS       -DCXXFLAGS=-DFFTW_PLAN_SAFE
 )
 
+
+
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2")# -march=native -fno-sanitize=all -static -Ofast
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2 -fno-sanitize=all -fomit-frame-pointer")# -march=native -fno-sanitize=all -static -Ofast // -fomit-frame-pointer
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
+
+target_include_directories(glspeaks
+    PUBLIC include
+    PUBLIC include/yas
+)
 
 # Set the AUTOMOC flag for the target
 set_property(TARGET glspeaks PROPERTY AUTOMOC ON)
