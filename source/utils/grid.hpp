@@ -3,7 +3,7 @@
 
 #include <vector>
 
-struct grid{
+struct Grid{
     std::vector<float> freq;
     float fstep;
 
