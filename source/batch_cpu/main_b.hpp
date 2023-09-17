@@ -87,7 +87,7 @@ if (argc > 8 && ((mode != "-g" && argv[8][0]) != '\0') || (mode == "-g" && argv[
 float max_amplitude = 8;
 if (argc > 9 && ((mode != "-g" && argv[9][0]) != '\0') || (mode == "-g" && argv[9][0]) != '\0'){max_amplitude = std::stof(argv[9]);}
 
-grid grid; grid.generate(min_frequency, max_frequency, resolution);
+Grid grid; grid.generate(min_frequency, max_frequency, resolution);
 
 std::cout << "\n" "Directory location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
