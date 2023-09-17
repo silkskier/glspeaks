@@ -5,7 +5,7 @@
 #include "../../utils/grid.hpp"
 #include "../../utils/readout.hpp"
 
-output_data ce_b(const star &data, const grid &grid) {
+output_data ce_b(const star &data, const Grid &grid) {
         uint normalization = 0; //comment after implementing switch statement
         output_data best_frequency;
 
