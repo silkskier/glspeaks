@@ -1,10 +1,15 @@
 #include <cmath>
+#include "../../utils/grid.hpp"
+#include "../../utils/readout.hpp"
 /* Author: Mathias Zechmeister
  * Date: 2018-10-01
  */
 
-void gls_s(const double* const t,  const float* const y, const float* const e_y, const unsigned int n, const unsigned int nk, const float fstep, const float* const f, double* p) { //
 
+void gls_s(const star &data, const grid &grid, double* p) {
+
+   const uint nk = grid.freq.size();
+   const uint n = data.x.size();
 
    /*
     * t : time array
@@ -26,23 +31,23 @@ void gls_s(const double* const t,  const float* const y, const float* const e_y,
 
    for (unsigned int i=0; i<n; ++i) {
       /* weights */
-      w[i] = 1 / (e_y[i] * e_y[i]);
+      w[i] = 1 / (data.dy[i] * data.dy[i]);
       wsum += w[i];
    }
    for (unsigned int i=0; i<n; ++i) {
       /* mean */
       w[i] /= wsum;                 /* normalised weights */
-      Y += w[i] * y[i];             /* Eq. (7) */
+      Y += w[i] * data.y[i];             /* Eq. (7) */
    }
    for (unsigned int i=0; i<n; ++i) {
       /* variance */
-      wy[i] = y[i] - Y;             /* Subtract weighted mean */
+      wy[i] = data.y[i] - Y;             /* Subtract weighted mean */
       YY += w[i] * wy[i] * wy[i];   /* Eq. (10) */
       wy[i] *= w[i];                /* attach weights */
 
       /* Prepare trigonometric recurrences cos(dx)+i sin(dx) */
-      cosdx[i] = cos(2 * M_PI * fstep * t[i]);
-      sindx[i] = sin(2 * M_PI * fstep * t[i]);
+      cosdx[i] = cos(2 * M_PI * grid.fstep * data.x[i]);
+      sindx[i] = sin(2 * M_PI * grid.fstep * data.x[i]);
    }
    /*printf("%i \n");*/
 
@@ -62,8 +67,8 @@ double     *cosx = (double *) malloc(n * sizeof(double)),
       for (unsigned int i=0; i<n; ++i) {
          if (j == 0) {
             /* init recurrences to stop error propagation */
-            cosx[i] = cos(2 * M_PI * f[k + j] * t[i]);
-            sinx[i] = sin(2 * M_PI * f[k + j] * t[i]);
+            cosx[i] = cos(2 * M_PI * grid.freq[k + j] * data.x[i]);
+            sinx[i] = sin(2 * M_PI * grid.freq[k + j] * data.x[i]);
          }
 
          C += w[i] * cosx[i];              /* Eq. (8) */
