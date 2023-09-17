@@ -5,8 +5,8 @@ project(glspeaks VERSION 0.1.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CMAKE_C_COMPILER "icx")
-#set(CMAKE_CXX_COMPILER "icpx")
+#set(CMAKE_C_COMPILER "clang")
+#set(CMAKE_CXX_COMPILER "clang++")
 # set(CUDA_FLAGS) ""
 # set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
@@ -39,7 +39,7 @@ CPMAddPackage(
 
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2 -fno-sanitize=all -fomit-frame-pointer")# -march=native -fno-sanitize=all -static -Ofast // -fomit-frame-pointer
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2 -fno-sanitize=all")# -march=native -fno-sanitize=all -static -Ofast -pg -fomit-frame-pointer // -fomit-frame-pointer
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
