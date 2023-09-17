@@ -11,22 +11,16 @@
 #include "../../utils/grid.hpp"
 #include "../../utils/readout.hpp"
 
-inline void fastsum(float *x, std::complex<float> *y, float *f, std::complex<float> *out, unsigned int n, unsigned int nk, int dk, int shift){
+inline void fastsum(float *x, std::complex<float> *y, float *f, std::complex<float> *out, unsigned int n, unsigned int nk){
     finufft_opts* opts = new finufft_opts;
     finufftf_default_opts(opts);
-    //opts->nthreads = 1;
-    opts->modeord = 1;
-    //int ier = finufftf1d3(n, &x[0], &y[0], +1, 1e-4, nk, &f[0], &out[0], opts);
-      int ier = finufftf1d1(n, &x[0], &y[0], +1, 1e-4, 2 * dk, &out[0], opts); // &f[0],
+    int ier = finufftf1d3(n, &x[0], &y[0], +1, 1e-5, nk, &f[0], &out[0], opts);
 return;}
 
-void nfftls_s(const star &data, Grid &grid, double* p) {
+void nfftls_s(const star &data, grid &grid, double* p) {
 
    const uint nk = grid.freq.size();
    const uint n = data.x.size();
-
-   uint dk = grid.freq[nk-1]/grid.fstep;
-   uint shift = grid.freq[0]/grid.fstep;
 
    /*
     * t : time array
@@ -39,23 +33,22 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
     * f : frequency array
     */
 
-   float wsum=0, xspan, Y=0, YY=0;
+   float wsum=0, Y=0, YY=0;
    float *ts =  (float *) malloc(n * sizeof(float));
 
    std::complex<float> *wy = (std::complex<float> *) malloc(n * sizeof(std::complex<float>)),
                        *w =  (std::complex<float> *) malloc(n * sizeof(std::complex<float>)),
-                       *Sh_Ch = (std::complex<float> *) malloc (2 * dk * sizeof(std::complex<float>)),
-                       *S2_C2 = (std::complex<float> *) malloc (2 * dk * sizeof(std::complex<float>));
+                       *Sh_Ch = (std::complex<float> *) malloc (nk * sizeof(std::complex<float>)),
+                       *S2_C2 = (std::complex<float> *) malloc (nk * sizeof(std::complex<float>));
 
    float SC, S2w, C2w, Cw, Sw, YC, YS, CC, SS;
 
-   xspan = data.x[n-1] - data.x[0];
 
    for (unsigned int i=0; i<n; ++i) {
       /* weights */
       w[i] = 1 / (data.dy[i] * data.dy[i]);
       wsum += w[i].real();
-      ts[i] = 0.00048828125 * M_PI * (data.x[i] - (data.x[0] + xspan));
+      ts[i] = 2 * M_PI * data.x[i];
    }
    for (unsigned int i=0; i<n; ++i) {
       /* mean */
@@ -70,12 +63,12 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
    }
 
    { //zero-mean fastsum
-   fastsum(ts, wy, grid.freq.data(), Sh_Ch, n, nk, dk, shift);
+   fastsum(ts, wy, grid.freq.data(), Sh_Ch, n, nk);
    for (unsigned int i=0; i<n; ++i) {ts[i] *= 2;}
-   fastsum(ts, w, grid.freq.data(), S2_C2, n, nk, dk, shift);
+   fastsum(ts, w, grid.freq.data(), S2_C2, n, nk);
    }
 
-      for (unsigned int i=shift; i<dk; ++i){
+    for (unsigned int i=0; i<nk; ++i){
         SC = S2_C2[i].imag() / S2_C2[i].real();
         S2w = SC / sqrt(1 + (SC * SC));
         C2w = 1 / sqrt(1 + (SC * SC));

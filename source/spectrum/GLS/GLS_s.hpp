@@ -6,7 +6,7 @@
  */
 
 
-void gls_s(const star &data, const grid &grid, double* p) {
+void gls_s(const star &data, const Grid &grid, double* p) {
 
    const uint nk = grid.freq.size();
    const uint n = data.x.size();
