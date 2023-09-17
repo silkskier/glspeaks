@@ -5,7 +5,7 @@
 #include "../../utils/grid.hpp"
 #include "../../utils/readout.hpp"
 
-void ce_s(const star &data, const grid &grid, double* powers) {
+void ce_s(const star &data, const Grid &grid, double* powers) {
         uint normalization = 0; //comment after implementing switch statement
 
 
