@@ -46,7 +46,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2 -fn
 add_executable(glspeaks source/main.cpp source/qt.h)
 
 target_include_directories(glspeaks
-    PUBLIC include
+    #PUBLIC include
     PUBLIC include/yas
 )
 
