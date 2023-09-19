@@ -21,6 +21,8 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(fmt REQUIRED)
+find_package(MKL CONFIG REQUIRED)
+message(STATUS "${MKL_IMPORTED_TARGETS}") #Provides available list of targets based on input
 
 include(cmake/CPM.cmake)
 
