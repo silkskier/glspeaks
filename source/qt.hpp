@@ -192,7 +192,7 @@ int qt(int argc, char *argv[]){
     QApplication app(argc, argv);
 
     QWidget window;
-    QVBoxLayout layout(&window);
+    QGridLayout *layout = new QGridLayout(&window);
 
     // Add Cancel and Continue buttons
     QHBoxLayout *hboxButtons = new QHBoxLayout;
@@ -207,8 +207,8 @@ int qt(int argc, char *argv[]){
     QRadioButton radio2("Peaks");
     QRadioButton radio3("Batch");
     QRadioButton radio4("Help");
-    QRadioButton radio5("Peaks (GPU)  [WIP]");
-    QRadioButton radio6("Batch (GPU) [WIP]");
+    QRadioButton radio5("Batch (GPU)");
+    QRadioButton radio6("Serialization");
 
     radio4.setChecked(true);
 
@@ -355,8 +355,8 @@ int qt(int argc, char *argv[]){
     batchGroupBox.setLayout(&batchLayout);
 
     QRadioButton radio11("Automatically generate phased plots of brightness");
-    QRadioButton radio12("Fine-tune the periodogram results while plotting [WIP]");
-    QRadioButton radio13("Use .npy files as an input [WIP]");
+    QRadioButton radio12("Fine-tune the periodogram results while plotting");
+    QRadioButton radio13("Use .phot files as an input");
 
     batchLayout.addWidget(&radio11);
     batchLayout.addWidget(&radio12);
@@ -417,15 +417,16 @@ QObject::connect(&radio11, &QRadioButton::toggled, [&radio3, &radio12](bool chec
 
     QObject::connect(&cancelButton, &QPushButton::clicked, &QCoreApplication::quit);
 
-    layout.addWidget(&modeGroupBox);
-    layout.addWidget(&algorithmGroupBox);
-    layout.addWidget(&dataGroupBox);
-    layout.addWidget(&parametersGroupBox);
-    layout.addWidget(&batchGroupBox);
+    layout->addWidget(&modeGroupBox, 0, 0, 1, 1); // Mode selection
+    layout->addWidget(&algorithmGroupBox, 1, 0, 1, 1); // Algorithm selection
+    layout->addWidget(&batchGroupBox, 2, 0, 1, 1); // Batch options
+
+    layout->addWidget(&dataGroupBox, 0, 1, 1, 1); // Data selection
+    layout->addWidget(&parametersGroupBox, 1, 1, 2, 1); // Parameters
 
     hboxButtons->addWidget(&cancelButton);
     hboxButtons->addWidget(&continueButton);
-    layout.addLayout(hboxButtons);
+    layout->addLayout(hboxButtons, 3, 0, 1, 2); // Buttons at the bottom
 
     // Connect the "Continue" button to a custom function
     QObject::connect(&continueButton, &QPushButton::clicked, &window, &QWidget::close);
@@ -468,7 +469,7 @@ QObject::connect(&radio11, &QRadioButton::toggled, [&radio3, &radio12](bool chec
 
 
     window.setWindowTitle("gslpeaks");
-    window.resize(480, window.height());
+    window.resize(920, window.height());
     window.show();
 
     return app.exec();
