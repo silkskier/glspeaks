@@ -33,7 +33,6 @@ CPMAddPackage(
   GIT_PROGRESS     Yes
   EXCLUDE_FROM_ALL Yes
   SYSTEM
-  # Compile thread-safe FINUFFT to make it usable in batch mode
   CMAKE_ARGS       -DCXXFLAGS=-DFFTW_PLAN_SAFE
 )
 ]]
