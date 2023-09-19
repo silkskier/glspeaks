@@ -7,7 +7,7 @@ A simple [GLS](https://github.com/mzechmeister/GLS) periodogram for detection of
 
 Application based on [fnpeaks](http://helas.astro.uni.wroc.pl/deliverables.php?active=fnpeaks), with the goal of increasing performance, user-friendliness, and accuracy over its predecessor.
 
-/include subdirectory does contain copy of [niXman/yas](https://github.com/niXman/yas) serializer, [fastfloat/fast_float](https://github.com/fastfloat/fast_float) parser, [fmtlib/fmt](https://github.com/fmtlib/fmt) formating library, (orlp/pdqsort)[https://github.com/orlp/pdqsort] sorting library and (cxxopts)[https://github.com/jarro2783/cxxopts] CLI arguments parser.
+/include subdirectory does contain copy of [niXman/yas](https://github.com/niXman/yas) serializer, [fastfloat/fast_float](https://github.com/fastfloat/fast_float) float parser, (orlp/pdqsort)[https://github.com/orlp/pdqsort] sorting library and (jarro2783/cxxopts)[https://github.com/jarro2783/cxxopts] CLI arguments parser.
 
 ### Recommended update/installation command for version beta 1.0.3:
 ##### No releases are currently available. Compilation from the source is recommended.
