@@ -48,7 +48,7 @@ std::cout << "\n" "File location: " << files_location << "\n";
 std::cout << "Min frequency: " << min_frequency << "\n";
 std::cout << "Max frequency: " << max_frequency << "\n";
 
-grid grid; grid.generate(min_frequency, max_frequency, res_0);
+Grid grid; grid.generate(min_frequency, max_frequency, res_0);
 
 std::cout << "Step size: " << grid.fstep << "\n";
 std::cout << "Number of steps: " << grid.freq.size() << "\n";
