@@ -76,7 +76,7 @@ void showText(const std::string& text, int windowWidth, int windowHeight, const 
     QFont font("Monospace");  // Set font to monospace
     textEdit->setFont(font);
 
-    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    QGridLayout* layout = new QGridLayout(&dialog);
     layout->addWidget(textEdit);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, &dialog);
@@ -226,22 +226,36 @@ int qt(int argc, char *argv[]){
     QGridLayout algorithmLayout;
     algorithmGroupBox.setLayout(&algorithmLayout);
     QRadioButton radio7("GLS (recursive)");
-    QRadioButton radio8("GLS (NFFT3) [WIP]");
-    QRadioButton radio9("FastChi (NFFT3) [WIP]");
-    QRadioButton radio10("Conditional entropy [WIP]");
-    QRadioButton radio14("Double Kuiper's test");
+    QRadioButton radio8("GLS (NFFT)");
+    QRadioButton radio9("FastChi (recursive)");
+    QRadioButton radio15("FastChi (NFFT)");
+    QRadioButton radio14("Conditional nonuniformity");
+    QRadioButton radio16("Binned conditional nonuniformity");
+    QRadioButton radio18("SuperSmoother");
+    QRadioButton radio19("Binned SuperSmoother");
+    QRadioButton radio10("Conditional entropy");
+    QRadioButton radio17("Analysis of variance");
 
     radio7.setChecked(true);
     radio8.setEnabled(false);
     radio9.setEnabled(false);
-    radio10.setEnabled(false);
+    radio10.setEnabled(true);
     radio14.setEnabled(true);
+    radio15.setEnabled(false);
+    radio17.setEnabled(false);
+    radio18.setEnabled(false);
+    radio19.setEnabled(false);
 
     algorithmLayout.addWidget(&radio7, 0, 0);
-    algorithmLayout.addWidget(&radio8, 1, 0);
-    algorithmLayout.addWidget(&radio9, 0, 1);
-    algorithmLayout.addWidget(&radio10, 1, 1);
-    algorithmLayout.addWidget(&radio14, 2, 0);
+    algorithmLayout.addWidget(&radio8, 0, 1);
+    algorithmLayout.addWidget(&radio9, 1, 0);
+    algorithmLayout.addWidget(&radio10, 2, 0);
+    algorithmLayout.addWidget(&radio17, 2, 1);
+    algorithmLayout.addWidget(&radio14, 3, 0);
+    algorithmLayout.addWidget(&radio15, 1, 1);
+    algorithmLayout.addWidget(&radio16, 3, 1);
+    algorithmLayout.addWidget(&radio18, 4, 0);
+    algorithmLayout.addWidget(&radio19, 4, 1);
 
     // File and directory selection line edits
     QGroupBox dataGroupBox("Data selection");
