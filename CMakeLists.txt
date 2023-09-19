@@ -5,8 +5,8 @@ project(glspeaks VERSION 0.1.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CMAKE_C_COMPILER "clang")
-#set(CMAKE_CXX_COMPILER "clang++")
+#set(CMAKE_C_COMPILER "icx")
+#set(CMAKE_CXX_COMPILER "icpx")
 # set(CUDA_FLAGS) ""
 # set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
@@ -24,6 +24,7 @@ find_package(fmt REQUIRED)
 
 include(cmake/CPM.cmake)
 
+#[[
 CPMAddPackage(
   NAME             Finufft
   GIT_REPOSITORY   https://github.com/flatironinstitute/finufft.git
@@ -35,7 +36,7 @@ CPMAddPackage(
   # Compile thread-safe FINUFFT to make it usable in batch mode
   CMAKE_ARGS       -DCXXFLAGS=-DFFTW_PLAN_SAFE
 )
-
+]]
 
 
 # Set compiler flags
@@ -57,8 +58,8 @@ target_link_libraries(glspeaks PRIVATE
     Qt5::Widgets
     OpenMP::OpenMP_CXX
     fmt::fmt
-    fftw3
-    finufft_static
+    #fftw3
+    #finufft_static
 )
 
 # Install the executable to /usr/local/bin
