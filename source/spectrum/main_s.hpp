@@ -13,10 +13,10 @@
 #include "../utils/vertex.hpp"
 
 #include "GLS/GLS_s.hpp"
-#include "GLS/NFFTLS.hpp"
+//#include "GLS/NFFTLS.hpp"
 #include "CNU/BCNU_s.hpp"
 #include "CE/CE.hpp"
-#include "NFFT/NFFT.hpp"
+//#include "NFFT/NFFT.hpp"
 
 
 void main_spectrum(int argc, char *argv[]){
