@@ -5,8 +5,8 @@ project(glspeaks VERSION 0.1.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(CMAKE_C_COMPILER "icx")
-#set(CMAKE_CXX_COMPILER "icpx")
+set(CMAKE_C_COMPILER "icx")
+set(CMAKE_CXX_COMPILER "icpx")
 # set(CUDA_FLAGS) ""
 # set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
@@ -35,19 +35,21 @@ CPMAddPackage(
   GIT_PROGRESS     Yes
   EXCLUDE_FROM_ALL Yes
   SYSTEM
+  # Compile thread-safe FINUFFT to make it usable in batch mode
   CMAKE_ARGS       -DCXXFLAGS=-DFFTW_PLAN_SAFE
 )
 ]]
 
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -mavx2 -fno-sanitize=all")# -march=native -fno-sanitize=all -static -Ofast -pg -fomit-frame-pointer // -fomit-frame-pointer
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -march=native -fno-sanitize=all -qmkl=sequential")# -march=native -fno-sanitize=all -static -Ofast -pg -fomit-frame-pointer // -fomit-frame-pointer #
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
 
 target_include_directories(glspeaks
-    PUBLIC include #/yas
+    PUBLIC include/yas
+    PUBLIC /opt/intel/oneapi/mkl/latest/include
 )
 
 # Set the AUTOMOC flag for the target
@@ -58,6 +60,10 @@ target_link_libraries(glspeaks PRIVATE
     Qt5::Widgets
     OpenMP::OpenMP_CXX
     fmt::fmt
+    #MKL::MKL
+    #MKL::mkl_core
+    #MKL::mkl_intel_thread
+    #MKL::mkl_intel_ilp64
     #fftw3
     #finufft_static
 )
