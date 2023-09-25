@@ -1,9 +1,11 @@
 #include <cmath>
+#include <array>
 #include <algorithm>
 #include "../../utils/vertex.hpp"
 #include "../../utils/periodograms.hpp"
 #include "../../utils/grid.hpp"
 #include "../../utils/readout.hpp"
+
 
 output_data ce_b(const star &data, const Grid &grid) {
         uint normalization = 0; //comment after implementing switch statement
@@ -15,7 +17,7 @@ output_data ce_b(const star &data, const Grid &grid) {
          *wy = (float *) malloc(data.x.size() * sizeof(float));
     uint i, j, k;
 
-    float max_ce = log2(5*10);
+    float max_ce = std::log2f(5*10);
 
     for (i=0; i<data.x.size(); ++i) {
        ts[i] = float(data.x[i]);
@@ -68,7 +70,7 @@ output_data ce_b(const star &data, const Grid &grid) {
                         p_y = sum_row / data.x.size();
                     }
 
-                    A += p_x_y * log2(p_y / p_x_y);
+                    A += p_x_y * std::log2f((p_y) / (p_x_y));
                 }
             }
         }
@@ -116,7 +118,7 @@ output_data ce_b(const star &data, const Grid &grid) {
                         p_y = sum_row / data.x.size();
                     }
 
-                    A += p_x_y * log2(p_y / p_x_y);
+                    A += p_x_y * std::log2f(p_y / p_x_y);
                 }
             }
         }
@@ -170,15 +172,10 @@ output_data ce_b(const star &data, const Grid &grid) {
             best_frequency.amplitude = 1;
             best_frequency.power = power;
         }
-
-
-
-
     }
 
 
     best_frequency.sum_of_powers = grid.freq.size();
-    best_frequency.power *= 10; //?!?!? - wyniki się nie zgadzają, ~20x za mała wartość 'power'
 
 free(ts); free(wy);
 return best_frequency;}
