@@ -138,7 +138,6 @@ for (unsigned int i = 0; i < file_count; i++) {
     opts->nthreads = 1;
     opts->modeord = 1;
     loc_count ++;
-        loc_count++;
     }
     auto [frequency, amplitude, max_power] = periodogram(grid, files[i]);
 
