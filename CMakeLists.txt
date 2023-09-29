@@ -5,12 +5,12 @@ project(glspeaks VERSION 0.1.3 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_COMPILER "icx")
-set(CMAKE_CXX_COMPILER "icpx")
+#set(CMAKE_C_COMPILER "icx")
+#set(CMAKE_CXX_COMPILER "icpx")
 # set(CUDA_FLAGS) ""
 # set(CUDA_FLAGS "-fsycl -fsycl-targets=nvptx64-nvidia-cuda -Xsycl-target-backend=nvptx64-nvidia-cuda --cuda-gpu-arch=sm_75")
 
-set(CMAKE_AUTOMOC ON)
+
 # Set the path to the Qt5 installation
 # set(CMAKE_PREFIX_PATH "/home/kacper/Qt5static/5.15" CACHE PATH "Qt5 installation path")
 
@@ -26,7 +26,7 @@ message(STATUS "${MKL_IMPORTED_TARGETS}") #Provides available list of targets ba
 
 include(cmake/CPM.cmake)
 
-#[[
+
 CPMAddPackage(
   NAME             Finufft
   GIT_REPOSITORY   https://github.com/flatironinstitute/finufft.git
@@ -38,11 +38,12 @@ CPMAddPackage(
   # Compile thread-safe FINUFFT to make it usable in batch mode
   CMAKE_ARGS       -DCXXFLAGS=-DFFTW_PLAN_SAFE
 )
-]]
+
+set(CMAKE_AUTOMOC ON)
 
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -march=native -fno-sanitize=all -qmkl=sequential")# -march=native -fno-sanitize=all -static -Ofast -pg -fomit-frame-pointer // -fomit-frame-pointer #
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -march=native")# -fsanitize=address -march=native -static -Ofast -pg -fomit-frame-pointer -fomit-frame-pointer -qmkl=sequential -fno-sanitize=all
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
@@ -60,12 +61,12 @@ target_link_libraries(glspeaks PRIVATE
     Qt5::Widgets
     OpenMP::OpenMP_CXX
     fmt::fmt
+    finufft_static
     #MKL::MKL
     #MKL::mkl_core
     #MKL::mkl_intel_thread
     #MKL::mkl_intel_ilp64
     #fftw3
-    #finufft_static
 )
 
 # Install the executable to /usr/local/bin
