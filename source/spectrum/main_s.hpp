@@ -13,7 +13,7 @@
 #include "../utils/vertex.hpp"
 
 #include "GLS/GLS_s.hpp"
-//#include "GLS/NFFTLS.hpp"
+#include "GLS/NFFTLS.hpp"
 #include "CNU/BCNU_s.hpp"
 #include "CE/CE.hpp"
 //#include "NFFT/NFFT.hpp"
@@ -63,9 +63,9 @@ data.read(file);
 unsigned int length_of_data = data.x.size();
 
 gls_s(data, grid, powers);
-//nfftls_s(data, grid, powers);
 //bcnu_s(data, grid, powers);
 //ce_s(data, grid, powers);
+//nfftls_s(data, grid, powers); //finufft-based
 //nfft_s(data, grid, powers); //do not use that
 
 //        for (unsigned int i = 0; i < no_steps; i++) std::cout<< frequencies[i] <<" "<< powers[i] <<std::endl; //prints power for each frequency
@@ -82,5 +82,5 @@ auto out = fmt::output_file(output_path);
 
 for (unsigned int i = 0; i < grid.freq.size(); i++){out.print(fmt::format("{:.5f}\t{:.5f}\n", grid.freq[i], powers[i]));}
 
- return;}
-
+free(powers);
+return;}
