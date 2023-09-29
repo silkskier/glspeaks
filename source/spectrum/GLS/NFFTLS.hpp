@@ -2,31 +2,24 @@
 #include <complex>
 
 //includes for finufft
-#include <cassert>
-#include <stdio.h>
-#include <stdlib.h>
 #include <finufft.h>
 
 #include "../../utils/periodograms.hpp"
 #include "../../utils/grid.hpp"
 #include "../../utils/readout.hpp"
 
-inline void fastsum(float *x, std::complex<float> *y, float *f, std::complex<float> *out, unsigned int n, unsigned int nk, int dk, int shift){
-    finufft_opts* opts = new finufft_opts;
-    finufftf_default_opts(opts);
-    //opts->nthreads = 1;
-    opts->modeord = 1;
-    //int ier = finufftf1d3(n, &x[0], &y[0], +1, 1e-4, nk, &f[0], &out[0], opts);
-      int ier = finufftf1d1(n, &x[0], &y[0], +1, 1e-4, 2 * dk, &out[0], opts); // &f[0],
-return;}
+   void nfftls_s(const star &data, const Grid &grid, double* p) {
 
-void nfftls_s(const star &data, Grid &grid, double* p) {
+   finufft_opts* opts = new finufft_opts;
+   finufftf_default_opts(opts);
+   opts->nthreads = 1;
+   opts->modeord = 1;
 
-   const uint nk = grid.freq.size();
-   const uint n = data.x.size();
+   int nk = grid.freq.size();
+   int n = data.x.size();
 
-   uint dk = grid.freq[nk-1]/grid.fstep;
-   uint shift = grid.freq[0]/grid.fstep;
+   int dk = grid.freq[nk-1]/grid.fstep;
+   int shift = grid.freq[0]/grid.fstep;
 
    /*
     * t : time array
@@ -44,10 +37,10 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
 
    std::complex<float> *wy = (std::complex<float> *) malloc(n * sizeof(std::complex<float>)),
                        *w =  (std::complex<float> *) malloc(n * sizeof(std::complex<float>)),
-                       *Sh_Ch = (std::complex<float> *) malloc (2 * dk * sizeof(std::complex<float>)),
-                       *S2_C2 = (std::complex<float> *) malloc (2 * dk * sizeof(std::complex<float>));
+                       *Sh_Ch = (std::complex<float> *) malloc ((((2 * dk) + 1) * sizeof(std::complex<float>))),
+                       *S2_C2 = (std::complex<float> *) malloc ((((2 * dk) + 1) * sizeof(std::complex<float>)));
 
-   float SC, S2w, C2w, Cw, Sw, YC, YS, CC, SS;
+   float SC, S2w, C2w, Cw, Sw, YC, YS, CC, SS, power;
 
    xspan = data.x[n-1] - data.x[0];
 
@@ -55,7 +48,7 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
       /* weights */
       w[i] = 1 / (data.dy[i] * data.dy[i]);
       wsum += w[i].real();
-      ts[i] = 0.00048828125 * M_PI * (data.x[i] - (data.x[0] + xspan));
+      ts[i] = 0.00048828125 * M_PI * (data.x[i] - (data.x[0] + (xspan/2))); // 0.00048828125 - 2^-11
    }
    for (unsigned int i=0; i<n; ++i) {
       /* mean */
@@ -69,11 +62,16 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
       wy[i] *= w[i].real();                /* attach weights */
    }
 
-   { //zero-mean fastsum
-   fastsum(ts, wy, grid.freq.data(), Sh_Ch, n, nk, dk, shift);
+
+   //zero-mean
+
+
+   //fastsum_b(ts, wy, Sh_Ch, n, dk, shift, opts);
+   int ier = finufftf1d1(n, &ts[0], &wy[0], +1, 1e-4, 2 * dk, &Sh_Ch[0], opts);
    for (unsigned int i=0; i<n; ++i) {ts[i] *= 2;}
-   fastsum(ts, w, grid.freq.data(), S2_C2, n, nk, dk, shift);
-   }
+   //fastsum_b(ts, w,  S2_C2, n, dk, shift, opts);
+   ier = finufftf1d1(n, &ts[0], &w[0], +1, 1e-4, 2 * dk, &S2_C2[0], opts);
+
 
       for (unsigned int i=shift; i<dk; ++i){
         SC = S2_C2[i].imag() / S2_C2[i].real();
@@ -88,20 +86,11 @@ void nfftls_s(const star &data, Grid &grid, double* p) {
         CC = 0.5 * ((1 + S2_C2[i].real() * S2_C2[i].real()) + (S2_C2[i].imag() * S2_C2[i].imag()));
         SS = 0.5 * ((1 + S2_C2[i].real() * S2_C2[i].real()) - (S2_C2[i].imag() * S2_C2[i].imag()));
 
-        p[i] =  ((YC * YC / CC) + (YS * YS / SS)) / YY;
-    } //SC - tan_2omega_tau
+        p[i-shift] =  ((YC * YC / CC) + (YS * YS / SS)) / YY;
+      }
+      //SC - tan_2omega_tau
 
     free(ts); free(w); free(wy); free(Sh_Ch); free(S2_C2);
-
-
-
-
-
-
+    delete opts;
 
     return;}
-
-
-
-
-
