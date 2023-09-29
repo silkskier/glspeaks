@@ -43,7 +43,7 @@ set(CMAKE_AUTOMOC ON)
 
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -march=native")# -fsanitize=address -march=native -static -Ofast -pg -fomit-frame-pointer -fomit-frame-pointer -qmkl=sequential -fno-sanitize=all
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_FLAGS} -Ofast -fopenmp -march=native")#  -fsanitize=address -march=native -static -Ofast -pg -fomit-frame-pointer -fomit-frame-pointer -qmkl=sequential -fno-sanitize=all
 
 # Add the source files for the executable
 add_executable(glspeaks source/main.cpp source/qt.h)
