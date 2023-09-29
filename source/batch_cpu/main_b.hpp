@@ -55,6 +55,7 @@ std::locale::global(std::locale("C"));
 
 std::string mode(argv[1]);
 
+bool use_fft = true;
 
 //defines and calculates constants used for calculations
 const std::string files_location = argv[2];
@@ -128,8 +129,17 @@ std::ofstream output_file(output_path);
 auto out = fmt::output_file(output_path);
 {out.print("file	frequency	period	amplitude	power\n");}
 
-#pragma omp parallel for
+
+uint loc_count = 0; finufft_opts* opts = new finufft_opts;
+#pragma omp parallel for private(loc_count, opts)
 for (unsigned int i = 0; i < file_count; i++) {
+    if(loc_count == 0 && use_fft){
+    finufftf_default_opts(opts);
+    opts->nthreads = 1;
+    opts->modeord = 1;
+    loc_count ++;
+        loc_count++;
+    }
     auto [frequency, amplitude, max_power] = periodogram(grid, files[i]);
 
     if (filter(frequency, max_power, min_power, filter_range, amplitude, min_amplitude, max_amplitude)) {
